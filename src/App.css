@@ -1,0 +1,154 @@
+body {
+  margin: 0;
+  background-color: #0a0a0a;
+  color: white;
+  font-family: 'Inter', sans-serif;
+}
+
+.shop-container {
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 18px;
+  letter-spacing: 2px;
+  border-left: 3px solid #ff3333;
+  padding-left: 10px;
+  margin-bottom: 25px;
+}
+
+.beat-row {
+  display: flex;
+  align-items: center;
+  background: #141414;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #222;
+  cursor: pointer;
+}
+
+.play-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.play-overlay {
+  background: rgba(0,0,0,0.3);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+}
+
+.beat-info {
+  flex-grow: 1;
+  margin-left: 15px;
+}
+
+.beat-title {
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.beat-meta {
+  font-size: 11px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.price-tag {
+  font-weight: bold;
+  color: #00ff88;
+  font-size: 14px;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  align-items: flex-end;
+  z-index: 999;
+}
+
+.modal-content {
+  background: #181818;
+  width: 100%;
+  padding: 25px;
+  border-radius: 20px 20px 0 0;
+  box-sizing: border-box;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.modal-cover {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+}
+
+.close-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 20px;
+}
+
+.license-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #222;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.license-info strong {
+  display: block;
+  font-size: 14px;
+}
+
+.license-info span {
+  font-size: 11px;
+  color: #777;
+}
+
+.buy-button {
+  background: #ff3333;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.modal-footer {
+  text-align: center;
+  font-size: 11px;
+  color: #444;
+  margin-top: 15px;
+}
