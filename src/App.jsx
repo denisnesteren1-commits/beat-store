@@ -1,57 +1,95 @@
-import { useEffect } from 'react'
-import WebApp from '@twa-dev/sdk'
-import './App.css'
+import React, { useState, useRef } from 'react';
+import './App.css';
+import inventory from './inventory';
 
 function App() {
-  useEffect(() => {
-    WebApp.ready();
-  }, []);
+  const [selectedBeat, setSelectedBeat] = useState(null);
+  const [currentPlaying, setCurrentPlaying] = useState(null);
+  const audioRef = useRef(null);
 
-  // Функция для остановки других треков при включении нового
-  const handlePlay = (e) => {
-    const audios = document.getElementsByTagName('audio');
-    for (let i = 0; i < audios.length; i++) {
-      if (audios[i] !== e.target) {
-        audios[i].pause();
-        audios[i].currentTime = 0; // Сбрасывает трек в начало (по желанию)
+  const openModal = (beat) => setSelectedBeat(beat);
+  const closeModal = () => setSelectedBeat(null);
+
+  // Функция проигрывания
+  const togglePlay = (e, beat) => {
+    e.stopPropagation(); // Чтобы не открывалось модальное окно при клике на плей
+    if (currentPlaying?.id === beat.id) {
+      audioRef.current.paused ? audioRef.current.play() : audioRef.current.pause();
+    } else {
+      setCurrentPlaying(beat);
+      if (audioRef.current) {
+        audioRef.current.src = beat.audio;
+        audioRef.current.play();
       }
     }
   };
 
-  const beats = [
-    { id: 1, title: 'Ashes', genre: 'Rock', price: '1500', cover: '/assets/Ashes.png', audio: '/assets/Ashes.mp3' },
-    { id: 2, title: 'One Road', genre: 'Chill', price: '2000', cover: '/assets/One_road.png', audio: '/assets/One_road.mp3' },
-    { id: 3, title: 'Grey Entrance', genre: 'Atmospheric', price: '1200', cover: '/assets/Grey_entrance.png', audio: '/assets/Grey_entrance.mp3' },
-  ];
+  const buyBeat = (licenseType, price) => {
+    const message = `Привет! Хочу купить бит "${selectedBeat.title}"\nЛицензия: ${licenseType}\nЦена: ${price}₽`;
+    const tgUrl = `https://t.me/Fr1sso?text=${encodeURIComponent(message)}`;
+    window.open(tgUrl, '_blank');
+  };
 
   return (
-    <div className="container">
-      <header>
-        <h1>BEAT STORE</h1>
-        <p>Привет, {WebApp.initDataUnsafe?.user?.first_name || 'Музыкант'}!</p>
-      </header>
+    <div className="shop-container">
+      <h2>🔥 FRESSO BEATS</h2>
+      
+      {/* Скрытый элемент аудио */}
+      <audio ref={audioRef} />
 
-      <div className="grid">
-        {beats.map((beat) => (
-          <div key={beat.id} className="card">
-            <img src={beat.cover} alt={beat.title} className="cover" />
-            <div className="info">
-              <h3>{beat.title}</h3>
-              <span className="genre">{beat.genre}</span>
-              <audio 
-                controls 
-                src={beat.audio} 
-                onPlay={handlePlay} // Вот эта магия отключает другие биты
-              ></audio>
-              <button className="buy-button" onClick={() => WebApp.showAlert(`Бит ${beat.title} выбран!`)}>
-                Купить • {beat.price}₽
-              </button>
+      <div className="beat-list">
+        {inventory.map((beat) => (
+          <div key={beat.id} className="beat-row" onClick={() => openModal(beat)}>
+            <div 
+              className="play-btn" 
+              onClick={(e) => togglePlay(e, beat)}
+              style={{ backgroundImage: `url(${beat.image})`, backgroundSize: 'cover' }}
+            >
+              <div className="play-overlay">
+                {currentPlaying?.id === beat.id ? '⏸' : '▶'}
+              </div>
             </div>
+
+            <div className="beat-info">
+              <div className="beat-title">{beat.title}</div>
+              <div className="beat-meta">
+                <span>{beat.bpm} BPM</span>
+                <span>{beat.key}</span>
+              </div>
+            </div>
+
+            <div className="price-tag">{beat.priceWav}₽</div>
           </div>
         ))}
       </div>
+
+      {/* Модалка (остается прежней) */}
+      {selectedBeat && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <img src={selectedBeat.image} alt="cover" className="modal-cover" />
+              <div>
+                <h3 style={{ margin: 0 }}>{selectedBeat.title}</h3>
+                <p style={{ margin: 0, color: '#888', fontSize: '12px' }}>{selectedBeat.bpm} BPM</p>
+              </div>
+              <button className="close-btn" onClick={closeModal}>✕</button>
+            </div>
+            <div className="license-list">
+              <div className="license-option">
+                <div className="license-info"><strong>WAV LEASE</strong><span>High Quality WAV</span></div>
+                <button className="buy-button" onClick={() => buyBeat('WAV', selectedBeat.priceWav)}>{selectedBeat.priceWav}₽</button>
+              </div>
+              <div className="license-option">
+                <div className="license-info"><strong>TRACKOUT</strong><span>WAV + STEMS</span></div>
+                <button className="buy-button" onClick={() => buyBeat('TRACKOUT', selectedBeat.priceStems)}>{selectedBeat.priceStems}₽</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
