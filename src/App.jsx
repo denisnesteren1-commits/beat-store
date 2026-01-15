@@ -3,7 +3,7 @@ import './App.css';
 import inventory from './inventory';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('shop'); // shop, profile, admin, beatPage, edit
+  const [activeTab, setActiveTab] = useState('shop'); // shop, profile, admin, edit, beatPage
   const [selectedBeat, setSelectedBeat] = useState(null);
   const [currentPlaying, setCurrentPlaying] = useState(null);
   const [progress, setProgress] = useState(0);
@@ -26,8 +26,15 @@ function App() {
 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
-      setProgress((audioRef.current.currentTime / audioRef.current.duration) * 100 || 0);
+      const p = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+      setProgress(p || 0);
     }
+  };
+
+  const onSeek = (e) => {
+    const newTime = (e.target.value / 100) * audioRef.current.duration;
+    audioRef.current.currentTime = newTime;
+    setProgress(e.target.value);
   };
 
   const togglePlay = (e, beat) => {
@@ -44,7 +51,6 @@ function App() {
     }
   };
 
-  // Логика фильтрации
   const filteredBeats = inventory.filter(beat => {
     const matchesSearch = beat.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesBpm = parseInt(beat.bpm) <= filterBpm;
@@ -55,114 +61,180 @@ function App() {
 
   const allTags = [...new Set(inventory.flatMap(b => b.tags))];
 
-  // ЭКРАН РЕДАКТИРОВАНИЯ / ЗАГРУЗКИ
+  // --- ЭКРАН ФОРМЫ (ЗАГРУЗКА / РЕДАКТИРОВАНИЕ) ---
   const RenderForm = ({ title, beatToEdit }) => (
     <div className="app-viewport">
       <div className="nav-bar">
         <button className="back-icon" onClick={() => setActiveTab(beatToEdit ? 'shop' : 'profile')}>←</button>
         <span className="nav-title">{title}</span>
-        <div style={{width: 20}}></div>
+        <div style={{width: 26}}></div>
       </div>
+      
       <div className="form-container">
         <div className="upload-cover-section">
-          <img src={beatToEdit?.image || "https://via.placeholder.com/150"} className="preview-img" />
-          <button className="btn-secondary">Upload New Cover</button>
+          <img src={beatToEdit?.image || "https://via.placeholder.com/150"} className="preview-img" alt="cover" />
+          <button className="btn-secondary">Change Cover</button>
         </div>
-        <input type="text" className="st-input" placeholder="Title" defaultValue={beatToEdit?.title} />
+
+        <div className="input-group">
+          <label>Beat Name</label>
+          <input type="text" className="st-input" placeholder="Enter beat title..." defaultValue={beatToEdit?.title?.replace('fresso - ', '')} />
+        </div>
+
         <div className="side-by-side">
-          <input type="number" className="st-input" placeholder="BPM" defaultValue={beatToEdit?.bpm} />
-          <input type="text" className="st-input" placeholder="Key" defaultValue={beatToEdit?.key} />
+          <div className="input-group">
+            <label>BPM</label>
+            <input type="number" className="st-input" placeholder="140" defaultValue={beatToEdit?.bpm} />
+          </div>
+          <div className="input-group">
+            <label>Key</label>
+            <input type="text" className="st-input" placeholder="Cm" defaultValue={beatToEdit?.key} />
+          </div>
         </div>
-        <div className="tag-cloud-input">
-          {allTags.map(t => <span key={t} className="mini-tag">{t}</span>)}
-          <input type="text" className="st-input" placeholder="Add Tags..." />
+
+        <div className="input-group">
+          <label>Tags & Genre</label>
+          <div className="tag-selector" style={{marginBottom: '10px'}}>
+             {allTags.map(t => <span key={t} className="tag-chip">{t}</span>)}
+          </div>
+          <input type="text" className="st-input" placeholder="Add custom tags..." />
         </div>
-        <div className="file-list">
-          <div className="file-item"><span>MP3 Tagged</span><input type="file" /></div>
-          <div className="file-item"><span>WAV License</span><input type="file" /></div>
-          <div className="file-item"><span>Trackout (ZIP)</span><input type="file" /></div>
+
+        <div className="file-section-box">
+          <div className="file-row">
+            <div className="file-info">
+              <span className="file-name">MP3 (With Tag)</span>
+              <span className="file-status">Public Preview</span>
+            </div>
+            <input type="file" accept="audio/mp3" />
+          </div>
+          <div className="file-row">
+            <div className="file-info">
+              <span className="file-name">WAV (High Res)</span>
+              <span className="file-status">Main License</span>
+            </div>
+            <input type="file" accept="audio/wav" />
+          </div>
+          <div className="file-row">
+            <div className="file-info">
+              <span className="file-name">Trackout (ZIP)</span>
+              <span className="file-status">Individual Stems</span>
+            </div>
+            <input type="file" accept=".zip,.rar" />
+          </div>
         </div>
-        <button className="main-btn">SAVE CHANGES</button>
+
+        <button className="main-btn" onClick={() => setActiveTab('shop')}>SAVE AND PUBLISH</button>
       </div>
     </div>
   );
 
-  // ЭКРАН ПРОФИЛЯ
+  // --- ЭКРАН ПРОФИЛЯ ---
   if (activeTab === 'profile') return (
-    <div className="app-viewport centered">
-      <div className="nav-bar top">
+    <div className="app-viewport profile-centered">
+      <div className="fixed-top-nav">
         <button className="back-icon" onClick={() => setActiveTab('shop')}>✕</button>
       </div>
-      <div className="profile-content">
-        <img src={user?.photo_url || "https://via.placeholder.com/100"} className="avatar-big" />
-        <h2>{user?.first_name || "Producer"}</h2>
-        <p className="user-tag">@{user?.username || "fresso_beats"}</p>
-        <button className="main-btn" onClick={() => setActiveTab('admin')}>UPLOAD NEW BEAT</button>
-      </div>
+      <img src={user?.photo_url || "https://via.placeholder.com/120"} className="avatar-huge" alt="user" />
+      <h2 className="user-name">{user?.first_name || "Producer"}</h2>
+      <p className="user-handle">@{user?.username || "fresso_beats"}</p>
+      <button className="main-btn" onClick={() => setActiveTab('admin')}>UPLOAD NEW BEAT</button>
     </div>
   );
 
-  if (activeTab === 'admin') return <RenderForm title="Upload Beat" />;
+  if (activeTab === 'admin') return <RenderForm title="New Release" />;
   if (activeTab === 'edit') return <RenderForm title="Edit Beat" beatToEdit={selectedBeat} />;
 
-  // ЭКРАН СТРАНИЦЫ БИТА (BeatPage)
+  // --- ЭКРАН ДЕТАЛЕЙ БИТА (BEAT PAGE) ---
   if (activeTab === 'beatPage' && selectedBeat) return (
     <div className="app-viewport">
       <div className="nav-bar">
         <button className="back-icon" onClick={() => setActiveTab('shop')}>←</button>
-        <span className="nav-title">Beat Info</span>
-        <div style={{width:20}}></div>
+        <span className="nav-title">Beat Store</span>
+        <div style={{width: 26}}></div>
       </div>
-      <div className="beat-page-content">
-        <img src={selectedBeat.image} className="large-rect-cover" />
-        <h1>{selectedBeat.title.replace('fresso - ', '')}</h1>
-        <div className="stats-row">
+      <div className="beat-details-screen">
+        <div className="main-cover-wrapper">
+          <img src={selectedBeat.image} className="full-cover" alt="beat" />
+        </div>
+        <h1 className="beat-name-big">{selectedBeat.title.replace('fresso - ', '')}</h1>
+        <div className="beat-meta-line">
           <span>{selectedBeat.bpm} BPM</span> • <span>{selectedBeat.key}</span>
         </div>
-        <div className="license-section">
-          <div className="lic-card">
-            <div><h3>WAV LEASE</h3><p>High Quality Audio</p></div>
-            <button className="buy-btn-sm">{selectedBeat.priceWav}₽</button>
+        
+        <div className="license-container">
+          <div className="license-item">
+            <div className="lic-text">
+              <h4>MP3 LEASE</h4>
+              <p>High Quality MP3, Tagged</p>
+            </div>
+            <button className="price-btn">{selectedBeat.priceWav / 2}₽</button>
           </div>
-          <div className="lic-card">
-            <div><h3>TRACKOUT</h3><p>Stems / Multi-track</p></div>
-            <button className="buy-btn-sm">{selectedBeat.priceStems}₽</button>
+          <div className="license-item">
+            <div className="lic-text">
+              <h4>WAV LICENSE</h4>
+              <p>Professional WAV, No Tags</p>
+            </div>
+            <button className="price-btn">{selectedBeat.priceWav}₽</button>
+          </div>
+          <div className="license-item">
+            <div className="lic-text">
+              <h4>TRACKOUT (STEMS)</h4>
+              <p>WAV + All Tracks ZIP</p>
+            </div>
+            <button className="price-btn">{selectedBeat.priceStems || 5000}₽</button>
           </div>
         </div>
       </div>
     </div>
   );
 
+  // --- ГЛАВНЫЙ ЭКРАН МАГАЗИНА ---
   return (
     <div className="app-viewport">
-      <header className="header-flex">
-        <h1 className="logo-text">FRESSO</h1>
+      <header className="main-header">
+        <h1 className="brand-logo">FRESSO</h1>
         <div className="header-right">
-          <button className="filter-toggle" onClick={() => setShowFilters(!showFilters)}>
+          <button className={`filter-btn ${showFilters ? 'active' : ''}`} onClick={() => setShowFilters(!showFilters)}>
             {showFilters ? '✕' : 'Filter'}
           </button>
-          <img src={user?.photo_url || "https://via.placeholder.com/32"} className="avatar-sm" onClick={() => setActiveTab('profile')} />
+          <img 
+            src={user?.photo_url || "https://via.placeholder.com/36"} 
+            className="avatar-top" 
+            onClick={() => setActiveTab('profile')} 
+            alt="me" 
+          />
         </div>
       </header>
 
       {showFilters && (
-        <div className="filter-drawer">
-          <label>Max BPM: {filterBpm}</label>
-          <input type="range" min="60" max="200" value={filterBpm} onChange={(e) => setFilterBpm(e.target.value)} className="seek-slider" />
-          <div className="filter-group">
-            <p>Key:</p>
-            <select onChange={(e) => setFilterKey(e.target.value)} className="st-input">
+        <div className="filter-panel">
+          <div className="filter-section">
+            <div className="label-row">
+              <label>MAX BPM</label>
+              <span>{filterBpm}</span>
+            </div>
+            <input type="range" min="60" max="220" value={filterBpm} onChange={(e) => setFilterBpm(e.target.value)} className="range-input" />
+          </div>
+          
+          <div className="filter-section">
+            <label>TONALITY (KEY)</label>
+            <select className="st-input" value={filterKey} onChange={(e) => setFilterKey(e.target.value)}>
               <option value="">All Keys</option>
-              <option value="Am">Am</option><option value="Cm">Cm</option>
+              <option value="Am">A Minor</option>
+              <option value="Cm">C Minor</option>
+              <option value="Gm">G Minor</option>
+              <option value="D#m">D# Minor</option>
             </select>
           </div>
-          <div className="filter-group">
-            <p>Tags:</p>
-            <div className="tag-cloud">
+
+          <div className="filter-section">
+            <label>SELECT TAGS</label>
+            <div className="tag-selector">
               {allTags.map(tag => (
                 <button 
                   key={tag} 
-                  className={`mini-tag ${selectedTags.includes(tag) ? 'active' : ''}`}
+                  className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
                   onClick={() => setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])}
                 >
                   {tag}
@@ -174,34 +246,50 @@ function App() {
         </div>
       )}
 
-      <div className="search-area">
-        <input type="text" className="search-field" placeholder="Search beats..." onChange={(e) => setSearchQuery(e.target.value)} />
+      <div className="search-box">
+        <input 
+          type="text" 
+          className="search-input-field" 
+          placeholder="Search beats..." 
+          onChange={(e) => setSearchQuery(e.target.value)} 
+        />
       </div>
 
       <audio ref={audioRef} onTimeUpdate={handleTimeUpdate} onEnded={() => setCurrentPlaying(null)} />
 
-      <div className="beat-column">
+      <div className="beat-list">
         {filteredBeats.map((beat) => (
-          <div key={beat.id} className="beat-card" onClick={() => { setSelectedBeat(beat); setActiveTab('beatPage'); }}>
-            <div className="cover-box" onClick={(e) => togglePlay(e, beat)}>
-              <img src={beat.image} className="img-fit" />
-              <div className="play-state">
-                {currentPlaying?.id === beat.id && !audioRef.current?.paused ? <div className="pause-white"></div> : <div className="play-white"></div>}
+          <div key={beat.id} className="beat-item-card" onClick={() => { setSelectedBeat(beat); setActiveTab('beatPage'); }}>
+            <div className="play-trigger" onClick={(e) => togglePlay(e, beat)}>
+              <img src={beat.image} className="card-thumb" alt="beat" />
+              <div className="play-overlay">
+                {currentPlaying?.id === beat.id && !audioRef.current?.paused ? (
+                  <div className="icon-pause-white"></div>
+                ) : (
+                  <div className="icon-play-white"></div>
+                )}
               </div>
             </div>
-            <div className="beat-details">
-              <div className="name-row">
-                <span className="name-txt">{beat.title.replace('fresso - ', '')}</span>
-                <button className="more-btn" onClick={(e) => { e.stopPropagation(); setSelectedBeat(beat); setActiveTab('edit'); }}>•••</button>
+            
+            <div className="card-info">
+              <div className="card-top-row">
+                <span className="card-name">{beat.title.replace('fresso - ', '')}</span>
+                <button className="edit-dots" onClick={(e) => { e.stopPropagation(); setSelectedBeat(beat); setActiveTab('edit'); }}>•••</button>
               </div>
-              <div className="info-tags">
+              <div className="card-meta">
                 <span>{beat.bpm} BPM</span> • <span>{beat.key}</span>
               </div>
               {currentPlaying?.id === beat.id && (
-                <input type="range" className="seek-slider" value={progress} readOnly />
+                <input 
+                  type="range" 
+                  className="player-seek" 
+                  value={progress} 
+                  onChange={onSeek} 
+                  onClick={(e) => e.stopPropagation()} 
+                />
               )}
             </div>
-            <div className="price-label">{beat.priceWav}₽</div>
+            <div className="card-price">{beat.priceWav}₽</div>
           </div>
         ))}
       </div>
