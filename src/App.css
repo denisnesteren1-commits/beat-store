@@ -25,7 +25,8 @@ function App() {
 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
-      setProgress((audioRef.current.currentTime / audioRef.current.duration) * 100 || 0);
+      const p = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+      setProgress(p || 0);
     }
   };
 
@@ -59,7 +60,7 @@ function App() {
 
   const allTags = [...new Set(inventory.flatMap(b => b.tags))];
 
-  // Рендер формы (Загрузка / Редактирование)
+  // Форма загрузки/редактирования
   const RenderForm = ({ title, beatToEdit }) => (
     <div className="app-viewport">
       <div className="nav-bar">
@@ -69,99 +70,111 @@ function App() {
       </div>
       <div className="form-container">
         <div className="upload-cover-section">
-          <img src={beatToEdit?.image || "https://via.placeholder.com/150"} className="preview-img" alt="" />
-          <button className="btn-secondary">Upload New Cover</button>
+          <img src={beatToEdit?.image || "https://via.placeholder.com/150"} className="preview-img" alt="cover" />
+          <button className="btn-secondary">Change Cover</button>
         </div>
-        <div className="form-group">
+        <div className="input-group">
           <label>Beat Name</label>
           <input type="text" className="st-input" placeholder="Title" defaultValue={beatToEdit?.title?.replace('fresso - ', '')} />
-          <div className="side-by-side">
-            <div>
-              <label>BPM</label>
-              <input type="number" className="st-input" placeholder="140" defaultValue={beatToEdit?.bpm} />
-            </div>
-            <div>
-              <label>Key</label>
-              <input type="text" className="st-input" placeholder="Cm" defaultValue={beatToEdit?.key} />
-            </div>
-          </div>
-          <label>Tags (Suggestions below)</label>
-          <div className="tag-cloud-input">
-            {allTags.map(t => (
-              <span key={t} className="mini-tag" onClick={() => {}}>{t}</span>
-            ))}
-          </div>
-          <div className="file-upload-list">
-            <div className="file-item">
-              <span>MP3 Tagged (Preview)</span>
-              <input type="file" accept="audio/mp3" />
-            </div>
-            <div className="file-item">
-              <span>WAV (Purchase)</span>
-              <input type="file" accept="audio/wav" />
-            </div>
-            <div className="file-item">
-              <span>Trackout (ZIP Archive)</span>
-              <input type="file" accept=".zip,.rar" />
-            </div>
-          </div>
-          <button className="main-btn">SAVE BEAT</button>
         </div>
+        <div className="side-by-side">
+          <div className="input-group">
+            <label>BPM</label>
+            <input type="number" className="st-input" placeholder="140" defaultValue={beatToEdit?.bpm} />
+          </div>
+          <div className="input-group">
+            <label>Key</label>
+            <input type="text" className="st-input" placeholder="Cm" defaultValue={beatToEdit?.key} />
+          </div>
+        </div>
+        <div className="input-group">
+          <label>Genre / Tags</label>
+          <div className="tag-suggestion-cloud">
+            {allTags.map(t => <span key={t} className="mini-tag">{t}</span>)}
+          </div>
+          <input type="text" className="st-input" placeholder="Add more tags..." />
+        </div>
+        <div className="file-section-box">
+          <div className="file-row">
+            <div className="file-info">
+              <span className="file-name">MP3 (Tagged)</span>
+              <span className="file-status">Required for preview</span>
+            </div>
+            <input type="file" />
+          </div>
+          <div className="file-row">
+            <div className="file-info">
+              <span className="file-name">WAV (Main)</span>
+              <span className="file-status">Sent after purchase</span>
+            </div>
+            <input type="file" />
+          </div>
+          <div className="file-row">
+            <div className="file-info">
+              <span className="file-name">Trackout (Stems)</span>
+              <span className="file-status">ZIP Archive</span>
+            </div>
+            <input type="file" />
+          </div>
+        </div>
+        <button className="main-btn">PUBLISH BEAT</button>
       </div>
     </div>
   );
 
   if (activeTab === 'profile') return (
-    <div className="app-viewport profile-page">
-      <div className="nav-bar">
+    <div className="app-viewport profile-centered">
+      <div className="nav-bar fixed-top">
         <button className="back-icon" onClick={() => setActiveTab('shop')}>✕</button>
       </div>
-      <div className="profile-content">
-        <img src={user?.photo_url || "https://via.placeholder.com/100"} className="avatar-big" alt="" />
-        <h2>{user?.first_name || "Producer"}</h2>
-        <p className="user-tag">@{user?.username || "fresso_beats"}</p>
-        <button className="main-btn" onClick={() => setActiveTab('admin')}>UPLOAD NEW BEAT</button>
+      <div className="profile-card">
+        <img src={user?.photo_url || "https://via.placeholder.com/100"} className="avatar-huge" alt="user" />
+        <h2 className="user-name">{user?.first_name || "Producer"}</h2>
+        <p className="user-handle">@{user?.username || "fresso_beats"}</p>
+        <button className="main-btn" onClick={() => setActiveTab('admin')}>UPLOAD BEAT</button>
       </div>
     </div>
   );
 
-  if (activeTab === 'admin') return <RenderForm title="Upload Beat" />;
-  if (activeTab === 'edit') return <RenderForm title="Edit Beat" beatToEdit={selectedBeat} />;
+  if (activeTab === 'admin') return <RenderForm title="New Release" />;
+  if (activeTab === 'edit') return <RenderForm title="Settings" beatToEdit={selectedBeat} />;
 
   if (activeTab === 'beatPage' && selectedBeat) return (
     <div className="app-viewport">
       <div className="nav-bar">
         <button className="back-icon" onClick={() => setActiveTab('shop')}>←</button>
-        <span className="nav-title">License Info</span>
+        <span className="nav-title">Beat Details</span>
         <div style={{width: 24}}></div>
       </div>
-      <div className="beat-page-content">
-        <img src={selectedBeat.image} className="large-rect-cover" alt="" />
-        <h1 className="beat-page-title">{selectedBeat.title.replace('fresso - ', '')}</h1>
-        <div className="beat-page-stats">
+      <div className="beat-details-screen">
+        <div className="main-cover-wrapper">
+          <img src={selectedBeat.image} className="full-cover" alt="beat" />
+        </div>
+        <h1 className="beat-name-big">{selectedBeat.title.replace('fresso - ', '')}</h1>
+        <div className="beat-meta-line">
           <span>{selectedBeat.bpm} BPM</span> • <span>{selectedBeat.key}</span>
         </div>
-        <div className="license-list">
-          <div className="lic-card">
-            <div className="lic-info">
-              <h3>MP3 LEASE</h3>
-              <p>Standard Quality, Tagged</p>
+        <div className="license-container">
+          <div className="license-item">
+            <div className="lic-text">
+              <h4>MP3 LEASE</h4>
+              <p>Tagged, 320kbps</p>
             </div>
-            <button className="buy-btn-sm">{selectedBeat.priceWav / 2}₽</button>
+            <button className="price-btn">{selectedBeat.priceWav / 2}₽</button>
           </div>
-          <div className="lic-card">
-            <div className="lic-info">
-              <h3>WAV LICENSE</h3>
-              <p>High Quality, Un-Tagged</p>
+          <div className="license-item">
+            <div className="lic-text">
+              <h4>WAV LICENSE</h4>
+              <p>High Quality, Untagged</p>
             </div>
-            <button className="buy-btn-sm">{selectedBeat.priceWav}₽</button>
+            <button className="price-btn">{selectedBeat.priceWav}₽</button>
           </div>
-          <div className="lic-card">
-            <div className="lic-info">
-              <h3>TRACKOUT (STEMS)</h3>
-              <p>Full ZIP of individual tracks</p>
+          <div className="license-item">
+            <div className="lic-text">
+              <h4>UNLIMITED / STEMS</h4>
+              <p>WAV + Trackout ZIP</p>
             </div>
-            <button className="buy-btn-sm">{selectedBeat.priceStems || 5000}₽</button>
+            <button className="price-btn">{selectedBeat.priceStems || 5000}₽</button>
           </div>
         </div>
       </div>
@@ -170,38 +183,41 @@ function App() {
 
   return (
     <div className="app-viewport">
-      <header className="header-flex">
-        <h1 className="logo-text">FRESSO</h1>
-        <div className="header-right">
-          <button className={`filter-toggle ${showFilters ? 'active' : ''}`} onClick={() => setShowFilters(!showFilters)}>
+      <header className="main-header">
+        <h1 className="brand-logo">FRESSO</h1>
+        <div className="header-actions">
+          <button className={`filter-btn ${showFilters ? 'active' : ''}`} onClick={() => setShowFilters(!showFilters)}>
             {showFilters ? '✕' : 'Filter'}
           </button>
-          <img src={user?.photo_url || "https://via.placeholder.com/32"} className="avatar-sm" onClick={() => setActiveTab('profile')} alt="" />
+          <img src={user?.photo_url || "https://via.placeholder.com/32"} className="avatar-top" onClick={() => setActiveTab('profile')} alt="me" />
         </div>
       </header>
 
       {showFilters && (
-        <div className="filter-drawer">
-          <div className="filter-item">
-            <div className="filter-label">Max BPM: <span>{filterBpm}</span></div>
-            <input type="range" min="60" max="220" value={filterBpm} onChange={(e) => setFilterBpm(e.target.value)} className="seek-slider" />
+        <div className="filter-panel">
+          <div className="filter-section">
+            <div className="label-row">
+              <label>MAX BPM</label>
+              <span>{filterBpm}</span>
+            </div>
+            <input type="range" min="60" max="220" value={filterBpm} onChange={(e) => setFilterBpm(e.target.value)} className="range-input" />
           </div>
-          <div className="filter-item">
-            <div className="filter-label">Key</div>
-            <select value={filterKey} onChange={(e) => setFilterKey(e.target.value)} className="st-input">
-              <option value="">All Scales</option>
+          <div className="filter-section">
+            <label>TONALITY</label>
+            <select className="st-select" value={filterKey} onChange={(e) => setFilterKey(e.target.value)}>
+              <option value="">All Keys</option>
               <option value="Am">A Minor</option>
               <option value="Cm">C Minor</option>
-              <option value="D#m">D# Minor</option>
+              <option value="Gm">G Minor</option>
             </select>
           </div>
-          <div className="filter-item">
-            <div className="filter-label">Genres / Tags</div>
-            <div className="tag-cloud">
+          <div className="filter-section">
+            <label>TAGS (SUMMABLE)</label>
+            <div className="tag-selector">
               {allTags.map(tag => (
                 <button 
                   key={tag} 
-                  className={`mini-tag ${selectedTags.includes(tag) ? 'active' : ''}`}
+                  className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
                   onClick={() => setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])}
                 >
                   {tag}
@@ -209,42 +225,42 @@ function App() {
               ))}
             </div>
           </div>
-          <button className="main-btn" onClick={() => setShowFilters(false)}>APPLY</button>
+          <button className="apply-btn" onClick={() => setShowFilters(false)}>APPLY FILTERS</button>
         </div>
       )}
 
-      <div className="search-area">
-        <input type="text" className="search-field" placeholder="Search for beats..." onChange={(e) => setSearchQuery(e.target.value)} />
+      <div className="search-box">
+        <input type="text" className="search-input-field" placeholder="Search by title..." onChange={(e) => setSearchQuery(e.target.value)} />
       </div>
 
       <audio ref={audioRef} onTimeUpdate={handleTimeUpdate} onEnded={() => setCurrentPlaying(null)} />
 
-      <div className="beat-column">
+      <div className="beat-list">
         {filteredBeats.map((beat) => (
-          <div key={beat.id} className="beat-card" onClick={() => { setSelectedBeat(beat); setActiveTab('beatPage'); }}>
-            <div className="cover-box" onClick={(e) => togglePlay(e, beat)}>
-              <img src={beat.image} className="img-fit" alt="" />
-              <div className="play-state">
+          <div key={beat.id} className="beat-item-card" onClick={() => { setSelectedBeat(beat); setActiveTab('beatPage'); }}>
+            <div className="play-trigger" onClick={(e) => togglePlay(e, beat)}>
+              <img src={beat.image} className="card-thumb" alt="beat" />
+              <div className="play-overlay">
                 {currentPlaying?.id === beat.id && !audioRef.current?.paused ? (
-                  <div className="pause-white"></div>
+                  <div className="icon-pause-white"></div>
                 ) : (
-                  <div className="play-white"></div>
+                  <div className="icon-play-white"></div>
                 )}
               </div>
             </div>
-            <div className="beat-details">
-              <div className="name-row">
-                <span className="name-txt">{beat.title.replace('fresso - ', '')}</span>
-                <button className="more-btn" onClick={(e) => { e.stopPropagation(); setSelectedBeat(beat); setActiveTab('edit'); }}>•••</button>
+            <div className="card-info">
+              <div className="card-top-row">
+                <span className="card-name">{beat.title.replace('fresso - ', '')}</span>
+                <button className="edit-dots" onClick={(e) => { e.stopPropagation(); setSelectedBeat(beat); setActiveTab('edit'); }}>•••</button>
               </div>
-              <div className="info-tags">
+              <div className="card-meta">
                 <span>{beat.bpm} BPM</span> • <span>{beat.key}</span>
               </div>
               {currentPlaying?.id === beat.id && (
-                <input type="range" className="seek-slider active-seek" value={progress} onChange={onSeek} onClick={(e) => e.stopPropagation()} />
+                <input type="range" className="player-seek" value={progress} onChange={onSeek} onClick={(e) => e.stopPropagation()} />
               )}
             </div>
-            <div className="price-label">{beat.priceWav}₽</div>
+            <div className="card-price">{beat.priceWav}₽</div>
           </div>
         ))}
       </div>
