@@ -1,18 +1,29 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 import inventory from './inventory';
 
 function App() {
   const [selectedBeat, setSelectedBeat] = useState(null);
   const [currentPlaying, setCurrentPlaying] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeGenre, setActiveGenre] = useState('All');
+  const [isAdmin, setIsAdmin] = useState(false); // Для перехода в режим загрузки
   const audioRef = useRef(null);
+
+  // Получаем данные из Telegram
+  const tg = window.Telegram?.WebApp;
+  const userAvatar = tg?.initDataUnsafe?.user?.photo_url || "https://via.placeholder.com/40";
+
+  useEffect(() => {
+    tg?.ready();
+    tg?.expand(); // Разворачиваем на весь экран
+  }, [tg]);
 
   const openModal = (beat) => setSelectedBeat(beat);
   const closeModal = () => setSelectedBeat(null);
 
-  // Функция проигрывания
   const togglePlay = (e, beat) => {
-    e.stopPropagation(); // Чтобы не открывалось модальное окно при клике на плей
+    e.stopPropagation();
     if (currentPlaying?.id === beat.id) {
       audioRef.current.paused ? audioRef.current.play() : audioRef.current.pause();
     } else {
@@ -30,20 +41,56 @@ function App() {
     window.open(tgUrl, '_blank');
   };
 
+  // Логика фильтрации
+  const filteredBeats = inventory.filter(beat => {
+    const matchesSearch = beat.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesGenre = activeGenre === 'All' || beat.tags.includes(activeGenre);
+    return matchesSearch && matchesGenre;
+  });
+
+  const genres = ['All', 'Dark', 'Trap', 'Melodic', 'Hard'];
+
   return (
     <div className="shop-container">
-      <h2>🔥 FRESSO BEATS</h2>
-      
-      {/* Скрытый элемент аудио */}
+      {/* HEADER С ПРОФИЛЕМ */}
+      <header className="app-header">
+        <div className="logo">FRESSO BEATS</div>
+        <div className="profile-section" onClick={() => alert('Здесь будет вход в админку')}>
+          <img src={userAvatar} alt="Profile" className="user-avatar" />
+        </div>
+      </header>
+
+      {/* ПОИСК И ФИЛЬТРЫ */}
+      <div className="search-bar">
+        <input 
+          type="text" 
+          placeholder="Search beats..." 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
+      <div className="genre-scroll">
+        {genres.map(genre => (
+          <button 
+            key={genre} 
+            className={`genre-btn ${activeGenre === genre ? 'active' : ''}`}
+            onClick={() => setActiveGenre(genre)}
+          >
+            {genre}
+          </button>
+        ))}
+      </div>
+
       <audio ref={audioRef} />
 
       <div className="beat-list">
-        {inventory.map((beat) => (
+        {filteredBeats.map((beat) => (
           <div key={beat.id} className="beat-row" onClick={() => openModal(beat)}>
             <div 
               className="play-btn" 
               onClick={(e) => togglePlay(e, beat)}
-              style={{ backgroundImage: `url(${beat.image})`, backgroundSize: 'cover' }}
+              style={{ backgroundImage: `url(${beat.image})` }}
             >
               <div className="play-overlay">
                 {currentPlaying?.id === beat.id ? '⏸' : '▶'}
@@ -53,8 +100,9 @@ function App() {
             <div className="beat-info">
               <div className="beat-title">{beat.title}</div>
               <div className="beat-meta">
-                <span>{beat.bpm} BPM</span>
-                <span>{beat.key}</span>
+                <span className="tag-bpm">{beat.bpm} BPM</span>
+                <span className="tag-key">{beat.key}</span>
+                <span className="tag-genre">{beat.tags[0]}</span>
               </div>
             </div>
 
@@ -63,15 +111,15 @@ function App() {
         ))}
       </div>
 
-      {/* Модалка (остается прежней) */}
+      {/* ТВОЯ МОДАЛКА КУПИТЬ */}
       {selectedBeat && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <img src={selectedBeat.image} alt="cover" className="modal-cover" />
               <div>
-                <h3 style={{ margin: 0 }}>{selectedBeat.title}</h3>
-                <p style={{ margin: 0, color: '#888', fontSize: '12px' }}>{selectedBeat.bpm} BPM</p>
+                <h3>{selectedBeat.title}</h3>
+                <p>{selectedBeat.bpm} BPM • {selectedBeat.key}</p>
               </div>
               <button className="close-btn" onClick={closeModal}>✕</button>
             </div>
