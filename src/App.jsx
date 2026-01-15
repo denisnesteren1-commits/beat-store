@@ -3,12 +3,18 @@ import './App.css';
 import inventory from './inventory';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('shop');
+  const [activeTab, setActiveTab] = useState('shop'); // shop, profile, admin, beatPage, edit
+  const [selectedBeat, setSelectedBeat] = useState(null);
   const [currentPlaying, setCurrentPlaying] = useState(null);
   const [progress, setProgress] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeGenre, setActiveGenre] = useState('All');
   
+  // Состояния фильтров
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterBpm, setFilterBpm] = useState(200);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [filterKey, setFilterKey] = useState('');
+
   const audioRef = useRef(null);
   const tg = window.Telegram?.WebApp;
   const user = tg?.initDataUnsafe?.user;
@@ -18,19 +24,10 @@ function App() {
     tg?.expand();
   }, []);
 
-  // Синхронизация прогресса
   const handleTimeUpdate = () => {
     if (audioRef.current) {
-      const p = (audioRef.current.currentTime / audioRef.current.duration) * 100;
-      setProgress(p || 0);
+      setProgress((audioRef.current.currentTime / audioRef.current.duration) * 100 || 0);
     }
-  };
-
-  // Перемотка ползунком
-  const onSeek = (e) => {
-    const newTime = (e.target.value / 100) * audioRef.current.duration;
-    audioRef.current.currentTime = newTime;
-    setProgress(e.target.value);
   };
 
   const togglePlay = (e, beat) => {
@@ -39,7 +36,7 @@ function App() {
       audioRef.current.paused ? audioRef.current.play() : audioRef.current.pause();
     } else {
       setCurrentPlaying(beat);
-      setProgress(0); // Сброс ползунка при переключении
+      setProgress(0);
       if (audioRef.current) {
         audioRef.current.src = beat.audio;
         audioRef.current.play();
@@ -47,109 +44,161 @@ function App() {
     }
   };
 
+  // Логика фильтрации
   const filteredBeats = inventory.filter(beat => {
     const matchesSearch = beat.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesGenre = activeGenre === 'All' || beat.tags.includes(activeGenre);
-    return matchesSearch && matchesGenre;
+    const matchesBpm = parseInt(beat.bpm) <= filterBpm;
+    const matchesKey = filterKey === '' || beat.key === filterKey;
+    const matchesTags = selectedTags.length === 0 || selectedTags.every(t => beat.tags.includes(t));
+    return matchesSearch && matchesBpm && matchesKey && matchesTags;
   });
 
-  // Получаем уникальные жанры из инвентаря для фильтров
-  const availableGenres = ['All', ...new Set(inventory.flatMap(b => b.tags))];
+  const allTags = [...new Set(inventory.flatMap(b => b.tags))];
 
-  if (activeTab === 'profile') {
-    return (
-      <div className="app-viewport">
-        <div className="nav-bar">
-          <button className="back-icon" onClick={() => setActiveTab('shop')}>✕</button>
-          <span className="nav-title">Profile</span>
-          <div style={{width: 20}}></div>
-        </div>
-        <div className="profile-content">
-          <img src={user?.photo_url || "https://via.placeholder.com/100"} className="avatar-big" />
-          <h2>{user?.first_name || "Producer"}</h2>
-          <p className="user-tag">@{user?.username || "fresso_beats"}</p>
-          <button className="main-btn" onClick={() => setActiveTab('admin')}>UPLOAD BEAT</button>
-        </div>
+  // ЭКРАН РЕДАКТИРОВАНИЯ / ЗАГРУЗКИ
+  const RenderForm = ({ title, beatToEdit }) => (
+    <div className="app-viewport">
+      <div className="nav-bar">
+        <button className="back-icon" onClick={() => setActiveTab(beatToEdit ? 'shop' : 'profile')}>←</button>
+        <span className="nav-title">{title}</span>
+        <div style={{width: 20}}></div>
       </div>
-    );
-  }
-
-  if (activeTab === 'admin') {
-    return (
-      <div className="app-viewport">
-        <div className="nav-bar">
-          <button className="back-icon" onClick={() => setActiveTab('profile')}>←</button>
-          <span className="nav-title">New Beat</span>
-          <div style={{width: 20}}></div>
+      <div className="form-container">
+        <div className="upload-cover-section">
+          <img src={beatToEdit?.image || "https://via.placeholder.com/150"} className="preview-img" />
+          <button className="btn-secondary">Upload New Cover</button>
         </div>
-        <div className="form-container">
-          <input type="text" className="st-input" placeholder="Title (without FRESSO)" />
-          <div className="side-by-side">
-            <input type="number" className="st-input" placeholder="BPM" />
-            <select className="st-input">
-              <option value="">Key (Scale)</option>
-              <option value="Cm">C Minor</option>
-              <option value="Am">A Minor</option>
-              {/* Можно добавить больше */}
-            </select>
+        <input type="text" className="st-input" placeholder="Title" defaultValue={beatToEdit?.title} />
+        <div className="side-by-side">
+          <input type="number" className="st-input" placeholder="BPM" defaultValue={beatToEdit?.bpm} />
+          <input type="text" className="st-input" placeholder="Key" defaultValue={beatToEdit?.key} />
+        </div>
+        <div className="tag-cloud-input">
+          {allTags.map(t => <span key={t} className="mini-tag">{t}</span>)}
+          <input type="text" className="st-input" placeholder="Add Tags..." />
+        </div>
+        <div className="file-list">
+          <div className="file-item"><span>MP3 Tagged</span><input type="file" /></div>
+          <div className="file-item"><span>WAV License</span><input type="file" /></div>
+          <div className="file-item"><span>Trackout (ZIP)</span><input type="file" /></div>
+        </div>
+        <button className="main-btn">SAVE CHANGES</button>
+      </div>
+    </div>
+  );
+
+  // ЭКРАН ПРОФИЛЯ
+  if (activeTab === 'profile') return (
+    <div className="app-viewport centered">
+      <div className="nav-bar top">
+        <button className="back-icon" onClick={() => setActiveTab('shop')}>✕</button>
+      </div>
+      <div className="profile-content">
+        <img src={user?.photo_url || "https://via.placeholder.com/100"} className="avatar-big" />
+        <h2>{user?.first_name || "Producer"}</h2>
+        <p className="user-tag">@{user?.username || "fresso_beats"}</p>
+        <button className="main-btn" onClick={() => setActiveTab('admin')}>UPLOAD NEW BEAT</button>
+      </div>
+    </div>
+  );
+
+  if (activeTab === 'admin') return <RenderForm title="Upload Beat" />;
+  if (activeTab === 'edit') return <RenderForm title="Edit Beat" beatToEdit={selectedBeat} />;
+
+  // ЭКРАН СТРАНИЦЫ БИТА (BeatPage)
+  if (activeTab === 'beatPage' && selectedBeat) return (
+    <div className="app-viewport">
+      <div className="nav-bar">
+        <button className="back-icon" onClick={() => setActiveTab('shop')}>←</button>
+        <span className="nav-title">Beat Info</span>
+        <div style={{width:20}}></div>
+      </div>
+      <div className="beat-page-content">
+        <img src={selectedBeat.image} className="large-rect-cover" />
+        <h1>{selectedBeat.title.replace('fresso - ', '')}</h1>
+        <div className="stats-row">
+          <span>{selectedBeat.bpm} BPM</span> • <span>{selectedBeat.key}</span>
+        </div>
+        <div className="license-section">
+          <div className="lic-card">
+            <div><h3>WAV LEASE</h3><p>High Quality Audio</p></div>
+            <button className="buy-btn-sm">{selectedBeat.priceWav}₽</button>
           </div>
-          <input type="text" className="st-input" placeholder="Tags (Trap, Dark...)" />
-          <div className="file-zone">MP3 + WAV + Image</div>
-          <button className="main-btn">PUBLISH</button>
+          <div className="lic-card">
+            <div><h3>TRACKOUT</h3><p>Stems / Multi-track</p></div>
+            <button className="buy-btn-sm">{selectedBeat.priceStems}₽</button>
+          </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
     <div className="app-viewport">
       <header className="header-flex">
-        <h1 className="logo-text">BEATS</h1>
-        <img src={user?.photo_url || "https://via.placeholder.com/32"} className="avatar-sm" onClick={() => setActiveTab('profile')} />
+        <h1 className="logo-text">FRESSO</h1>
+        <div className="header-right">
+          <button className="filter-toggle" onClick={() => setShowFilters(!showFilters)}>
+            {showFilters ? '✕' : 'Filter'}
+          </button>
+          <img src={user?.photo_url || "https://via.placeholder.com/32"} className="avatar-sm" onClick={() => setActiveTab('profile')} />
+        </div>
       </header>
 
-      <div className="controls-area">
-        <input type="text" className="search-field" placeholder="Search..." onChange={(e) => setSearchQuery(e.target.value)} />
-        <div className="genre-row">
-          {availableGenres.map(g => (
-            <button key={g} className={`tag-btn ${activeGenre === g ? 'active' : ''}`} onClick={() => setActiveGenre(g)}>{g}</button>
-          ))}
+      {showFilters && (
+        <div className="filter-drawer">
+          <label>Max BPM: {filterBpm}</label>
+          <input type="range" min="60" max="200" value={filterBpm} onChange={(e) => setFilterBpm(e.target.value)} className="seek-slider" />
+          <div className="filter-group">
+            <p>Key:</p>
+            <select onChange={(e) => setFilterKey(e.target.value)} className="st-input">
+              <option value="">All Keys</option>
+              <option value="Am">Am</option><option value="Cm">Cm</option>
+            </select>
+          </div>
+          <div className="filter-group">
+            <p>Tags:</p>
+            <div className="tag-cloud">
+              {allTags.map(tag => (
+                <button 
+                  key={tag} 
+                  className={`mini-tag ${selectedTags.includes(tag) ? 'active' : ''}`}
+                  onClick={() => setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+          <button className="main-btn" onClick={() => setShowFilters(false)}>APPLY FILTERS</button>
         </div>
+      )}
+
+      <div className="search-area">
+        <input type="text" className="search-field" placeholder="Search beats..." onChange={(e) => setSearchQuery(e.target.value)} />
       </div>
 
-      <audio ref={audioRef} onTimeUpdate={handleTimeUpdate} onEnded={() => {setCurrentPlaying(null); setProgress(0);}} />
+      <audio ref={audioRef} onTimeUpdate={handleTimeUpdate} onEnded={() => setCurrentPlaying(null)} />
 
       <div className="beat-column">
         {filteredBeats.map((beat) => (
-          <div key={beat.id} className="beat-card">
+          <div key={beat.id} className="beat-card" onClick={() => { setSelectedBeat(beat); setActiveTab('beatPage'); }}>
             <div className="cover-box" onClick={(e) => togglePlay(e, beat)}>
               <img src={beat.image} className="img-fit" />
               <div className="play-state">
-                {currentPlaying?.id === beat.id && !audioRef.current?.paused ? (
-                  <div className="pause-white"></div>
-                ) : (
-                  <div className="play-white"></div>
-                )}
+                {currentPlaying?.id === beat.id && !audioRef.current?.paused ? <div className="pause-white"></div> : <div className="play-white"></div>}
               </div>
             </div>
-            
             <div className="beat-details">
               <div className="name-row">
                 <span className="name-txt">{beat.title.replace('fresso - ', '')}</span>
-                <button className="more-btn">•••</button>
+                <button className="more-btn" onClick={(e) => { e.stopPropagation(); setSelectedBeat(beat); setActiveTab('edit'); }}>•••</button>
               </div>
               <div className="info-tags">
-                <span>{beat.bpm} BPM</span>
-                <span>{beat.key}</span>
+                <span>{beat.bpm} BPM</span> • <span>{beat.key}</span>
               </div>
-              
               {currentPlaying?.id === beat.id && (
-                <input 
-                  type="range" 
-                  className="seek-slider" 
-                  value={progress} 
-                  onChange={onSeek} 
-                />
+                <input type="range" className="seek-slider" value={progress} readOnly />
               )}
             </div>
             <div className="price-label">{beat.priceWav}₽</div>
