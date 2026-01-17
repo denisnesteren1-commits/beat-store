@@ -2,108 +2,77 @@
   --accent: #ff3333;
   --bg: #000;
   --card: #121212;
-  --text: #fff;
-  --gray: #888;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-body {
-  margin: 0; background: var(--bg); color: var(--text);
-  font-family: -apple-system, system-ui, sans-serif;
-  background: linear-gradient(-45deg, #000000, #1a0505, #0a0a0a, #000000);
-  background-size: 400% 400%; animation: grad 15s ease infinite;
-  overflow-x: hidden;
+body { 
+  margin: 0; background: #000; color: #fff; 
+  font-family: -apple-system, sans-serif;
+  display: flex; justify-content: center;
 }
 
-@keyframes grad { 
-  0%{ background-position: 0% 50%; } 
-  50%{ background-position: 100% 50%; } 
-  100%{ background-position: 0% 50%; } 
+.app-container {
+  width: 100vw; max-width: 480px; margin: 0 auto; min-height: 100vh;
+  background: #000; position: relative;
 }
 
-/* Контейнеры */
-.app-container, .profile-view, .admin-container {
-  width: 100%; max-width: 480px; margin: 0 auto; min-height: 100vh;
-  display: flex; flex-direction: column;
+/* ШАПКА */
+.main-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; }
+.logo { font-size: 24px; font-weight: 900; color: var(--accent); letter-spacing: -1px; }
+.header-avatar { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #222; }
+
+/* ТАБЫ */
+.tab-menu { display: flex; gap: 20px; padding: 10px 20px; font-size: 14px; font-weight: 800; color: #444; }
+.tab-menu .active { color: #fff; border-bottom: 2px solid var(--accent); }
+
+/* КАРТОЧКА БИТА */
+.beat-list { padding: 10px 20px; }
+.beat-card { 
+  display: flex; gap: 15px; background: var(--card); padding: 12px; 
+  border-radius: 20px; margin-bottom: 12px; align-items: center;
+  border: 1px solid #1a1a1a; transition: 0.2s;
 }
-
-/* Эффект нажатия кнопок (АНИМАЦИЯ) */
-button, .p-item, .chip, .beat-cover, .add-beat-btn { 
-  transition: transform 0.1s ease, opacity 0.2s; 
-  cursor: pointer; 
-}
-button:active, .p-item:active, .chip:active { transform: scale(0.96); opacity: 0.8; }
-
-/* Шапка */
-.main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
-.logo { font-size: 24px; font-weight: 900; margin: 0; letter-spacing: -1px; }
-.header-avatar { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid var(--accent); object-fit: cover; }
-.menu-btn { background: none; color: #fff; font-size: 24px; padding: 0; }
-
-/* Боковое меню */
-.side-menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; backdrop-filter: blur(5px); }
-.side-menu-content { width: 70%; height: 100%; background: #080808; padding: 40px 20px; display: flex; flex-direction: column; gap: 20px; border-right: 1px solid #222; }
-.menu-header { font-size: 28px; font-weight: 900; color: var(--accent); margin-bottom: 20px; }
-.menu-nav-item { font-size: 20px; font-weight: 700; padding: 10px 0; border-bottom: 1px solid #111; }
-
-/* Профиль (ИСПРАВЛЕНО: Квадратная и огромная иконка теперь круглая) */
-.profile-view { padding-bottom: 40px; }
-.profile-header-content { display: flex; flex-direction: column; align-items: center; padding: 0 30px; }
-.avatar-circle { width: 110px; height: 110px; margin-top: 10px; margin-bottom: 15px; position: relative; }
-.avatar-circle img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--accent); object-fit: cover; }
-.profile-name { font-size: 28px; margin: 0; font-weight: 900; }
-.profile-handle { color: var(--gray); margin: 5px 0 25px; font-size: 16px; }
-
-/* Админка (ИСПРАВЛЕНО: Центрирование заголовка и форма) */
-.admin-header { display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; padding: 15px; text-align: center; }
-.back-btn { background: none; color: #fff; font-size: 24px; }
-.admin-title { font-weight: 900; margin: 0; font-size: 18px; letter-spacing: 1px; }
-.admin-form { padding: 0 20px 40px; }
-.upload-square { width: 140px; height: 140px; border: 2px dashed #333; border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #080808; }
-.upload-square img { width: 100%; height: 100%; object-fit: cover; }
-.fresso-input { width: 100%; background: #0f0f0f; border: 1px solid #222; color: #fff; padding: 15px; border-radius: 14px; margin-bottom: 12px; font-size: 15px; outline: none; }
-.fresso-input:focus { border-color: var(--accent); }
-.fresso-row, .fresso-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-/* Жанры в админке */
-.genre-selection { display: flex; flex-direction: column; gap: 0px; }
-
-/* Магазин и Фильтры (КРУТИЛКА BPM) */
-.page-content { padding: 0 15px; }
-.filter-pill { width: 100%; background: #111; padding: 12px; border-radius: 12px; color: var(--gray); font-weight: 700; margin: 10px 0; border: 1px solid #222; }
-.filter-box { background: #080808; padding: 20px; border-radius: 20px; border: 1px solid #222; margin-bottom: 15px; }
-.filter-group label { display: block; margin-bottom: 10px; font-size: 13px; color: var(--gray); font-weight: 700; }
-
-.dual-range { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-.dual-range input[type="range"] { 
-  -webkit-appearance: none; width: 100%; height: 4px; background: #222; border-radius: 5px; accent-color: var(--accent); 
-}
-
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { background: #111; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; border: 1px solid #222; }
-.chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-/* Карточка бита */
-.beat-card { display: flex; gap: 15px; background: var(--card); padding: 12px; border-radius: 20px; margin-bottom: 12px; align-items: center; border: 1px solid #1a1a1a; }
-.beat-cover { width: 65px; height: 65px; border-radius: 14px; overflow: hidden; position: relative; flex-shrink: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+.beat-card.active { border-color: #333; background: #181818; }
+.beat-cover { width: 65px; height: 65px; border-radius: 14px; overflow: hidden; position: relative; flex-shrink: 0; }
 .beat-cover img { width: 100%; height: 100%; object-fit: cover; }
-.play-btn { position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; }
+.play-ico { position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; }
 
-.beat-details { flex: 1; }
-.beat-row { display: flex; justify-content: space-between; align-items: center; }
-.beat-title { font-weight: 800; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
-.beat-price { color: #00ff88; font-weight: 900; background: rgba(0,255,136,0.1); padding: 4px 8px; border-radius: 8px; font-size: 14px; }
-.beat-meta { font-size: 11px; color: var(--gray); margin: 5px 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.beat-body { flex: 1; }
+.beat-name-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 15px; }
+.fav-heart { cursor: pointer; padding-left: 10px; }
+.beat-meta-row { font-size: 11px; color: #666; margin: 4px 0 8px; }
+.prog-bar { width: 100%; height: 3px; background: #222; border-radius: 2px; }
+.prog-fill { height: 100%; background: var(--accent); transition: width 0.1s linear; }
+.beat-buy-btn { background: rgba(0,255,136,0.1); color: #00ff88; padding: 8px 12px; border-radius: 10px; font-size: 13px; font-weight: 800; }
 
-.beat-progress-bg { width: 100%; height: 4px; background: #222; border-radius: 10px; overflow: hidden; }
-.beat-progress-fill { height: 100%; background: var(--accent); border-radius: 10px; transition: width 0.1s linear; }
+/* ПРОФИЛЬ */
+.profile-view { padding: 20px; display: flex; flex-direction: column; align-items: center; }
+.p-ava-box { width: 110px; height: 110px; border-radius: 50%; border: 2px solid var(--accent); overflow: hidden; margin-bottom: 15px; }
+.p-ava-box img { width: 100%; height: 100%; object-fit: cover; }
+.p-header h1 { font-size: 26px; font-weight: 900; margin-bottom: 20px; text-align: center; }
+.add-btn-main { background: #fff; color: #000; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; border: none; }
 
-/* Кнопки и Футер профиля */
-.add-beat-btn { width: 100%; background: #fff; color: #000; padding: 18px; border-radius: 16px; font-weight: 900; font-size: 16px; margin: 10px 0 20px; box-shadow: 0 4px 20px rgba(255,255,255,0.1); }
-.social-footer { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
-.social-footer a { text-decoration: none; font-size: 26px; filter: grayscale(0.5); transition: 0.3s; }
-.social-footer a:hover { filter: grayscale(0); transform: translateY(-3px); }
+.p-menu-list { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 30px; }
+.p-menu-item { 
+  width: 100%; background: var(--card); border: 1px solid #222; color: #fff; 
+  padding: 20px; border-radius: 18px; display: flex; justify-content: space-between; 
+  font-weight: 700; transition: 0.2s;
+}
+.p-menu-item:active { transform: scale(0.97); background: #1a1a1a; }
+.p-back-btn { margin-top: 30px; background: none; border: none; color: #444; font-weight: 700; }
 
-/* Кнопка поддержки в стиле профиля */
-.p-item span { font-size: 18px; }
+/* АДМИНКА */
+.admin-header { display: flex; align-items: center; padding: 20px; justify-content: space-between; }
+.back-clickable { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; }
+.admin-title { font-size: 18px; font-weight: 900; color: var(--accent); }
+.admin-form { padding: 0 20px 40px; }
+.upload-square { width: 130px; height: 130px; border: 2px dashed #333; border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; background: #080808; }
+.upload-square img { width: 100%; height: 100%; border-radius: 18px; object-fit: cover; }
+
+.fresso-input { width: 100%; background: #111; border: 1px solid #222; color: #fff; padding: 16px; border-radius: 14px; margin-bottom: 10px; font-size: 16px; }
+.fresso-row, .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.file-selectors { margin: 15px 0; display: flex; flex-direction: column; gap: 10px; }
+.file-row { background: #111; border: 1px solid #222; padding: 15px; border-radius: 12px; font-size: 12px; font-weight: 800; text-align: center; color: #555; }
+.file-row.ready { border-color: var(--accent); color: var(--accent); background: rgba(255,51,51,0.05); }
+.fresso-submit { width: 100%; background: var(--accent); color: #fff; border: none; padding: 20px; border-radius: 18px; font-weight: 900; margin-top: 15px; }
