@@ -1,45 +1,42 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
-import { db, storage } from './firebase'; 
+import { db, storage } from './firebase';
 import { collection, onSnapshot, query, orderBy, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const tg = window.Telegram ? window.Telegram.WebApp : null;
 
 function App() {
-  const [activeTab, setActiveTab] = useState('shop'); 
+  const [activeTab, setActiveTab] = useState('shop');
   const [beats, setBeats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
 
-  // --- СОСТОЯНИЯ ДЛЯ МАГАЗИНА ---
+  // --- МАГАЗИН И ФИЛЬТРЫ ---
   const [showFilters, setShowFilters] = useState(false);
   const [cart, setCart] = useState([]);
-  const [favorites, setFavorites] = useState([]);
+  const [selectedKeys, setSelectedKeys] = useState([]);
 
-  // --- СОСТОЯНИЯ ФОРМЫ (РАСШИРЕННЫЕ) ---
+  const allKeys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+  // --- АДМИНКА (ДАННЫЕ) ---
   const [title, setTitle] = useState('');
   const [bpm, setBpm] = useState('');
-  const [key, setKey] = useState('');
-  const [genre, setGenre] = useState('Trap');
-  const [tags, setTags] = useState('');
-  const [price, setPrice] = useState('');
+  const [key, setKey] = useState('C');
+  const [genre, setGenre] = useState('');
+  const [prices, setPrices] = useState({ mp3: '', wav: '', stems: '', excl: '' });
   const [coverFile, setCoverFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
-  const [audioFile, setAudioFile] = useState(null); // MP3 Preview
+  const [audioFile, setAudioFile] = useState(null);
 
-  // --- СОСТОЯНИЯ ПЛЕЕРА ---
+  // --- ПЛЕЕР ---
   const [currentBeatId, setCurrentBeatId] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const audioRef = useRef(new Audio());
 
-  // Единый useEffect для инициализации
   useEffect(() => {
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
+    if (tg) { tg.ready(); tg.expand(); }
     const q = query(collection(db, "beats"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -49,192 +46,196 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // Таймер прогресса
   useEffect(() => {
     const audio = audioRef.current;
-    const updateProgress = () => setProgress((audio.currentTime / audio.duration) * 100 || 0);
-    audio.addEventListener('timeupdate', updateProgress);
-    return () => audio.removeEventListener('timeupdate', updateProgress);
+    const up = () => setProgress((audio.currentTime / audio.duration) * 100 || 0);
+    audio.addEventListener('timeupdate', up);
+    return () => audio.removeEventListener('timeupdate', up);
   }, []);
 
   const togglePlay = (beat) => {
-    const audio = audioRef.current;
     if (currentBeatId === beat.id) {
-      isPlaying ? audio.pause() : audio.play().catch(e => console.log(e));
+      isPlaying ? audioRef.current.pause() : audioRef.current.play();
       setIsPlaying(!isPlaying);
     } else {
-      audio.src = beat.audio;
-      audio.play().catch(e => console.log(e));
+      audioRef.current.src = beat.audio;
+      audioRef.current.play();
       setCurrentBeatId(beat.id);
       setIsPlaying(true);
-      setProgress(0);
     }
-  };
-
-  const handleSeek = (e, beatId) => {
-    if (currentBeatId !== beatId || !audioRef.current.duration) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    audioRef.current.currentTime = (x / rect.width) * audioRef.current.duration;
   };
 
   const handleUpload = async () => {
     if (!title || !coverFile || !audioFile) {
-      tg?.showAlert("Заполни название и выбери файлы!");
+      tg?.showAlert("Заполни название и загрузи файлы!");
       return;
     }
     setUploading(true);
     try {
-      const coverRef = ref(storage, `covers/${Date.now()}_${coverFile.name}`);
-      await uploadBytes(coverRef, coverFile);
-      const coverUrl = await getDownloadURL(coverRef);
+      const cRef = ref(storage, `covers/${Date.now()}_${coverFile.name}`);
+      await uploadBytes(cRef, coverFile);
+      const cUrl = await getDownloadURL(cRef);
 
-      const audioRefFB = ref(storage, `audio/${Date.now()}_${audioFile.name}`);
-      await uploadBytes(audioRefFB, audioFile);
-      const audioUrl = await getDownloadURL(audioRefFB);
+      const aRef = ref(storage, `audio/${Date.now()}_${audioFile.name}`);
+      await uploadBytes(aRef, audioFile);
+      const aUrl = await getDownloadURL(aRef);
 
       await addDoc(collection(db, "beats"), {
-        title, bpm, key, genre, tags: tags.split(',').map(t => t.trim()),
-        priceWav: price,
-        image: coverUrl,
-        audio: audioUrl,
-        plays: 0,
+        title, bpm, key, genre,
+        priceMp3: prices.mp3, priceWav: prices.wav, priceStems: prices.stems, priceExcl: prices.excl,
+        image: cUrl, audio: aUrl,
         createdAt: new Date()
       });
 
-      tg?.showAlert("Бит добавлен!");
+      setUploading(false);
       setActiveTab('shop');
-    } catch (e) { tg?.showAlert("Ошибка!"); }
-    finally { setUploading(false); }
+      tg?.showAlert("Бит опубликован!");
+    } catch (e) {
+      setUploading(false);
+      tg?.showAlert("Ошибка загрузки!");
+    }
   };
 
-  // --- РЕНДЕР: АДМИНКА (ДОБАВИТЬ БИТ) ---
+  const SocialLinks = () => (
+    <div className="social-row">
+      <a href="https://instagram.com/your_nick">📸</a>
+      <a href="https://youtube.com/your_channel">📺</a>
+      <a href="https://t.me/your_channel" className="tg-icon">✈️</a>
+      <a href="https://vk.com/your_nick">🟦</a>
+      <a href="https://soundcloud.com/your_nick">☁️</a>
+    </div>
+  );
+
+  // ЭКРАН АДМИНКИ
   if (activeTab === 'admin') return (
-    <div className="app-viewport with-nav-offset">
-      <div className="fixed-header-navigation">
-        <button className="nav-icon-button" onClick={() => setActiveTab('profile')}>←</button>
-        <span className="nav-display-title">ДОБАВИТЬ БИТ</span>
-        <div className="nav-placeholder"></div>
+    <div className="app-viewport">
+      <div className="header-nav">
+        <button onClick={() => setActiveTab('profile')}>←</button>
+        <span>ДОБАВИТЬ БИТ</span>
+        <div style={{ width: 20 }}></div>
       </div>
-      <div className="scroll-content-container">
-        <div className="cover-box-preview" style={{margin: '0 auto 20px'}}>
-          <img src={coverPreview || "https://via.placeholder.com/200"} alt="" />
-          <input type="file" accept="image/*" onChange={e => {
-            setCoverFile(e.target.files[0]);
-            setCoverPreview(URL.createObjectURL(e.target.files[0]));
+      <div className="scroll-content" style={{ padding: 20 }}>
+        <div className="upload-zone" onClick={() => document.getElementById('coverInp').click()}>
+          {coverPreview ? <img src={coverPreview} alt="" /> : <span>ЗАГРУЗИТЬ ОБЛОЖКУ</span>}
+          <input id="coverInp" type="file" hidden onChange={e => {
+            if (e.target.files[0]) {
+              setCoverFile(e.target.files[0]);
+              setCoverPreview(URL.createObjectURL(e.target.files[0]));
+            }
           }} />
         </div>
-        
-        <input type="text" className="full-width-input" placeholder="Название" value={title} onChange={e=>setTitle(e.target.value)} />
-        
-        <div className="form-grid-two-cols">
-          <input type="number" className="full-width-input" placeholder="BPM" value={bpm} onChange={e=>setBpm(e.target.value)} />
-          <input type="text" className="full-width-input" placeholder="Key (e.g. Cm)" value={key} onChange={e=>setKey(e.target.value)} />
+
+        <input className="fresso-input" placeholder="Название" onChange={e => setTitle(e.target.value)} />
+        <div className="form-grid">
+          <input className="fresso-input" placeholder="BPM" onChange={e => setBpm(e.target.value)} />
+          <select className="fresso-input" onChange={e => setKey(e.target.value)}>
+            {allKeys.map(k => <option key={k} value={k}>{k}</option>)}
+          </select>
+        </div>
+        <input className="fresso-input" placeholder="Жанр (например Trap, Drill)" onChange={e => setGenre(e.target.value)} />
+
+        <div className="price-grid">
+          <input className="fresso-input" placeholder="MP3 $" onChange={e => setPrices({ ...prices, mp3: e.target.value })} />
+          <input className="fresso-input" placeholder="WAV $" onChange={e => setPrices({ ...prices, wav: e.target.value })} />
         </div>
 
-        <select className="full-width-input" value={genre} onChange={e=>setGenre(e.target.value)} style={{background: '#1a1a1a', color: 'white', border: '1px solid #333'}}>
-          <option value="Trap">Trap</option>
-          <option value="Drill">Drill</option>
-          <option value="Deep House">Deep House</option>
-        </select>
-
-        <input type="text" className="full-width-input" placeholder="Теги (через запятую)" value={tags} onChange={e=>setTags(e.target.value)} />
-        <input type="number" className="full-width-input" placeholder="Цена ₽" value={price} onChange={e=>setPrice(e.target.value)} />
-
-        <div className="file-upload-row">
-           <span>MP3 PREVIEW</span>
-           <input type="file" accept="audio/*" onChange={e=>setAudioFile(e.target.files[0])} />
+        <div className="file-btn" onClick={() => document.getElementById('audInp').click()}>
+          {audioFile ? audioFile.name : "ВЫБРАТЬ MP3 PREVIEW"}
+          <input id="audInp" type="file" hidden onChange={e => setAudioFile(e.target.files[0])} />
         </div>
 
-        <button className="primary-action-button" onClick={handleUpload} disabled={uploading}>
+        <button className="main-btn" onClick={handleUpload} disabled={uploading}>
           {uploading ? "ЗАГРУЗКА..." : "ОПУБЛИКОВАТЬ"}
         </button>
       </div>
     </div>
   );
 
+  // ОСНОВНОЙ ЭКРАН (МАГАЗИН ИЛИ ПРОФИЛЬ)
   return (
     <div className="app-viewport">
       {activeTab === 'shop' ? (
         <>
-          <header className="shop-top-header">
-            <div style={{display:'flex', alignItems:'center', gap: '10px'}}>
-              <button className="menu-burger" style={{background:'none', border:'none', color:'white', fontSize:'24px'}}>☰</button>
-              <h1 className="main-logo-fresso">FRESSO</h1>
+          <header className="shop-header">
+            <div className="header-left">
+              <button className="burger">☰</button>
+              <h1 className="logo">FRESSO</h1>
             </div>
-            <div style={{display:'flex', alignItems:'center', gap: '15px'}}>
-               <div className="cart-icon-container" style={{position:'relative'}}>
-                  <span style={{fontSize:'20px'}}>🛒</span>
-                  {cart.length > 0 && <span className="cart-badge">{cart.length}</span>}
-               </div>
-               <img src={tg?.initDataUnsafe?.user?.photo_url || "https://via.placeholder.com/42"} className="top-nav-avatar" onClick={() => setActiveTab('profile')} alt="" />
+            <div className="header-right">
+              <div className="cart-box">
+                🛒 {cart.length > 0 && <span className="badge">{cart.length}</span>}
+              </div>
+              <img src={tg?.initDataUnsafe?.user?.photo_url || "https://via.placeholder.com/40"}
+                className="avatar-small" onClick={() => setActiveTab('profile')} alt="avatar" />
             </div>
           </header>
 
-          <div className="filter-bar-toggle" onClick={() => setShowFilters(!showFilters)} style={{padding: '10px 20px', color: '#888', fontSize:'12px'}}>
-            {showFilters ? "✕ ЗАКРЫТЬ ФИЛЬТРЫ" : "▽ ФИЛЬТРЫ И ПОИСК"}
+          <div className="filter-toggle" onClick={() => setShowFilters(!showFilters)}>
+            {showFilters ? "✕ ЗАКРЫТЬ" : "▽ ФИЛЬТРЫ"}
           </div>
 
           {showFilters && (
-            <div className="filters-dropdown" style={{padding: '0 20px 20px'}}>
-               <div className="filter-row">
-                  <label>BPM: {bpm || 140}</label>
-                  <input type="range" min="60" max="200" style={{width:'100%', accentColor: 'red'}} />
-               </div>
+            <div className="filters-area">
+              <p>ТОНАЛЬНОСТЬ:</p>
+              <div className="keys-grid">
+                {allKeys.map(k => (
+                  <div key={k}
+                    className={`key-chip ${selectedKeys.includes(k) ? 'active' : ''}`}
+                    onClick={() => setSelectedKeys(prev =>
+                      prev.includes(k) ? prev.filter(i => i !== k) : [...prev, k])}>
+                    {k} {selectedKeys.includes(k) && '✓'}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
-          <div className="beats-vertical-list">
-            {loading ? <p style={{textAlign:'center'}}>Загрузка...</p> : 
-              beats.map(beat => {
-                const isThisCurrent = currentBeatId === beat.id;
-                const isLiked = favorites.includes(beat.id);
-                return (
-                  <div key={beat.id} className="feed-beat-card">
-                    <div className="beat-play-control" onClick={() => togglePlay(beat)}>
-                      <img src={beat.image} className="beat-card-thumb" alt="" />
-                      <div className="play-status-overlay">
-                        {isThisCurrent && isPlaying ? "⏸" : "▶"}
-                      </div>
-                    </div>
-                    <div className="beat-card-info">
-                      <div className="beat-title-row">
-                        <span className="beat-name-text">{beat.title}</span>
-                        <div style={{display:'flex', gap:'10px'}}>
-                           <span onClick={() => setFavorites(prev => isLiked ? prev.filter(id=>id!==beat.id) : [...prev, beat.id])}>
-                             {isLiked ? "❤️" : "🤍"}
-                           </span>
-                           <span className="beat-card-price" onClick={() => setCart([...cart, beat.id])}>{beat.priceWav}₽</span>
-                        </div>
-                      </div>
-                      <div className="beat-meta-text">{beat.bpm} BPM • {beat.key} • {beat.genre}</div>
-                      <div className="beat-progress-bar" onClick={(e) => handleSeek(e, beat.id)}>
-                        <div className="beat-progress-fill" style={{ width: `${isThisCurrent ? progress : 0}%` }}></div>
-                      </div>
-                    </div>
+          <div className="beat-list">
+            {beats.map(beat => (
+              <div key={beat.id} className="beat-card">
+                <div className="beat-img" onClick={() => togglePlay(beat)}>
+                  <img src={beat.image} alt="" />
+                  <div className="play-overlay">{currentBeatId === beat.id && isPlaying ? "⏸" : "▶"}</div>
+                </div>
+                <div className="beat-info">
+                  <div className="beat-row">
+                    <span className="b-name">{beat.title}</span>
+                    <span className="b-price" onClick={() => setCart([...cart, beat.id])}>
+                      от ${beat.priceMp3 || beat.price || "0"}
+                    </span>
                   </div>
-                );
-              })
-            }
+                  <div className="b-meta">{beat.bpm} BPM • {beat.key} • {beat.genre}</div>
+                  <div className="progress-bg" onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    audioRef.current.currentTime = ((e.clientX - rect.left) / rect.width) * audioRef.current.duration;
+                  }}>
+                    <div className="progress-bar" style={{ width: `${currentBeatId === beat.id ? progress : 0}%` }}></div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </>
       ) : (
-        <div className="profile-center-layout" style={{transform: 'scale(0.9)'}}>
-            <div className="avatar-huge-wrapper">
-                <img src={tg?.initDataUnsafe?.user?.photo_url || "https://via.placeholder.com/160"} className="avatar-image-circle" alt="" />
-                <div className="avatar-edit-plus" onClick={() => setActiveTab('admin')}>+</div>
+        <div className="profile-screen">
+          <div className="profile-header">
+            <button className="back-btn" onClick={() => setActiveTab('shop')}>←</button>
+          </div>
+          <div className="profile-content">
+            <div className="avatar-big">
+              <img src={tg?.initDataUnsafe?.user?.photo_url || "https://via.placeholder.com/120"} alt="avatar-large" />
             </div>
-            <h2 className="profile-user-name">{tg?.initDataUnsafe?.user?.first_name || "USER"}</h2>
-            <button className="primary-action-button" onClick={() => setActiveTab('admin')}>ДОБАВИТЬ БИТ</button>
-            <div style={{marginTop: '20px', display:'flex', flexDirection:'column', gap:'10px', width: '100%'}}>
-               <button className="secondary-btn">❤️ ЛЮБИМЫЕ</button>
-               <button className="secondary-btn">🛒 КОРЗИНА</button>
-               <button className="secondary-btn">💳 СПОСОБ ОПЛАТЫ</button>
+            <h2>{tg?.initDataUnsafe?.user?.first_name || "PRODUCER"}</h2>
+            <button className="main-btn" onClick={() => setActiveTab('admin')}>ДОБАВИТЬ БИТ</button>
+            <div className="profile-menu">
+              <button className="menu-item">❤️ ЛЮБИМЫЕ</button>
+              <button className="menu-item">🛒 КОРЗИНА</button>
+              <button className="menu-item">💳 СПОСОБ ОПЛАТЫ</button>
             </div>
-            <button className="nav-icon-button" style={{marginTop:'40px'}} onClick={() => setActiveTab('shop')}>← НАЗАД</button>
+            <SocialLinks />
+          </div>
         </div>
       )}
-      <div className="bottom-safe-spacer"></div>
     </div>
   );
 }
