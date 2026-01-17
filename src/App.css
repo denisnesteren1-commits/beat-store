@@ -2,37 +2,129 @@
    1. ГЛОБАЛЬНЫЕ СТИЛИ И ПЕРЕМЕННЫЕ
    ============================================================ */
 :root {
-  /* Основная палитра */
+  /* Твои старые переменные (оставляем) */
   --bg-color: #000000;
   --surface-1: #111111;
   --surface-2: #1a1a1a;
   --surface-3: #252525;
-  
   --accent: #ff3333;
   --accent-glow: rgba(255, 51, 51, 0.35);
-  
   --text-main: #ffffff;
   --text-secondary: #8e8e93;
   --text-muted: #444444;
-  
   --success: #00ff88;
   --border-color: rgba(255, 255, 255, 0.08);
-
-  /* Telegram Safe Areas */
-  --safe-top: env(safe-area-inset-top, 24px);
-  --safe-bottom: env(safe-area-inset-bottom, 24px);
+  --safe-top: env(safe-area-inset-top, 20px);
+  --safe-bottom: env(safe-area-inset-bottom, 20px);
   --nav-h: 64px;
-  
-  /* Тайминги */
   --t-fast: 0.15s ease;
   --t-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-* {
+/* Общие настройки с плавной анимацией фона */
+body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box !important;
+  box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
+  background: linear-gradient(-45deg, #000000, #120101, #0a0a0a, #000000);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Глобальная анимация для всех интерактивных элементов (как ты просил) */
+button, .nav-icon-button, .beat-play-control, .filter-chip, .avatar-edit-plus {
+  cursor: pointer;
+  transition: transform var(--t-fast), opacity var(--t-fast);
+}
+
+button:active, .nav-icon-button:active, .beat-play-control:active {
+  transform: scale(0.92); /* Эффект нажатия */
+  opacity: 0.7;
+}
+/* ============================================================
+   2. НОВЫЕ ЭЛЕМЕНТЫ (МЕНЮ, КОРЗИНА, ФИЛЬТРЫ)
+   ============================================================ */
+
+/* Исправляем логотип, чтобы буква O не резалась */
+.main-logo-fresso {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding-right: 4px; /* Запас для буквы O */
+  background: linear-gradient(to right, #fff, #888);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Бейдж корзины (красный кружок с числом) */
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background: var(--accent);
+  color: white;
+  font-size: 10px;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+  border: 2px solid #000;
+}
+
+/* Кнопки в профиле (Любимые, Оплата и т.д.) */
+.secondary-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 14px 18px;
+  border-radius: 14px;
+  width: 100%;
+  text-align: left;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Выпадающие фильтры */
+.filters-dropdown {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  margin-top: 10px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Поле выбора жанра в админке */
+select.full-width-input {
+  appearance: none;
+  background: var(--surface-2);
+  color: white;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+* {
+  box-sizing: border-box !important;
   -webkit-tap-highlight-color: transparent;
   outline: none;
 }
