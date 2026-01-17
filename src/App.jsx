@@ -15,8 +15,9 @@ function App() {
   const [beats, setBeats] = useState([]);
   const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('fresso_favs')) || []);
   const [uploading, setUploading] = useState(false);
-  const [userAvatar, setUserAvatar] = useState(tg?.initDataUnsafe?.user?.photo_url || "https://via.placeholder.com/150");
-  
+  const [userAvatar, setUserAvatar] = useState(
+  localStorage.getItem('user_ava') || tg?.initDataUnsafe?.user?.photo_url || "https://via.placeholder.com/150"
+);
   // Данные для админки
   const [title, setTitle] = useState('');
   const [bpm, setBpm] = useState('');
@@ -72,19 +73,37 @@ function App() {
     return data.secure_url;
   };
 
-  // Смена аватара профиля
+  // Смена аватара профиля с сохранением в память
   const changeAvatar = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const url = await uploadFile(file, 'image');
-      setUserAvatar(url);
-      if(tg) tg.showAlert("Фото профиля обновлено!");
-    } catch (err) { alert("Ошибка загрузки фото"); }
+      const url = await uploadFile(file, 'image'); // Загружаем в облако
+      setUserAvatar(url); // Меняем в текущем окне
+      localStorage.setItem('user_ava', url); // СОХРАНЯЕМ В ПАМЯТЬ ТЕЛЕФОНА
+      if(tg) tg.showAlert("Фото профиля сохранено!");
+    } catch (err) { 
+      alert("Ошибка загрузки фото"); 
+    }
   };
 
   const toggleFav = (id) => {
-    setFavorites(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    setFavorites(prev => {
+      const isFav = prev.includes(id);
+      const updated = isFav 
+        ? prev.filter(i => i !== id) 
+        : [...prev, id];
+      
+      // 1. Сохраняем в память телефона
+      localStorage.setItem('fresso_favs', JSON.stringify(updated));
+
+      // 2. Добавляем вибрацию для Telegram (приятный отклик)
+      if (tg && !isFav) {
+        tg.HapticFeedback.impactOccurred('light');
+      }
+
+      return updated;
+    });
   };
 
   const playBeat = (beat) => {
