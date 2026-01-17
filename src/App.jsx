@@ -6,7 +6,7 @@ import { db, storage } from './firebase';
 import { collection, onSnapshot, query, orderBy, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-const tg = window.Telegram.WebApp;
+const tg = window.Telegram ? window.Telegram.WebApp : null;
 
 function App() {
   const [activeTab, setActiveTab] = useState('shop'); 
@@ -43,15 +43,19 @@ function App() {
 
   // --- ЛОГИКА ПЛЕЕРА ---
   useEffect(() => {
-    const audio = audioRef.current;
-    const updateProgress = () => {
-      const p = (audio.currentTime / audio.duration) * 100;
-      setProgress(p || 0);
-    };
-    audio.addEventListener('timeupdate', updateProgress);
-    audio.addEventListener('ended', () => { setIsPlaying(false); setProgress(0); });
-    return () => audio.removeEventListener('timeupdate', updateProgress);
-  }, []);
+  if (tg) {
+    tg.ready();
+    tg.expand();
+  }
+  
+  const q = query(collection(db, "beats"), orderBy("createdAt", "desc"));
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setBeats(data);
+    setLoading(false);
+  });
+  return () => unsubscribe();
+}, []);
 
   const togglePlay = (beat) => {
     const audio = audioRef.current;
