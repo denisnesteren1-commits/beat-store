@@ -4,28 +4,52 @@
   --card: #121212;
 }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* { 
+  box-sizing: border-box; 
+  -webkit-tap-highlight-color: transparent; 
+}
+
+/* 1. ЖИВОЙ ГРАДИЕНТ И ЦЕНТРИРОВАНИЕ */
 body { 
-  margin: 0; background: #000; color: #fff; 
-  font-family: -apple-system, sans-serif;
-  display: flex; justify-content: center;
+  margin: 0; 
+  color: #fff; 
+  font-family: -apple-system, system-ui, sans-serif;
+  background: linear-gradient(-45deg, #000000, #1a0505, #0a0a0a, #000000);
+  background-size: 400% 400%; 
+  animation: grad 15s ease infinite;
+  display: flex; 
+  justify-content: center; 
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
+@keyframes grad { 
+  0%{ background-position: 0% 50% } 
+  50%{ background-position: 100% 50% } 
+  100%{ background-position: 0% 50% } 
+}
+
+/* 2. ОСНОВНОЙ КОНТЕЙНЕР (ЧЕТКИЙ ЦЕНТР) */
 .app-container {
-  width: 100vw; max-width: 480px; margin: 0 auto; min-height: 100vh;
-  background: #000; position: relative;
+  width: 100vw; 
+  max-width: 450px; /* Идеально для Telegram WebApp */
+  margin: 0 auto; 
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ШАПКА */
+/* 3. ШАПКА */
 .main-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; }
 .logo { font-size: 24px; font-weight: 900; color: var(--accent); letter-spacing: -1px; }
-.header-avatar { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #222; }
+.header-avatar { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #222; object-fit: cover; }
 
-/* ТАБЫ */
+/* 4. ТАБЫ (ВСЕ БИТЫ / ЛЮБИМЫЕ) */
 .tab-menu { display: flex; gap: 20px; padding: 10px 20px; font-size: 14px; font-weight: 800; color: #444; }
 .tab-menu .active { color: #fff; border-bottom: 2px solid var(--accent); }
 
-/* КАРТОЧКА БИТА */
+/* 5. КАРТОЧКА БИТА */
 .beat-list { padding: 10px 20px; }
 .beat-card { 
   display: flex; gap: 15px; background: var(--card); padding: 12px; 
@@ -39,40 +63,64 @@ body {
 
 .beat-body { flex: 1; }
 .beat-name-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 15px; }
-.fav-heart { cursor: pointer; padding-left: 10px; }
+.fav-heart { cursor: pointer; padding-left: 10px; font-size: 18px; }
 .beat-meta-row { font-size: 11px; color: #666; margin: 4px 0 8px; }
 .prog-bar { width: 100%; height: 3px; background: #222; border-radius: 2px; }
 .prog-fill { height: 100%; background: var(--accent); transition: width 0.1s linear; }
 .beat-buy-btn { background: rgba(0,255,136,0.1); color: #00ff88; padding: 8px 12px; border-radius: 10px; font-size: 13px; font-weight: 800; }
 
-/* ПРОФИЛЬ */
-.profile-view { padding: 20px; display: flex; flex-direction: column; align-items: center; }
-.p-ava-box { width: 110px; height: 110px; border-radius: 50%; border: 2px solid var(--accent); overflow: hidden; margin-bottom: 15px; }
-.p-ava-box img { width: 100%; height: 100%; object-fit: cover; }
-.p-header h1 { font-size: 26px; font-weight: 900; margin-bottom: 20px; text-align: center; }
-.add-btn-main { background: #fff; color: #000; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; border: none; }
+/* 6. ПРОФИЛЬ (ИСПРАВЛЕНО ЦЕНТРИРОВАНИЕ И ФОТО) */
+.profile-view { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  padding: 20px; 
+  width: 100%;
+}
+.avatar-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 15px;
+  cursor: pointer;
+  background: #111;
+}
+.avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
 
-.p-menu-list { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 30px; }
+.profile-name { font-size: 26px; font-weight: 900; margin: 0; }
+.profile-handle { color: #666; margin-bottom: 20px; }
+
+.add-btn-main { 
+  background: #fff; color: #000; width: 100%; padding: 18px; 
+  border-radius: 15px; font-weight: 900; border: none; margin-bottom: 20px;
+}
+
+.p-menu-list { width: 100%; display: flex; flex-direction: column; gap: 10px; }
 .p-menu-item { 
   width: 100%; background: var(--card); border: 1px solid #222; color: #fff; 
   padding: 20px; border-radius: 18px; display: flex; justify-content: space-between; 
-  font-weight: 700; transition: 0.2s;
+  font-weight: 700; transition: 0.2s; text-decoration: none;
 }
 .p-menu-item:active { transform: scale(0.97); background: #1a1a1a; }
-.p-back-btn { margin-top: 30px; background: none; border: none; color: #444; font-weight: 700; }
+.p-back-btn { margin-top: 30px; background: none; border: none; color: #444; font-weight: 700; cursor: pointer; }
 
-/* АДМИНКА */
+/* 7. АДМИНКА */
 .admin-header { display: flex; align-items: center; padding: 20px; justify-content: space-between; }
 .back-clickable { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; }
 .admin-title { font-size: 18px; font-weight: 900; color: var(--accent); }
 .admin-form { padding: 0 20px 40px; }
-.upload-square { width: 130px; height: 130px; border: 2px dashed #333; border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; background: #080808; }
-.upload-square img { width: 100%; height: 100%; border-radius: 18px; object-fit: cover; }
+.upload-square { width: 130px; height: 130px; border: 2px dashed #333; border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; background: #080808; overflow: hidden;}
+.upload-square img { width: 100%; height: 100%; object-fit: cover; }
 
-.fresso-input { width: 100%; background: #111; border: 1px solid #222; color: #fff; padding: 16px; border-radius: 14px; margin-bottom: 10px; font-size: 16px; }
+.fresso-input { width: 100%; background: #111; border: 1px solid #222; color: #fff; padding: 16px; border-radius: 14px; margin-bottom: 10px; font-size: 16px; outline: none; }
+.fresso-input:focus { border-color: var(--accent); }
 .fresso-row, .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 .file-selectors { margin: 15px 0; display: flex; flex-direction: column; gap: 10px; }
-.file-row { background: #111; border: 1px solid #222; padding: 15px; border-radius: 12px; font-size: 12px; font-weight: 800; text-align: center; color: #555; }
+.file-row { background: #111; border: 1px solid #222; padding: 15px; border-radius: 12px; font-size: 12px; font-weight: 800; text-align: center; color: #555; cursor: pointer; }
 .file-row.ready { border-color: var(--accent); color: var(--accent); background: rgba(255,51,51,0.05); }
-.fresso-submit { width: 100%; background: var(--accent); color: #fff; border: none; padding: 20px; border-radius: 18px; font-weight: 900; margin-top: 15px; }
+.fresso-submit { width: 100%; background: var(--accent); color: #fff; border: none; padding: 20px; border-radius: 18px; font-weight: 900; margin-top: 15px; cursor: pointer; }
+.fresso-submit:disabled { opacity: 0.5; }
