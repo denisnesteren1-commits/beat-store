@@ -434,7 +434,20 @@ function App() {
 
           <h1 className="profile-name">{tg?.initDataUnsafe?.user?.first_name || "Fresso Producer"}</h1>
           <p className="profile-handle">@{tg?.initDataUnsafe?.user?.username || "fresso"}</p>
-
+          <div className="social-grid">
+          <div className="social-item" onClick={() => window.open('https://vk.com/fr1sso')}>
+            <i className="fa-brands fa-vk"></i>
+          </div>
+          <div className="social-item" onClick={() => window.open('https://www.instagram.com/fresso.beatzzz')}>
+            <i className="fa-brands fa-instagram"></i>
+          </div>
+          <div className="social-item" onClick={() => window.open('https://soundcloud.com/de-nys-nes321')}>
+            <i className="fa-brands fa-soundcloud"></i>
+          </div>
+          <div className="social-item" onClick={() => window.open('https://youtube.com/@fressobeats3787')}>
+            <i className="fa-brands fa-youtube"></i>
+          </div>
+        </div>
           {tg?.initDataUnsafe?.user?.id === 856199923 && (
             <button className="add-btn-main" onClick={() => setActiveTab('admin')}>
               ДОБАВИТЬ БИТ
