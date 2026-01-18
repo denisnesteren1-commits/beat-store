@@ -417,9 +417,12 @@ function App() {
               <div key={beat.id} className="beat-card" onClick={() => playBeat(beat)}>
                 <div className="beat-cover">
                   <img src={beat.image} alt="cover" />
+                  
+                  {/* ПУЛЬСАЦИЯ ВНУТРИ ОБЛОЖКИ: только если этот бит играет */}
                   {currentBeatId === beat.id && isPlaying && (
-                    <div className="play-ico">
-                      <div className="center-dot"></div>
+                    <div className="beat-pulse-overlay">
+                      <div className="beat-pulse-circle"></div>
+                      <div className="beat-pulse-icon">||</div>
                     </div>
                   )}
                 </div>
@@ -596,15 +599,14 @@ function App() {
 
               {/* Кнопка Плей/Пауза — с динамическим классом для пульсации */}
               <button 
-                className={`mini-btn mini-play-btn ${isPlaying ? 'is-playing' : ''}`} 
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  setIsPlaying(!isPlaying); 
-                }}
-              >
-                {/* Используем текстовые символы: || для паузы, треугольник для плей */}
-                {isPlaying ? "||" : "▶"}
-              </button>
+              className="mini-btn mini-play-btn" 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                setIsPlaying(!isPlaying); 
+              }}
+            >
+              {isPlaying ? "||" : "▶"}
+            </button>
               
               {/* Кнопка Закрыть (Крестик) */}
               <button 

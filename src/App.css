@@ -47,17 +47,89 @@ body {
 .tab-menu { display: flex; gap: 20px; padding: 10px 20px; font-size: 14px; font-weight: 800; color: #444; }
 .tab-menu .active { color: #fff; border-bottom: 2px solid var(--accent); }
 
-/* 3. КАРТОЧКА БИТА (ЧИСТЫЙ СТИЛЬ) */
-.beat-list { padding: 10px 20px; padding-bottom: 120px; }
-.beat-card { 
-  display: flex; gap: 15px; background: var(--card); padding: 14px; 
-  border-radius: 22px; margin-bottom: 12px; align-items: center;
-  border: 1px solid #1a1a1a; transition: 0.3s;
+/* 3. КАРТОЧКА БИТА (ЧИСТЫЙ СТИЛЬ С ПУЛЬСАЦИЕЙ) */
+.beat-list { 
+  padding: 10px 20px; 
+  padding-bottom: 120px; 
 }
 
-.beat-cover { width: 60px; height: 60px; border-radius: 12px; overflow: hidden; position: relative; flex-shrink: 0; }
-.beat-cover img { width: 100%; height: 100%; object-fit: cover; }
+.beat-card { 
+  display: flex; 
+  gap: 15px; 
+  background: var(--card); 
+  padding: 14px; 
+  border-radius: 22px; 
+  margin-bottom: 12px; 
+  align-items: center;
+  border: 1px solid #1a1a1a; 
+  transition: 0.3s;
+}
 
+/* ОБЛОЖКА: Основа для пульсации */
+.beat-cover { 
+  width: 60px; 
+  height: 60px; 
+  border-radius: 12px; 
+  overflow: hidden; 
+  position: relative; 
+  flex-shrink: 0; 
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.beat-cover img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+/* ОВЕРЛЕЙ ПРИ ВОСПРОИЗВЕДЕНИИ */
+.beat-pulse-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.45); /* Мягкое затемнение */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+/* ПУЛЬСИРУЮЩИЙ КРУЖОК */
+.beat-pulse-circle {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: card-pulse-wave 1.6s infinite ease-out;
+}
+
+/* ИКОНКА ПАУЗЫ ВНУТРИ */
+.beat-pulse-icon {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  z-index: 6;
+  font-family: sans-serif;
+}
+
+/* АНИМАЦИЯ ВОЛНЫ */
+@keyframes card-pulse-wave {
+  0% {
+    transform: scale(0.7);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* Эффект при нажатии на всю карточку */
+.beat-card:active {
+  transform: scale(0.98);
+  background: #151515;
+}
 /* Пульсирующая точка (только когда играет) */
 .play-ico { 
   position: absolute; inset: 0; 
@@ -178,44 +250,34 @@ body {
   font-family: sans-serif !important;
 }
 
-/* --- ПУЛЬСАЦИЯ ДЛЯ КНОПКИ PLAY --- */
-.mini-play-btn.is-playing {
-  color: #fff !important;
-  position: relative;
-}
+/* --- КНОПКИ НИЖНЕГО ПЛЕЕРА (БЕЗ ПУЛЬСАЦИИ) --- */
 
-/* Белый кружок пульсации */
-.mini-play-btn.is-playing::after {
-  content: '';
-  position: absolute;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  animation: mini-pulse 1.5s infinite;
-}
-
-@keyframes mini-pulse {
-  0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(1.6); opacity: 0; }
-}
-
-/* Стилизация символов */
 .mini-play-btn {
+  font-family: sans-serif !important;
   font-size: 16px !important;
   font-weight: 900 !important;
-  letter-spacing: -1px; /* Для красивой паузы || */
+  letter-spacing: -1px; /* Красивое отображение паузы || */
+  color: #888 !important;
+  transition: 0.2s;
+}
+
+/* Если музыка играет, можем просто сделать кнопку чуть светлее */
+.mini-play-btn.is-playing {
+  color: #ffffff !important;
 }
 
 .mini-close-btn {
   font-size: 22px !important;
   font-weight: 200 !important;
-  opacity: 0.7;
+  font-family: Arial, sans-serif !important;
+  opacity: 0.6;
 }
 
+/* Эффект нажатия для всех кнопок плеера */
 .mini-btn:active { 
   transform: scale(0.85); 
   color: #ffffff !important;
+  opacity: 1;
 }
 /* 5. ПРОФИЛЬ — Полная центровка и жирные шрифты */
 .profile-view { 
