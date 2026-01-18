@@ -164,6 +164,12 @@ function App() {
       setIsPlaying(true);
     }
   };
+
+  const handleSeek = (e) => {
+    const seekTime = (e.target.value / 100) * audioRef.current.duration;
+    audioRef.current.currentTime = seekTime;
+    setProgress(e.target.value);
+  };
   // Функция для плавной анимации процентов
   const simulateProgress = (start, end, duration) => {
     let current = start;
@@ -405,9 +411,17 @@ function App() {
                     </span>
                   </div>
                   <div className="beat-meta-row">{beat.bpm} BPM • {beat.key}</div>
-                  <div className="prog-bar">
-                    <div className="prog-fill" style={{ width: currentBeatId === beat.id ? `${progress}%` : '0%' }}></div>
-                  </div>
+                  <div className="prog-container" onClick={(e) => e.stopPropagation()}>
+                  <input
+                    type="range"
+                    className="fresso-slider"
+                    value={currentBeatId === beat.id ? progress : 0}
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    onChange={handleSeek}
+                  />
+                </div>
                 </div>
                 <div className="beat-buy-btn">${beat.priceMp3}</div>
               </div>
