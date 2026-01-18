@@ -47,58 +47,110 @@ body {
 .tab-menu { display: flex; gap: 20px; padding: 10px 20px; font-size: 14px; font-weight: 800; color: #444; }
 .tab-menu .active { color: #fff; border-bottom: 2px solid var(--accent); }
 
-/* 3. КАРТОЧКА БИТА */
-.beat-list { padding: 10px 20px; padding-bottom: 120px; } /* Место под плеер */
+/* 3. КАРТОЧКА БИТА (ТОЧКА В ЦЕНТРЕ) */
+.beat-list { padding: 10px 20px; padding-bottom: 120px; }
 .beat-card { 
   display: flex; gap: 15px; background: var(--card); padding: 12px; 
   border-radius: 20px; margin-bottom: 12px; align-items: center;
-  border: 1px solid #1a1a1a; transition: 0.2s;
+  border: 1px solid #1a1a1a; transition: 0.2s; position: relative;
+  overflow: hidden;
 }
+
+/* Обложка с нейтральной точкой в центре */
 .beat-cover { width: 65px; height: 65px; border-radius: 14px; overflow: hidden; position: relative; flex-shrink: 0; }
 .beat-cover img { width: 100%; height: 100%; object-fit: cover; }
-.play-ico { position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; }
 
-.beat-body { flex: 1; overflow: hidden; }
+.play-ico { 
+  position: absolute; inset: 0; 
+  background: rgba(0,0,0,0.4); 
+  display: flex; align-items: center; justify-content: center; 
+}
+
+/* Нейтральная пульсирующая точка */
+.center-dot {
+  width: 10px; height: 10px; 
+  background: rgba(255, 255, 255, 0.7); 
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+  animation: smooth-pulse 2s infinite ease-in-out;
+}
+
+@keyframes smooth-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.5); opacity: 0.3; }
+}
+
+.beat-body { flex: 1; z-index: 2; }
 .beat-name-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 15px; }
-.fav-heart { cursor: pointer; padding-left: 10px; font-size: 18px; }
-.beat-meta-row { font-size: 11px; color: #666; margin: 4px 0 0; }
 
-.beat-status-row { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
-.playing-dot {
-  width: 7px; height: 7px; background: var(--accent); border-radius: 50%;
-  box-shadow: 0 0 8px var(--accent); animation: pulse-dot 1.5s infinite;
-}
-.idle-dot { width: 7px; height: 7px; background: #333; border-radius: 50%; }
-
-@keyframes pulse-dot {
-  0% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.3); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-.beat-buy-btn { background: rgba(0,255,136,0.1); color: #00ff88; padding: 8px 12px; border-radius: 10px; font-size: 13px; font-weight: 800; border: none; cursor: pointer; }
-
-/* 4. НИЖНИЙ МИНИ-ПЛЕЕР */
+/* 4. НИЖНИЙ МИНИ-ПЛЕЕР (ФИНАЛЬНАЯ ВЕРСИЯ С СЕРДЕЧКОМ И ПЕРЕМОТКОЙ) */
 .mini-player {
   position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(18, 18, 18, 0.98); backdrop-filter: blur(15px);
+  background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px);
   border-top: 1px solid #222; z-index: 1000;
   padding-bottom: env(safe-area-inset-bottom);
+  height: 70px;
+  overflow: hidden;
 }
-.mini-player-prog-container { position: absolute; top: -2px; left: 0; width: 100%; height: 3px; overflow: hidden; background: #222; }
 
-/* Стили ползунка в плеере */
-.fresso-slider { -webkit-appearance: none; width: 100%; height: 3px; background: transparent; cursor: pointer; }
-.fresso-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 3px; width: 3px; box-shadow: -100vw 0 0 100vw var(--accent); }
-.fresso-slider::-moz-range-progress { background-color: var(--accent); height: 3px; }
+/* Прозрачно-серый прямоугольник заполнения */
+.player-progress-fill {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.07); 
+  z-index: 1;
+  pointer-events: none;
+  transition: width 0.3s linear;
+}
 
-.mini-player-content { display: flex; align-items: center; padding: 8px 16px; gap: 12px; height: 60px; }
-.mini-cover { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; }
-.mini-info { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-.mini-title { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
-.mini-author { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-.mini-play-btn { background: none; border: none; color: #fff; font-size: 26px; cursor: pointer; display: flex; align-items: center; }
+.mini-player-content { 
+  position: relative; z-index: 20; /* Подняли выше ползунка */
+  display: flex; align-items: center; 
+  padding: 0 16px; gap: 12px; height: 100%; 
+  pointer-events: none; /* Пропускает клики на ползунок, но... */
+}
 
+/* ...разрешаем клики только для самих кнопок и инфо */
+.mini-info, .mini-controls, .mini-cover { 
+  pointer-events: auto; 
+}
+
+.mini-cover { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; }
+.mini-info { flex: 1; overflow: hidden; }
+.mini-title { font-size: 14px; font-weight: 800; color: #fff; white-space: nowrap; }
+.mini-author { font-size: 11px; color: #666; text-transform: uppercase; }
+
+/* Кнопки и Сердечко */
+.mini-controls { display: flex; align-items: center; gap: 8px; position: relative; z-index: 30; }
+
+.mini-play-btn, .mini-close-btn, .mini-fav-btn { 
+  background: none; border: none; color: #fff; 
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  padding: 8px; outline: none; 
+  -webkit-tap-highlight-color: transparent;
+  transition: 0.2s;
+}
+
+.mini-fav-btn { font-size: 20px; }
+.mini-close-btn { color: #555; font-size: 20px; font-weight: 300; }
+.mini-play-btn { font-size: 28px; }
+
+.mini-play-btn:active, .mini-close-btn:active, .mini-fav-btn:active {
+  transform: scale(0.9);
+  opacity: 0.7;
+}
+
+/* Скрытый ползунок для перемотки по всей площади */
+.fresso-slider-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  z-index: 10;
+  cursor: pointer;
+  margin: 0;
+  -webkit-appearance: none;
+}
 /* 5. ПРОФИЛЬ — Полная центровка и жирные шрифты */
 .profile-view { 
   display: flex; 

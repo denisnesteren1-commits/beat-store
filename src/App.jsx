@@ -389,36 +389,48 @@ function App() {
         </header>
       )}
 
-      {/* 2. МАГАЗИН И ЛЮБИМЫЕ */}
+      {/* 2. МАГАЗИН И ЛЮБИМЫЕ — БЕЗ СЕРДЕЧЕК */}
       {(activeTab === 'shop' || activeTab === 'favs') && (
         <div className="page-content">
           <div className="tab-menu">
             <span className={activeTab === 'shop' ? 'active' : ''} onClick={() => setActiveTab('shop')}>МАГАЗИН</span>
             <span className={activeTab === 'favs' ? 'active' : ''} onClick={() => setActiveTab('favs')}>ЛЮБИМЫЕ ({favorites.length})</span>
           </div>
+          
           <div className="beat-list">
             {beats.filter(b => activeTab === 'favs' ? favorites.includes(b.id) : true).map(beat => (
               <div key={beat.id} className="beat-card">
+                
+                {/* Обложка с пульсирующей точкой при игре */}
                 <div className="beat-cover" onClick={() => playBeat(beat)}>
                   <img src={beat.image} alt="cover" />
-                  <div className="play-ico">{currentBeatId === beat.id && isPlaying ? "⏸" : "▶"}</div>
+                  <div className="play-ico">
+                    {currentBeatId === beat.id && isPlaying ? (
+                      <div className="center-dot"></div> 
+                    ) : (
+                      "▶"
+                    )}
+                  </div>
                 </div>
+
                 <div className="beat-body">
                   <div className="beat-name-row">
                     <span>{beat.title}</span>
-                    <span onClick={() => toggleFav(beat.id)} className="fav-heart">
-                      {favorites.includes(beat.id) ? "❤️" : "🤍"}
-                    </span>
+                    {/* Сердечко отсюда удалено */}
                   </div>
+                  
                   <div className="beat-status-row">
-                  {currentBeatId === beat.id && isPlaying ? (
-                    <div className="playing-dot"></div>
-                  ) : (
-                    <div className="idle-dot"></div>
-                  )}
-                  <div className="beat-meta-row" style={{margin: 0}}>{beat.bpm} BPM • {beat.key}</div>
+                    {/* Точка статуса (красная/серая) остается здесь */}
+                    {currentBeatId === beat.id && isPlaying ? (
+                      <div className="playing-dot"></div>
+                    ) : (
+                      <div className="idle-dot"></div>
+                    )}
+                    <div className="beat-meta-row" style={{margin: 0}}>{beat.bpm} BPM • {beat.key}</div>
+                  </div>
                 </div>
-                </div>
+
+                {/* Кнопка купить */}
                 <div className="beat-buy-btn">${beat.priceMp3}</div>
               </div>
             ))}
@@ -547,34 +559,55 @@ function App() {
       )}
       {/* ... здесь заканчивается блок с покупками или профилем ... */}
       
-      {/* 1. НИЖНИЙ ПЛЕЕР */}
+     {/* 1. НИЖНИЙ ПЛЕЕР — СЕРДЕЧКО, ЗАПОЛНЕНИЕ И КРЕСТИК */}
       {currentBeatId && (
         <div className="mini-player">
-          <div className="mini-player-prog-container">
-            <input
-              type="range"
-              className="fresso-slider"
-              value={progress}
-              min="0"
-              max="100"
-              step="0.1"
-              onChange={handleSeek}
-            />
-          </div>
+          <div 
+            className="player-progress-fill" 
+            style={{ width: `${progress}%` }}
+          ></div>
+
           <div className="mini-player-content">
             <img src={beats.find(b => b.id === currentBeatId)?.image} alt="mini-cover" className="mini-cover" />
+            
             <div className="mini-info">
               <div className="mini-title">{beats.find(b => b.id === currentBeatId)?.title}</div>
               <div className="mini-author">Fresso</div>
             </div>
-            <button className="mini-play-btn" onClick={() => setIsPlaying(!isPlaying)}>
-              {isPlaying ? (tg ? "⏸" : "Pause") : (tg ? "▶" : "Play")}
-            </button>
+
+            <div className="mini-controls" style={{ position: 'relative', zIndex: 20 }}>
+              <button className="mini-fav-btn" onClick={() => toggleFav(currentBeatId)}>
+                {favorites.includes(currentBeatId) ? "❤️" : "🤍"}
+              </button>
+
+              <button className="mini-play-btn" onClick={() => setIsPlaying(!isPlaying)}>
+                {isPlaying ? "⏸" : "▶"}
+              </button>
+              
+              <button className="mini-close-btn" onClick={() => {
+                audioRef.current.pause();
+                setCurrentBeatId(null);
+                setIsPlaying(false);
+              }}>
+                ✕
+              </button>
+            </div>
           </div>
+          
+          <input
+            type="range"
+            className="fresso-slider-overlay"
+            value={progress}
+            min="0"
+            max="100"
+            step="0.1"
+            onChange={handleSeek}
+            style={{ zIndex: 10 }}
+          />
         </div>
       )}
     </div> // Закрывает app-container
-  );
+  ); // Закрывает return
 } // Закрывает функцию App
 
-export default App; // Последняя строка файла
+export default App;
