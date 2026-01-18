@@ -23,14 +23,17 @@ function App() {
   const [title, setTitle] = useState('');
   const [bpm, setBpm] = useState('');
   const [key, setKey] = useState('C');
-  const [prices, setPrices] = useState({ mp3: '', wav: '', stems: '' });
+  const [genre, setGenre] = useState(''); // НОВОЕ
+  const [prices, setPrices] = useState({ mp3: '', wav: '', stems: '', excl: '' }); // ОБНОВЛЕНО
   
   // Файлы для загрузки
   const [coverFile, setCoverFile] = useState(null);
   const [mp3File, setMp3File] = useState(null);
   const [wavFile, setWavFile] = useState(null);
   const [zipFile, setZipFile] = useState(null);
+  const [exclFile, setExclFile] = useState(null); // НОВОЕ
   const [coverPreview, setCoverPreview] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0); // НОВОЕ
 
   // Плеер
   const [currentBeatId, setCurrentBeatId] = useState(null);
@@ -118,28 +121,67 @@ function App() {
       setIsPlaying(true);
     }
   };
-
+  // Функция для плавной анимации процентов
+  const simulateProgress = (start, end, duration) => {
+    let current = start;
+    const step = (end - start) / (duration / 50);
+    const interval = setInterval(() => {
+      current += step;
+      if (current >= end) {
+        setUploadProgress(Math.floor(end));
+        clearInterval(interval);
+      } else {
+        setUploadProgress(Math.floor(current));
+      }
+    }, 50);
+    return interval;
+  };
   const handlePublish = async () => {
-    if (!title || !coverFile || !mp3File) return alert("Заполни: Название, Фото и MP3!");
+    if (!title || !coverFile || !mp3File) return alert("Заполни базу: Название, Фото и MP3!");
     setUploading(true);
+    
+    // Запускаем плавное движение до 85% (пока грузятся файлы)
+    const progressInterval = simulateProgress(0, 85, 5000); 
+
     try {
-      const [img, mp3, wav, zip] = await Promise.all([
+      const [img, mp3, wav, zip, excl] = await Promise.all([
         uploadFile(coverFile, 'image'),
-        uploadFile(mp3File, 'audio'),
-        uploadFile(wavFile, 'audio'),
-        uploadFile(zipFile, 'audio')
+        uploadFile(mp3File, 'video'),
+        uploadFile(wavFile, 'video'),
+        uploadFile(zipFile, 'video'),
+        uploadFile(exclFile, 'video')
       ]);
+      
+      clearInterval(progressInterval); // Останавливаем имитацию
+      setUploadProgress(90); // Файлы загружены
+
       await addDoc(collection(db, "beats"), {
-        title, bpm, key, image: img, audio: mp3, wavUrl: wav, zipUrl: zip,
-        priceMp3: prices.mp3, priceWav: prices.wav, createdAt: new Date()
+        title, bpm, key, genre,
+        image: img, audio: mp3, wavUrl: wav, zipUrl: zip, exclUrl: excl,
+        priceMp3: prices.mp3, priceWav: prices.wav, 
+        priceStems: prices.stems, priceExcl: prices.excl,
+        createdAt: new Date()
       });
-      setUploading(false); setActiveTab('shop');
-    } catch (e) { alert(e.message); setUploading(false); }
+
+      setUploadProgress(100); // Всё готово
+      
+      setTimeout(() => {
+        setUploading(false); 
+        setActiveTab('shop');
+        setUploadProgress(0);
+        if(tg) tg.HapticFeedback.notificationOccurred('success'); // Вибрация успеха
+      }, 600);
+
+    } catch (e) { 
+      clearInterval(progressInterval);
+      alert("Ошибка: " + e.message); 
+      setUploading(false); 
+      setUploadProgress(0);
+    }
   };
 
   // 4. ОТОБРАЖЕНИЕ (RENDER)
   if (activeTab === 'admin') {
-    // Если зашел не ты (ID не совпал), админка не откроется, а просто перекинет в магазин
     if (tg?.initDataUnsafe?.user?.id !== ADMIN_ID) {
       setActiveTab('shop');
       return null;
@@ -156,7 +198,6 @@ function App() {
         </div>
 
         <div className="admin-form">
-          {/* Секция обложки */}
           <div className="upload-square" onClick={() => document.getElementById('cInp').click()}>
             {coverPreview ? <img src={coverPreview} alt="preview" /> : <span>ОБЛОЖКА</span>}
             <input id="cInp" type="file" hidden onChange={e => {
@@ -166,39 +207,59 @@ function App() {
           </div>
 
           <input className="fresso-input" placeholder="Название" onChange={e => setTitle(e.target.value)} />
+          <input className="fresso-input" placeholder="Жанр / Тэги" onChange={e => setGenre(e.target.value)} />
           
           <div className="fresso-row">
             <input className="fresso-input" placeholder="BPM" onChange={e => setBpm(e.target.value)} />
             <input className="fresso-input" placeholder="Key" onChange={e => setKey(e.target.value)} />
           </div>
 
-          <div className="price-grid">
+          <div className="price-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <input className="fresso-input" placeholder="MP3 $" onChange={e => setPrices({...prices, mp3: e.target.value})} />
             <input className="fresso-input" placeholder="WAV $" onChange={e => setPrices({...prices, wav: e.target.value})} />
+            <input className="fresso-input" placeholder="STEMS $" onChange={e => setPrices({...prices, stems: e.target.value})} />
+            <input className="fresso-input" placeholder="EXCL $" onChange={e => setPrices({...prices, excl: e.target.value})} />
           </div>
 
           <div className="file-selectors">
             <div className={`file-row ${mp3File ? 'ready' : ''}`} onClick={() => document.getElementById('f1').click()}>
               <span className="file-status">{mp3File ? "✅" : "📁"}</span>
-              <span className="file-name">{mp3File ? `MP3: ${mp3File.name.slice(0, 10)}...` : "MP3 С ТЭГОМ"}</span>
+              <span className="file-name">MP3 С ТЭГОМ</span>
               <input id="f1" type="file" accept="audio/*" hidden onChange={e => setMp3File(e.target.files[0])} />
             </div>
 
             <div className={`file-row ${wavFile ? 'ready' : ''}`} onClick={() => document.getElementById('f2').click()}>
               <span className="file-status">{wavFile ? "✅" : "📁"}</span>
-              <span className="file-name">{wavFile ? `WAV: ${wavFile.name.slice(0, 10)}...` : "WAV БЕЗ ТЭГА"}</span>
+              <span className="file-name">WAV БЕЗ ТЭГА</span>
               <input id="f2" type="file" accept="audio/*" hidden onChange={e => setWavFile(e.target.files[0])} />
             </div>
 
             <div className={`file-row ${zipFile ? 'ready' : ''}`} onClick={() => document.getElementById('f3').click()}>
               <span className="file-status">{zipFile ? "✅" : "📁"}</span>
-              <span className="file-name">{zipFile ? `ZIP: ${zipFile.name.slice(0, 10)}...` : "ZIP TRACKOUT"}</span>
+              <span className="file-name">ZIP TRACKOUT</span>
               <input id="f3" type="file" hidden onChange={e => setZipFile(e.target.files[0])} />
+            </div>
+
+            <div className={`file-row ${exclFile ? 'ready' : ''}`} onClick={() => document.getElementById('f4').click()}>
+              <span className="file-status">{exclFile ? "✅" : "📁"}</span>
+              <span className="file-name">ZIP EXCLUSIVE</span>
+              <input id="f4" type="file" hidden onChange={e => setExclFile(e.target.files[0])} />
             </div>
           </div>
 
+          {uploading && (
+            <div style={{ marginBottom: 20 }}>
+              <div className="prog-bar" style={{ background: '#222', height: '6px' }}>
+                <div className="prog-fill" style={{ width: `${uploadProgress}%`, transition: '0.3s' }}></div>
+              </div>
+              <p style={{ textAlign: 'center', fontSize: '12px', marginTop: '8px', color: 'var(--accent)' }}>
+                Загрузка: {uploadProgress}%
+              </p>
+            </div>
+          )}
+
           <button className="fresso-submit" onClick={handlePublish} disabled={uploading}>
-            {uploading ? "ЗАГРУЗКА..." : "ОПУБЛИКОВАТЬ БИТ"}
+            {uploading ? "ПОДОЖДИТЕ..." : "ОПУБЛИКОВАТЬ БИТ"}
           </button>
         </div>
       </div>
