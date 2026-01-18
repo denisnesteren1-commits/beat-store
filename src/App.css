@@ -219,7 +219,7 @@ body {
 .fresso-submit:active { transform: scale(0.98); }
 .fresso-submit:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
 
-/* 8. СОЦСЕТИ — Цветные и с поочередной пульсацией */
+/* 8. СОЦСЕТИ — Волна по рядам и цветное свечение */
 .social-container-main { 
   width: 100%; 
   display: flex; 
@@ -232,46 +232,58 @@ body {
   display: flex; 
   justify-content: center; 
   gap: 15px; 
+  flex-wrap: wrap; /* Позволяет иконкам переноситься на второй ряд */
 }
 
 .social-item { 
   width: 55px; 
   height: 55px; 
-  background: rgba(255, 255, 255, 0.05); 
-  border: 1px solid rgba(255, 255, 255, 0.1); 
+  background: rgba(255, 255, 255, 0.03); 
+  border: 1px solid rgba(255, 255, 255, 0.08); 
   border-radius: 16px; 
   display: flex; 
   align-items: center; 
   justify-content: center; 
   font-size: 26px; 
   transition: 0.3s;
-  animation: pulse-social 3s infinite; /* Общая анимация */
+  position: relative;
+  /* Анимация длится 4 секунды, чтобы пауза между кругами была приятной */
+  animation: wave-pulse 4s infinite ease-in-out;
 }
 
-/* Родные цвета иконок */
-.social-item.tiktok { color: #ff0050; border-color: rgba(255, 0, 80, 0.3); }
-.social-item.youtube { color: #ff0000; border-color: rgba(255, 0, 0, 0.3); }
-.social-item.instagram { color: #e1306c; border-color: rgba(225, 48, 108, 0.3); }
-.social-item.soundcloud { color: #ff5500; border-color: rgba(255, 85, 0, 0.3); }
-.social-item.telegram { color: #0088cc; border-color: rgba(0, 136, 204, 0.3); }
-.social-item.vk { color: #0077ff; border-color: rgba(0, 119, 255, 0.3); }
+/* Фирменные цвета */
+.social-item.tiktok    { color: #ff0050; --shadow: rgba(255, 0, 80, 0.4); }
+.social-item.youtube   { color: #ff0000; --shadow: rgba(255, 0, 0, 0.4); }
+.social-item.instagram { color: #e1306c; --shadow: rgba(225, 48, 108, 0.4); }
+.social-item.soundcloud { color: #ff5500; --shadow: rgba(255, 85, 0, 0.4); }
+.social-item.telegram  { color: #0088cc; --shadow: rgba(0, 136, 204, 0.4); }
+.social-item.vk        { color: #0077ff; --shadow: rgba(0, 119, 255, 0.4); }
 
-/* Эффект при нажатии */
-.social-item:active { transform: scale(0.9); filter: brightness(1.5); }
+/* Настройка очереди (Волна: 1-2-3-4-5-6) */
+.social-item:nth-child(1) { animation-delay: 0.0s; }
+.social-item:nth-child(2) { animation-delay: 0.3s; }
+.social-item:nth-child(3) { animation-delay: 0.6s; }
+.social-item:nth-child(4) { animation-delay: 0.9s; }
+.social-item:nth-child(5) { animation-delay: 1.2s; }
+.social-item:nth-child(6) { animation-delay: 1.5s; }
 
-/* Поочередная задержка анимации (чтобы пульсировали по очереди) */
-.social-item:nth-child(1) { animation-delay: 0s; }
-.social-item:nth-child(2) { animation-delay: 0.5s; }
-.social-item:nth-child(3) { animation-delay: 1s; }
-.social-item:nth-child(4) { animation-delay: 1.5s; }
-.social-item:nth-child(5) { animation-delay: 2s; }
-.social-item:nth-child(6) { animation-delay: 2.5s; }
+@keyframes wave-pulse {
+  0%, 20%, 100% { 
+    transform: scale(1); 
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+  }
+  10% { 
+    transform: scale(1.15); 
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px var(--shadow); /* Свечение в цвет иконки */
+    border-color: var(--shadow);
+  }
+}
 
-@keyframes pulse-social {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
-  10% { transform: scale(1.1); box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); }
-  20% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
-  100% { transform: scale(1); }
+.social-item:active {
+  transform: scale(0.9) !important;
+  filter: brightness(1.8);
 }
 /* 9. ПОКУПКИ — Финальная версия */
 .purchases-view {
