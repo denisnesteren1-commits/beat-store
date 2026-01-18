@@ -447,6 +447,12 @@ function App() {
             <button className="p-menu-item" onClick={() => setActiveTab('my_purchases')}>
               МОИ ПОКУПКИ <span>🎹</span>
             </button>
+            
+            {/* НОВАЯ КНОПКА (ЗАГЛУШКА) */}
+            <button className="p-menu-item" onClick={() => tg?.showAlert("Настройка оплаты появится в ближайшем обновлении!")}>
+              СПОСОБЫ ОПЛАТЫ <span>💳</span>
+            </button>
+
             <button className="p-menu-item" onClick={() => window.open('https://t.me/Fr1sso')}>
               ПОДДЕРЖКА <span>💬</span>
             </button>
