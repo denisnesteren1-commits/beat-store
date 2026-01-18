@@ -219,7 +219,7 @@ body {
 .fresso-submit:active { transform: scale(0.98); }
 .fresso-submit:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
 
-/* 8. СОЦСЕТИ — Строгая последовательная волна по рядам */
+/* 8. СОЦСЕТИ — Медленная и плавная волна по рядам */
 .social-container-main { 
   width: 100%; 
   display: flex; 
@@ -244,9 +244,9 @@ body {
   align-items: center; 
   justify-content: center; 
   font-size: 26px; 
-  transition: 0.3s;
-  /* Цикл 3 секунды: пробежка по всем иконкам и пауза */
-  animation: wave-pulse 3s infinite ease-in-out;
+  transition: 0.5s;
+  /* Цикл 6 секунд делает анимацию очень спокойной */
+  animation: wave-pulse-slow 6s infinite ease-in-out;
 }
 
 /* Цвета иконок */
@@ -257,34 +257,33 @@ body {
 .social-item.telegram  { color: #0088cc; --shadow: rgba(0, 136, 204, 0.4); }
 .social-item.vk        { color: #0077ff; --shadow: rgba(0, 119, 255, 0.4); }
 
-/* РУЧНАЯ ОЧЕРЕДЬ (чтобы второй ряд ждал первый) */
-/* Если у тебя два блока .social-grid, используем такие селекторы: */
-
-/* ПЕРВЫЙ РЯД (1, 2, 3 иконки) */
+/* МЕДЛЕННАЯ ОЧЕРЕДЬ (Задержки увеличены) */
+/* ПЕРВЫЙ РЯД */
 .social-grid:first-child .social-item:nth-child(1) { animation-delay: 0.0s; }
-.social-grid:first-child .social-item:nth-child(2) { animation-delay: 0.2s; }
-.social-grid:first-child .social-item:nth-child(3) { animation-delay: 0.4s; }
+.social-grid:first-child .social-item:nth-child(2) { animation-delay: 0.5s; }
+.social-grid:first-child .social-item:nth-child(3) { animation-delay: 1.0s; }
 
-/* ВТОРОЙ РЯД (4, 5, 6 иконки) — начинают ПОСЛЕ первого ряда */
-.social-grid:last-child .social-item:nth-child(1) { animation-delay: 0.6s; }
-.social-grid:last-child .social-item:nth-child(2) { animation-delay: 0.8s; }
-.social-grid:last-child .social-item:nth-child(3) { animation-delay: 1.0s; }
+/* ВТОРОЙ РЯД — вступает плавно после первого */
+.social-grid:last-child .social-item:nth-child(1) { animation-delay: 1.5s; }
+.social-grid:last-child .social-item:nth-child(2) { animation-delay: 2.0s; }
+.social-grid:last-child .social-item:nth-child(3) { animation-delay: 2.5s; }
 
-@keyframes wave-pulse {
-  0%, 15%, 100% { 
+@keyframes wave-pulse-slow {
+  0%, 25%, 100% { 
     transform: scale(1); 
     box-shadow: 0 0 0 rgba(0,0,0,0);
     background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
   }
-  7% { 
-    transform: scale(1.18); 
-    box-shadow: 0 0 15px var(--shadow);
-    background: rgba(255, 255, 255, 0.1);
+  12% { 
+    transform: scale(1.12); 
+    box-shadow: 0 0 20px var(--shadow);
+    background: rgba(255, 255, 255, 0.08);
     border-color: var(--shadow);
   }
 }
 
-.social-item:active { transform: scale(0.9); }
+.social-item:active { transform: scale(0.9); transition: 0.1s; }
 /* 9. ПОКУПКИ — Финальная версия */
 .purchases-view {
   display: flex;
