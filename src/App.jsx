@@ -582,16 +582,19 @@ function App() {
             </div>
 
             <div className="mini-controls">
+              {/* Кнопка Лайка */}
               <button 
-                className="mini-btn mini-fav-btn" 
+                className="mini-btn" 
                 onClick={(e) => { 
                   e.stopPropagation(); 
                   toggleFav(currentBeatId); 
                 }}
               >
-                {favorites.includes(currentBeatId) ? "❤️" : "🤍"}
+                <i className={favorites.includes(currentBeatId) ? "fa-solid fa-heart" : "fa-regular fa-heart"} 
+                   style={{ color: favorites.includes(currentBeatId) ? '#ff4d4d' : '#888' }}></i>
               </button>
 
+              {/* Кнопка Плей/Пауза — ТЕПЕРЬ ЧЕРЕЗ ИКОНКИ ШРИФТА */}
               <button 
                 className="mini-btn mini-play-btn" 
                 onClick={(e) => { 
@@ -599,9 +602,10 @@ function App() {
                   setIsPlaying(!isPlaying); 
                 }}
               >
-                {isPlaying ? "\u23F8\uFE0E" : "\u25B6\uFE0E"}
+                <i className={isPlaying ? "fa-solid fa-pause" : "fa-solid fa-play"}></i>
               </button>
               
+              {/* Кнопка Закрыть */}
               <button 
                 className="mini-btn mini-close-btn" 
                 onClick={(e) => {
@@ -611,7 +615,7 @@ function App() {
                   setIsPlaying(false);
                 }}
               >
-                ✕
+                <i className="fa-solid fa-xmark"></i>
               </button>
             </div>
           </div>

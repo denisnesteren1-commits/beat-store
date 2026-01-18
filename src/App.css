@@ -150,13 +150,14 @@ body {
   font-size: 11px; 
   color: #555; 
   text-transform: uppercase; 
+  letter-spacing: 1px;
 }
 
 /* Кнопки управления */
 .mini-controls { 
   display: flex; 
   align-items: center; 
-  gap: 5px; 
+  gap: 2px; /* Уменьшил зазор для компактности */
   z-index: 20; 
 }
 
@@ -165,30 +166,38 @@ body {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  color: #888 !important; 
+  color: #888 !important; /* Наш фирменный серый */
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  width: 44px; /* Фиксированная область нажатия */
+  height: 44px;
   transition: 0.2s;
   -webkit-tap-highlight-color: transparent;
-
-  /* ГЛАВНЫЙ ХАК: убирает желтизну и заставляет символы быть серыми */
-  filter: grayscale(100%);
-  font-family: serif; 
 }
 
-/* Размеры иконок */
-.mini-play-btn { font-size: 26px !important; }
-.mini-fav-btn { font-size: 19px !important; }
-.mini-close-btn { font-size: 20px !important; font-weight: 300; }
+/* Управление размерами иконок Font Awesome */
+.mini-btn i {
+  font-size: 18px; /* Базовый размер для иконок */
+}
 
-/* Состояние при нажатии */
+.mini-play-btn i { 
+  font-size: 22px; /* Кнопка Play/Pause чуть больше остальных */
+}
+
+.mini-close-btn i {
+  font-size: 18px;
+  font-weight: 300;
+}
+
+/* Эффект при нажатии: иконка загорается белым */
 .mini-btn:active { 
   transform: scale(0.85); 
-  color: #ffffff !important; 
-  filter: grayscale(0%); /* При клике становится ярко-белым */
+}
+
+.mini-btn:active i {
+  color: #ffffff !important;
 }
 /* 5. ПРОФИЛЬ — Полная центровка и жирные шрифты */
 .profile-view { 
