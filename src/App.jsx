@@ -389,7 +389,7 @@ function App() {
         </header>
       )}
 
-      {/* 2. МАГАЗИН И ЛЮБИМЫЕ — БЕЗ СЕРДЕЧЕК */}
+      {/* 2. МАГАЗИН И ЛЮБИМЫЕ */}
       {(activeTab === 'shop' || activeTab === 'favs') && (
         <div className="page-content">
           <div className="tab-menu">
@@ -399,38 +399,23 @@ function App() {
           
           <div className="beat-list">
             {beats.filter(b => activeTab === 'favs' ? favorites.includes(b.id) : true).map(beat => (
-              <div key={beat.id} className="beat-card">
-                
-                {/* Обложка с пульсирующей точкой при игре */}
-                <div className="beat-cover" onClick={() => playBeat(beat)}>
+              <div key={beat.id} className="beat-card" onClick={() => playBeat(beat)}>
+                <div className="beat-cover">
                   <img src={beat.image} alt="cover" />
-                  <div className="play-ico">
-                    {currentBeatId === beat.id && isPlaying ? (
-                      <div className="center-dot"></div> 
-                    ) : (
-                      "▶"
-                    )}
-                  </div>
+                  {currentBeatId === beat.id && isPlaying && (
+                    <div className="play-ico">
+                      <div className="center-dot"></div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="beat-body">
-                  <div className="beat-name-row">
-                    <span>{beat.title}</span>
-                    {/* Сердечко отсюда удалено */}
-                  </div>
-                  
-                  <div className="beat-status-row">
-                    {/* Точка статуса (красная/серая) остается здесь */}
-                    {currentBeatId === beat.id && isPlaying ? (
-                      <div className="playing-dot"></div>
-                    ) : (
-                      <div className="idle-dot"></div>
-                    )}
-                    <div className="beat-meta-row" style={{margin: 0}}>{beat.bpm} BPM • {beat.key}</div>
+                  <div className="beat-name-row">{beat.title}</div>
+                  <div className="beat-meta-row">
+                    {beat.bpm} BPM • {beat.key} • {beat.tags || 'PROD BY FRESSO'}
                   </div>
                 </div>
 
-                {/* Кнопка купить */}
                 <div className="beat-buy-btn">${beat.priceMp3}</div>
               </div>
             ))}
@@ -559,51 +544,57 @@ function App() {
       )}
       {/* ... здесь заканчивается блок с покупками или профилем ... */}
       
-     {/* 1. НИЖНИЙ ПЛЕЕР — СЕРДЕЧКО, ЗАПОЛНЕНИЕ И КРЕСТИК */}
+     {/* 1. НИЖНИЙ МИНИ-ПЛЕЕР */}
       {currentBeatId && (
         <div className="mini-player">
+          {/* Только визуальное заполнение серым цветом */}
           <div 
             className="player-progress-fill" 
             style={{ width: `${progress}%` }}
           ></div>
 
           <div className="mini-player-content">
-            <img src={beats.find(b => b.id === currentBeatId)?.image} alt="mini-cover" className="mini-cover" />
+            <img 
+              src={beats.find(b => b.id === currentBeatId)?.image} 
+              alt="mini-cover" 
+              className="mini-cover" 
+            />
             
             <div className="mini-info">
-              <div className="mini-title">{beats.find(b => b.id === currentBeatId)?.title}</div>
+              <div className="mini-title">
+                {beats.find(b => b.id === currentBeatId)?.title}
+              </div>
               <div className="mini-author">Fresso</div>
             </div>
 
-            <div className="mini-controls" style={{ position: 'relative', zIndex: 20 }}>
-              <button className="mini-fav-btn" onClick={() => toggleFav(currentBeatId)}>
+            <div className="mini-controls">
+              <button 
+                className="mini-btn mini-fav-btn" 
+                onClick={(e) => { e.stopPropagation(); toggleFav(currentBeatId); }}
+              >
                 {favorites.includes(currentBeatId) ? "❤️" : "🤍"}
               </button>
 
-              <button className="mini-play-btn" onClick={() => setIsPlaying(!isPlaying)}>
+              <button 
+                className="mini-btn mini-play-btn" 
+                onClick={(e) => { e.stopPropagation(); setIsPlaying(!isPlaying); }}
+              >
                 {isPlaying ? "⏸" : "▶"}
               </button>
               
-              <button className="mini-close-btn" onClick={() => {
-                audioRef.current.pause();
-                setCurrentBeatId(null);
-                setIsPlaying(false);
-              }}>
+              <button 
+                className="mini-btn mini-close-btn" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  audioRef.current.pause();
+                  setCurrentBeatId(null);
+                  setIsPlaying(false);
+                }}
+              >
                 ✕
               </button>
             </div>
           </div>
-          
-          <input
-            type="range"
-            className="fresso-slider-overlay"
-            value={progress}
-            min="0"
-            max="100"
-            step="0.1"
-            onChange={handleSeek}
-            style={{ zIndex: 10 }}
-          />
         </div>
       )}
     </div> // Закрывает app-container
