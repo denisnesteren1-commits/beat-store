@@ -71,7 +71,7 @@ function App() {
     return () => audio.removeEventListener('timeupdate', updateProgress);
   }, []);
 
-  // ЗАГРУЗКА: Черновик (Draft) и Покупки (Purchases) при старте
+  // ЗАГРУЗКА: Черновик и Покупки
   useEffect(() => {
     // 1. Восстанавливаем черновик админки
     const savedDraft = localStorage.getItem('fresso_draft');
@@ -86,17 +86,21 @@ function App() {
     }
 
     // 2. Подписываемся на покупки пользователя
-    const userId = tg?.initDataUnsafe?.user?.id;
-    if (userId) {
-      const q = query(collection(db, "purchases"), orderBy("date", "desc"));
-      const unsub = onSnapshot(q, (snap) => {
-        const userPurchases = snap.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
-          .filter(p => p.userId === userId);
-        setMyPurchases(userPurchases);
-      });
-      return () => unsub();
-    }
+  useEffect(() => {
+    // Определяем ID текущего пользователя (твой или клиента из Telegram)
+    const currentUserId = tg?.initDataUnsafe?.user?.id || 856199923; 
+
+    const q = query(collection(db, "purchases"), orderBy("date", "desc"));
+    const unsub = onSnapshot(q, (snap) => {
+      const allPurchases = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      // Теперь фильтрация идет по ID того, кто открыл приложение
+      const userPurchases = allPurchases.filter(p => Number(p.userId) === Number(currentUserId));
+      
+      setMyPurchases(userPurchases);
+    });
+
+    return () => unsub();
   }, []);
 
   // АВТОСОХРАНЕНИЕ: Черновик при каждом изменении полей
@@ -491,4 +495,6 @@ function App() {
       )}
     </div>
   );
-}
+} // <--- Эта скобка закрывает функцию App
+
+export default App; // <--- Экспорт всегда идет в самом конце, снаружи функции
