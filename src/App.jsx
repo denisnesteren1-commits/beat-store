@@ -7,8 +7,8 @@ const tg = window.Telegram ? window.Telegram.WebApp : null;
 const ADMIN_ID = 856199923;
 
 // НАСТРОЙКИ ОБЛАКА
-const CLOUD_NAME = "djp9xjfek"; 
-const UPLOAD_PRESET = "Beats and images"; 
+const CLOUD_NAME = "djp9xjfek";
+const UPLOAD_PRESET = "Beats and images";
 
 function App() {
   // 1. ВСЕ СОСТОЯНИЯ (STATES)
@@ -18,16 +18,16 @@ function App() {
   const [myPurchases, setMyPurchases] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [userAvatar, setUserAvatar] = useState(
-  localStorage.getItem('user_ava') || tg?.initDataUnsafe?.user?.photo_url || "https://via.placeholder.com/150"
-);
+    localStorage.getItem('user_ava') || tg?.initDataUnsafe?.user?.photo_url || "https://via.placeholder.com/150"
+  );
   // Данные для админки
   const [title, setTitle] = useState('');
   const [bpm, setBpm] = useState('');
   const [key, setKey] = useState('C');
-  const [genre, setGenre] = useState(''); 
+  const [genre, setGenre] = useState('');
   const [tags, setTags] = useState(''); // НОВОЕ ПОЛЕ
   const [prices, setPrices] = useState({ mp3: '', wav: '', stems: '', excl: '' });
-  
+
   // Файлы
   const [coverFile, setCoverFile] = useState(null);
   const [mp3File, setMp3File] = useState(null);
@@ -45,12 +45,12 @@ function App() {
   const audioRef = useRef(new Audio());
 
   // 2. ЭФФЕКТЫ (EFFECTS)
-  
+
   // Инициализация Telegram и загрузка основного списка битов
   useEffect(() => {
-    if (tg) { 
-      tg.ready(); 
-      tg.expand(); 
+    if (tg) {
+      tg.ready();
+      tg.expand();
     }
     const q = query(collection(db, "beats"), orderBy("createdAt", "desc"));
     return onSnapshot(q, (snap) => {
@@ -85,32 +85,27 @@ function App() {
       setPrices(d.prices || { mp3: '', wav: '', stems: '', excl: '' });
     }
 
-    // 2. Подписываемся на покупки пользователя
-  useEffect(() => {
-    // Определяем ID текущего пользователя (твой или клиента из Telegram)
-    const currentUserId = tg?.initDataUnsafe?.user?.id || 856199923; 
-
+    // 2. Подписываемся на покупки (у каждого свои)
+    const currentUserId = tg?.initDataUnsafe?.user?.id || 856199923;
     const q = query(collection(db, "purchases"), orderBy("date", "desc"));
+
     const unsub = onSnapshot(q, (snap) => {
       const allPurchases = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      
-      // Теперь фильтрация идет по ID того, кто открыл приложение
       const userPurchases = allPurchases.filter(p => Number(p.userId) === Number(currentUserId));
-      
       setMyPurchases(userPurchases);
     });
 
     return () => unsub();
-  }, []);
+  }, []); // Тут закрывается общий эффект загрузки
 
-  // АВТОСОХРАНЕНИЕ: Черновик при каждом изменении полей
+  // АВТОСОХРАНЕНИЕ: Черновик
   useEffect(() => {
     const draft = { title, bpm, key, genre, tags, prices };
     localStorage.setItem('fresso_draft', JSON.stringify(draft));
   }, [title, bpm, key, genre, tags, prices]);
 
   // 3. ВСЕ ФУНКЦИИ (FUNCTIONS)
-  
+
   // Универсальная загрузка в Cloudinary
   const uploadFile = async (file, type) => {
     if (!file) return "";
@@ -133,19 +128,19 @@ function App() {
       const url = await uploadFile(file, 'image'); // Загружаем в облако
       setUserAvatar(url); // Меняем в текущем окне
       localStorage.setItem('user_ava', url); // СОХРАНЯЕМ В ПАМЯТЬ ТЕЛЕФОНА
-      if(tg) tg.showAlert("Фото профиля сохранено!");
-    } catch (err) { 
-      alert("Ошибка загрузки фото"); 
+      if (tg) tg.showAlert("Фото профиля сохранено!");
+    } catch (err) {
+      alert("Ошибка загрузки фото");
     }
   };
 
   const toggleFav = (id) => {
     setFavorites(prev => {
       const isFav = prev.includes(id);
-      const updated = isFav 
-        ? prev.filter(i => i !== id) 
+      const updated = isFav
+        ? prev.filter(i => i !== id)
         : [...prev, id];
-      
+
       // 1. Сохраняем в память телефона
       localStorage.setItem('fresso_favs', JSON.stringify(updated));
 
@@ -200,15 +195,15 @@ function App() {
     setCoverPreview(null);
     // Сбрасываем сами инпуты (чтобы визуально очистить выбор файлов)
     document.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
-    localStorage.removeItem('fresso_draft'); 
+    localStorage.removeItem('fresso_draft');
   };
 
   const handlePublish = async () => {
     if (!title || !coverFile || !mp3File) return alert("Заполни базу: Название, Фото и MP3!");
     setUploading(true);
-    
+
     // Запускаем плавное движение до 85% (пока грузятся файлы)
-    const progressInterval = simulateProgress(0, 85, 5000); 
+    const progressInterval = simulateProgress(0, 85, 5000);
 
     try {
       const [img, mp3, wav, zip, excl] = await Promise.all([
@@ -218,7 +213,7 @@ function App() {
         uploadFile(zipFile, 'video'),
         uploadFile(exclFile, 'video')
       ]);
-      
+
       clearInterval(progressInterval); // Останавливаем имитацию
       setUploadProgress(90); // Файлы загружены
 
@@ -226,25 +221,25 @@ function App() {
       await addDoc(collection(db, "beats"), {
         title, bpm, key, genre, tags, // Добавили tags
         image: img, audio: mp3, wavUrl: wav, zipUrl: zip, exclUrl: excl,
-        priceMp3: prices.mp3, priceWav: prices.wav, 
+        priceMp3: prices.mp3, priceWav: prices.wav,
         priceStems: prices.stems, priceExcl: prices.excl,
         createdAt: new Date()
       });
 
       setUploadProgress(100);
-      
+
       setTimeout(() => {
-        setUploading(false); 
+        setUploading(false);
         setActiveTab('shop');
         setUploadProgress(0);
         resetForm(); // <--- ВОТ ЭТО ОЧИСТИТ ФОРМУ
-        if(tg) tg.HapticFeedback.notificationOccurred('success');
+        if (tg) tg.HapticFeedback.notificationOccurred('success');
       }, 600);
 
-    } catch (e) { 
+    } catch (e) {
       clearInterval(progressInterval);
-      alert("Ошибка: " + e.message); 
-      setUploading(false); 
+      alert("Ошибка: " + e.message);
+      setUploading(false);
       setUploadProgress(0);
     }
   };
@@ -276,88 +271,88 @@ function App() {
           </div>
 
           {/* Секция текстовых полей */}
-          <input 
-            className="fresso-input" 
-            placeholder="Название" 
-            value={title} 
-            onChange={e => setTitle(e.target.value)} 
+          <input
+            className="fresso-input"
+            placeholder="Название"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
           />
-          <input 
-            className="fresso-input" 
-            placeholder="Жанр (например, Trap)" 
-            value={genre} 
-            onChange={e => setGenre(e.target.value)} 
+          <input
+            className="fresso-input"
+            placeholder="Жанр (например, Trap)"
+            value={genre}
+            onChange={e => setGenre(e.target.value)}
           />
-          <input 
-            className="fresso-input" 
-            placeholder="Тэги (через запятую)" 
-            value={tags} 
-            onChange={e => setTags(e.target.value)} 
-          />          
+          <input
+            className="fresso-input"
+            placeholder="Тэги (через запятую)"
+            value={tags}
+            onChange={e => setTags(e.target.value)}
+          />
           <div className="fresso-row">
             <input className="fresso-input" placeholder="BPM" value={bpm} onChange={e => setBpm(e.target.value)} />
             <input className="fresso-input" placeholder="Key" value={key} onChange={e => setKey(e.target.value)} />          </div>
 
           <div className="price-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <input className="fresso-input" placeholder="MP3 $" value={prices.mp3} onChange={e => setPrices({...prices, mp3: e.target.value})} />
-            <input className="fresso-input" placeholder="WAV $" value={prices.wav} onChange={e => setPrices({...prices, wav: e.target.value})} />
-            <input className="fresso-input" placeholder="STEMS $" value={prices.stems} onChange={e => setPrices({...prices, stems: e.target.value})} />
-            <input className="fresso-input" placeholder="EXCL $" value={prices.excl} onChange={e => setPrices({...prices, excl: e.target.value})} />
+            <input className="fresso-input" placeholder="MP3 $" value={prices.mp3} onChange={e => setPrices({ ...prices, mp3: e.target.value })} />
+            <input className="fresso-input" placeholder="WAV $" value={prices.wav} onChange={e => setPrices({ ...prices, wav: e.target.value })} />
+            <input className="fresso-input" placeholder="STEMS $" value={prices.stems} onChange={e => setPrices({ ...prices, stems: e.target.value })} />
+            <input className="fresso-input" placeholder="EXCL $" value={prices.excl} onChange={e => setPrices({ ...prices, excl: e.target.value })} />
           </div>
 
           <div className="file-selectors">
-  {[
-    { id: 'f1', label: 'MP3 С ТЭГОМ', file: mp3File, set: setMp3File, accept: "audio/*" },
-    { id: 'f2', label: 'WAV БЕЗ ТЭГА', file: wavFile, set: setWavFile, accept: "audio/*" },
-    { id: 'f3', label: 'ZIP TRACKOUT', file: zipFile, set: setZipFile, accept: "*" },
-    { id: 'f4', label: 'ZIP EXCLUSIVE', file: exclFile, set: setExclFile, accept: "*" },
-  ].map((item) => (
-    <div key={item.id} className={`file-row ${item.file ? 'ready' : ''}`}>
-      
-      {/* Клик по этой части откроет выбор, только если файл еще НЕ выбран */}
-      <div 
-        style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer' }}
-        onClick={() => !item.file && document.getElementById(item.id).click()}
-      >
-        <span className="file-status">{item.file ? "✅" : "📁"}</span>
-        <span className="file-name" style={{ fontSize: '12px' }}>
-           {item.file ? item.file.name.substring(0, 15) + '...' : item.label}
-        </span>
-      </div>
+            {[
+              { id: 'f1', label: 'MP3 С ТЭГОМ', file: mp3File, set: setMp3File, accept: "audio/*" },
+              { id: 'f2', label: 'WAV БЕЗ ТЭГА', file: wavFile, set: setWavFile, accept: "audio/*" },
+              { id: 'f3', label: 'ZIP TRACKOUT', file: zipFile, set: setZipFile, accept: "*" },
+              { id: 'f4', label: 'ZIP EXCLUSIVE', file: exclFile, set: setExclFile, accept: "*" },
+            ].map((item) => (
+              <div key={item.id} className={`file-row ${item.file ? 'ready' : ''}`}>
 
-      {/* Кнопка удаления и замены появляются только если файл уже есть */}
-{item.file && (
-  <div style={{ display: 'flex', gap: '8px' }}>
-    {/* Кнопка УДАЛИТЬ */}
-    <div 
-      onClick={() => item.set(null)} 
-      className="file-action-btn delete"
-      title="Удалить"
-    >
-      🗑
-    </div>
-    
-    {/* Кнопка ЗАМЕНИТЬ */}
-    <div 
-      onClick={() => document.getElementById(item.id).click()}
-      className="file-action-btn replace"
-      title="Заменить"
-    >
-      🔄
-    </div>
-  </div>
-)}
+                {/* Клик по этой части откроет выбор, только если файл еще НЕ выбран */}
+                <div
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer' }}
+                  onClick={() => !item.file && document.getElementById(item.id).click()}
+                >
+                  <span className="file-status">{item.file ? "✅" : "📁"}</span>
+                  <span className="file-name" style={{ fontSize: '12px' }}>
+                    {item.file ? item.file.name.substring(0, 15) + '...' : item.label}
+                  </span>
+                </div>
 
-      <input 
-        id={item.id} 
-        type="file" 
-        accept={item.accept} 
-        hidden 
-        onChange={e => e.target.files[0] && item.set(e.target.files[0])} 
-      />
-    </div>
-  ))}
-</div>
+                {/* Кнопка удаления и замены появляются только если файл уже есть */}
+                {item.file && (
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {/* Кнопка УДАЛИТЬ */}
+                    <div
+                      onClick={() => item.set(null)}
+                      className="file-action-btn delete"
+                      title="Удалить"
+                    >
+                      🗑
+                    </div>
+
+                    {/* Кнопка ЗАМЕНИТЬ */}
+                    <div
+                      onClick={() => document.getElementById(item.id).click()}
+                      className="file-action-btn replace"
+                      title="Заменить"
+                    >
+                      🔄
+                    </div>
+                  </div>
+                )}
+
+                <input
+                  id={item.id}
+                  type="file"
+                  accept={item.accept}
+                  hidden
+                  onChange={e => e.target.files[0] && item.set(e.target.files[0])}
+                />
+              </div>
+            ))}
+          </div>
 
           {uploading && (
             <div style={{ marginBottom: 20 }}>
@@ -378,7 +373,7 @@ function App() {
     );
   }
 
- return (
+  return (
     <div className="app-container">
       {/* 1. ШАПКА */}
       {activeTab !== 'profile' && activeTab !== 'admin' && activeTab !== 'my_purchases' && (
@@ -411,7 +406,7 @@ function App() {
                   </div>
                   <div className="beat-meta-row">{beat.bpm} BPM • {beat.key}</div>
                   <div className="prog-bar">
-                    <div className="prog-fill" style={{width: currentBeatId === beat.id ? `${progress}%` : '0%'}}></div>
+                    <div className="prog-fill" style={{ width: currentBeatId === beat.id ? `${progress}%` : '0%' }}></div>
                   </div>
                 </div>
                 <div className="beat-buy-btn">${beat.priceMp3}</div>
@@ -439,13 +434,13 @@ function App() {
 
           <h1 className="profile-name">{tg?.initDataUnsafe?.user?.first_name || "Fresso Producer"}</h1>
           <p className="profile-handle">@{tg?.initDataUnsafe?.user?.username || "fresso"}</p>
-          
+
           {tg?.initDataUnsafe?.user?.id === 856199923 && (
             <button className="add-btn-main" onClick={() => setActiveTab('admin')}>
               ДОБАВИТЬ БИТ
             </button>
           )}
-          
+
           <div className="p-menu-list">
             <button className="p-menu-item" onClick={() => setActiveTab('my_purchases')}>
               МОИ ПОКУПКИ <span>🎹</span>
