@@ -285,7 +285,7 @@ function App() {
     { id: 'f3', label: 'ZIP TRACKOUT', file: zipFile, set: setZipFile, accept: "*" },
     { id: 'f4', label: 'ZIP EXCLUSIVE', file: exclFile, set: setExclFile, accept: "*" },
   ].map((item) => (
-    <div key={item.id} className={`file-row ${item.file ? 'ready' : ''}`} style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px' }}>
+    <div key={item.id} className={`file-row ${item.file ? 'ready' : ''}`}>
       
       {/* Клик по этой части откроет выбор, только если файл еще НЕ выбран */}
       <div 
@@ -298,15 +298,28 @@ function App() {
         </span>
       </div>
 
-      {/* Кнопка замены появляется только если файл уже есть */}
-      {item.file && (
-        <div 
-          onClick={() => document.getElementById(item.id).click()}
-          style={{ padding: '5px 10px', cursor: 'pointer', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '16px' }}
-        >
-          🔄
-        </div>
-      )}
+      {/* Кнопка удаления и замены появляются только если файл уже есть */}
+{item.file && (
+  <div style={{ display: 'flex', gap: '8px' }}>
+    {/* Кнопка УДАЛИТЬ */}
+    <div 
+      onClick={() => item.set(null)} 
+      className="file-action-btn delete"
+      title="Удалить"
+    >
+      🗑
+    </div>
+    
+    {/* Кнопка ЗАМЕНИТЬ */}
+    <div 
+      onClick={() => document.getElementById(item.id).click()}
+      className="file-action-btn replace"
+      title="Заменить"
+    >
+      🔄
+    </div>
+  </div>
+)}
 
       <input 
         id={item.id} 
