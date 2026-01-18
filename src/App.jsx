@@ -4,6 +4,7 @@ import { db } from './firebase';
 import { collection, onSnapshot, query, orderBy, addDoc } from "firebase/firestore";
 
 const tg = window.Telegram ? window.Telegram.WebApp : null;
+const ADMIN_ID = 856199923;
 
 // НАСТРОЙКИ ОБЛАКА
 const CLOUD_NAME = "djp9xjfek"; 
@@ -137,67 +138,72 @@ function App() {
   };
 
   // 4. ОТОБРАЖЕНИЕ (RENDER)
-  if (activeTab === 'admin') return (
-  <div className="admin-container">
-    <div className="admin-header">
-      {/* Кнопка назад с увеличенной областью нажатия */}
-      <div className="back-area" onClick={() => setActiveTab('profile')}>
-        <span className="back-arrow">←</span>
-      </div>
-      <h2 className="admin-title">НОВЫЙ БИТ</h2>
-      <div style={{ width: 44 }}></div>
-    </div>
+  if (activeTab === 'admin') {
+    // Если зашел не ты (ID не совпал), админка не откроется, а просто перекинет в магазин
+    if (tg?.initDataUnsafe?.user?.id !== ADMIN_ID) {
+      setActiveTab('shop');
+      return null;
+    }
 
-    <div className="admin-form">
-      {/* Секция обложки */}
-      <div className="upload-square" onClick={() => document.getElementById('cInp').click()}>
-        {coverPreview ? <img src={coverPreview} alt="preview" /> : <span>ОБЛОЖКА</span>}
-        <input id="cInp" type="file" hidden onChange={e => {
-          setCoverFile(e.target.files[0]);
-          setCoverPreview(URL.createObjectURL(e.target.files[0]));
-        }} />
-      </div>
-
-      {/* Поля ввода */}
-      <input className="fresso-input" placeholder="Название" onChange={e => setTitle(e.target.value)} />
-      
-      <div className="fresso-row">
-        <input className="fresso-input" placeholder="BPM" onChange={e => setBpm(e.target.value)} />
-        <input className="fresso-input" placeholder="Key" onChange={e => setKey(e.target.value)} />
-      </div>
-
-      <div className="price-grid">
-        <input className="fresso-input" placeholder="MP3 $" onChange={e => setPrices({...prices, mp3: e.target.value})} />
-        <input className="fresso-input" placeholder="WAV $" onChange={e => setPrices({...prices, wav: e.target.value})} />
-      </div>
-
-      {/* Список файлов (вертикальный список, чтобы не было наложений) */}
-      <div className="file-selectors">
-        <div className={`file-row ${mp3File ? 'ready' : ''}`} onClick={() => document.getElementById('f1').click()}>
-          <span className="file-status">{mp3File ? "✅" : "📁"}</span>
-          <span className="file-name">{mp3File ? `MP3: ${mp3File.name.slice(0, 10)}...` : "MP3 С ТЭГОМ"}</span>
-          <input id="f1" type="file" accept="audio/*" hidden onChange={e => setMp3File(e.target.files[0])} />
+    return (
+      <div className="admin-container">
+        <div className="admin-header">
+          <div className="back-area" onClick={() => setActiveTab('profile')}>
+            <span className="back-arrow">←</span>
+          </div>
+          <h2 className="admin-title">НОВЫЙ БИТ</h2>
+          <div style={{ width: 44 }}></div>
         </div>
 
-        <div className={`file-row ${wavFile ? 'ready' : ''}`} onClick={() => document.getElementById('f2').click()}>
-          <span className="file-status">{wavFile ? "✅" : "📁"}</span>
-          <span className="file-name">{wavFile ? `WAV: ${wavFile.name.slice(0, 10)}...` : "WAV БЕЗ ТЭГА"}</span>
-          <input id="f2" type="file" accept="audio/*" hidden onChange={e => setWavFile(e.target.files[0])} />
-        </div>
+        <div className="admin-form">
+          {/* Секция обложки */}
+          <div className="upload-square" onClick={() => document.getElementById('cInp').click()}>
+            {coverPreview ? <img src={coverPreview} alt="preview" /> : <span>ОБЛОЖКА</span>}
+            <input id="cInp" type="file" hidden onChange={e => {
+              setCoverFile(e.target.files[0]);
+              setCoverPreview(URL.createObjectURL(e.target.files[0]));
+            }} />
+          </div>
 
-        <div className={`file-row ${zipFile ? 'ready' : ''}`} onClick={() => document.getElementById('f3').click()}>
-          <span className="file-status">{zipFile ? "✅" : "📁"}</span>
-          <span className="file-name">{zipFile ? `ZIP: ${zipFile.name.slice(0, 10)}...` : "ZIP TRACKOUT"}</span>
-          <input id="f3" type="file" hidden onChange={e => setZipFile(e.target.files[0])} />
+          <input className="fresso-input" placeholder="Название" onChange={e => setTitle(e.target.value)} />
+          
+          <div className="fresso-row">
+            <input className="fresso-input" placeholder="BPM" onChange={e => setBpm(e.target.value)} />
+            <input className="fresso-input" placeholder="Key" onChange={e => setKey(e.target.value)} />
+          </div>
+
+          <div className="price-grid">
+            <input className="fresso-input" placeholder="MP3 $" onChange={e => setPrices({...prices, mp3: e.target.value})} />
+            <input className="fresso-input" placeholder="WAV $" onChange={e => setPrices({...prices, wav: e.target.value})} />
+          </div>
+
+          <div className="file-selectors">
+            <div className={`file-row ${mp3File ? 'ready' : ''}`} onClick={() => document.getElementById('f1').click()}>
+              <span className="file-status">{mp3File ? "✅" : "📁"}</span>
+              <span className="file-name">{mp3File ? `MP3: ${mp3File.name.slice(0, 10)}...` : "MP3 С ТЭГОМ"}</span>
+              <input id="f1" type="file" accept="audio/*" hidden onChange={e => setMp3File(e.target.files[0])} />
+            </div>
+
+            <div className={`file-row ${wavFile ? 'ready' : ''}`} onClick={() => document.getElementById('f2').click()}>
+              <span className="file-status">{wavFile ? "✅" : "📁"}</span>
+              <span className="file-name">{wavFile ? `WAV: ${wavFile.name.slice(0, 10)}...` : "WAV БЕЗ ТЭГА"}</span>
+              <input id="f2" type="file" accept="audio/*" hidden onChange={e => setWavFile(e.target.files[0])} />
+            </div>
+
+            <div className={`file-row ${zipFile ? 'ready' : ''}`} onClick={() => document.getElementById('f3').click()}>
+              <span className="file-status">{zipFile ? "✅" : "📁"}</span>
+              <span className="file-name">{zipFile ? `ZIP: ${zipFile.name.slice(0, 10)}...` : "ZIP TRACKOUT"}</span>
+              <input id="f3" type="file" hidden onChange={e => setZipFile(e.target.files[0])} />
+            </div>
+          </div>
+
+          <button className="fresso-submit" onClick={handlePublish} disabled={uploading}>
+            {uploading ? "ЗАГРУЗКА..." : "ОПУБЛИКОВАТЬ БИТ"}
+          </button>
         </div>
       </div>
-
-      <button className="fresso-submit" onClick={handlePublish} disabled={uploading}>
-        {uploading ? "ЗАГРУЗКА..." : "ОПУБЛИКОВАТЬ БИТ"}
-      </button>
-    </div>
-  </div>
-);
+    );
+  }
 
   return (
     <div className="app-container">
@@ -260,7 +266,12 @@ function App() {
           <h1 className="profile-name">{tg?.initDataUnsafe?.user?.first_name || "Fresso Producer"}</h1>
           <p className="profile-handle">@{tg?.initDataUnsafe?.user?.username || "fresso"}</p>
           
-          <button className="add-btn-main" onClick={() => setActiveTab('admin')}>ДОБАВИТЬ БИТ</button>
+          {/* 4. Кнопка админа (появится только если ID совпадает) */}
+{tg?.initDataUnsafe?.user?.id === 856199923 && (
+  <button className="add-btn-main" onClick={() => setActiveTab('admin')}>
+    ДОБАВИТЬ БИТ
+  </button>
+)}
           
           <div className="p-menu-list">
             <button className="p-menu-item">ИСТОРИЯ ЗАКАЗОВ <span>📦</span></button>
