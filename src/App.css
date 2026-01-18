@@ -99,18 +99,92 @@ body {
 .mini-author { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
 .mini-play-btn { background: none; border: none; color: #fff; font-size: 26px; cursor: pointer; display: flex; align-items: center; }
 
-/* 5. ПРОФИЛЬ */
-.profile-view { display: flex; flex-direction: column; align-items: center; padding: 5px 20px 20px; width: 100%; }
-.avatar-circle { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--accent); overflow: hidden; position: relative; margin: 10px 0 15px 0; cursor: pointer; background: #111; }
+/* 5. ПРОФИЛЬ — Полная центровка и жирные шрифты */
+.profile-view { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  text-align: center; 
+  padding: 10px 20px 30px; 
+  width: 100%; 
+}
+
+.avatar-circle { 
+  width: 120px; 
+  height: 120px; 
+  border-radius: 50%; 
+  border: 3px solid var(--accent); 
+  overflow: hidden; 
+  position: relative; 
+  margin: 0 0 15px 0; 
+  cursor: pointer; 
+  background: #111; 
+  box-shadow: 0 0 20px rgba(255, 51, 51, 0.2);
+}
+
 .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
-.profile-name { font-size: 26px; font-weight: 900; margin: 0; }
-.profile-handle { color: #666; margin-bottom: 20px; }
-.add-btn-main { background: #fff; color: #000; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; border: none; margin-bottom: 20px; cursor: pointer; }
 
-.p-menu-list { width: 100%; display: flex; flex-direction: column; gap: 10px; }
-.p-menu-item { width: 100%; background: var(--card); border: none; color: #fff; padding: 20px; border-radius: 18px; display: flex; justify-content: space-between; font-weight: 700; transition: 0.2s; text-decoration: none; }
-.p-menu-item:active { transform: scale(0.97); background: #1a1a1a; }
+.profile-name { 
+  font-size: 28px; 
+  font-weight: 900; 
+  margin: 0; 
+  letter-spacing: -1px; 
+  color: #fff;
+}
 
+.profile-handle { 
+  color: #666; 
+  margin: 5px 0 25px 0; 
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.add-btn-main { 
+  background: #fff; 
+  color: #000; 
+  width: 100%; 
+  max-width: 320px; /* Чтобы на широких экранах кнопка не была слишком длинной */
+  padding: 18px; 
+  border-radius: 16px; 
+  font-weight: 900; 
+  font-size: 16px;
+  text-transform: uppercase;
+  border: none; 
+  margin-bottom: 25px; 
+  cursor: pointer; 
+  transition: transform 0.2s;
+}
+
+.add-btn-main:active { transform: scale(0.96); }
+
+.p-menu-list { 
+  width: 100%; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+}
+
+.p-menu-item { 
+  width: 100%; 
+  background: var(--card); 
+  border: 1px solid #1a1a1a; 
+  color: #fff; 
+  padding: 22px; 
+  border-radius: 20px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  font-weight: 800; 
+  font-size: 15px;
+  transition: 0.2s; 
+  text-decoration: none; 
+}
+
+.p-menu-item:active { 
+  transform: scale(0.98); 
+  background: #1a1a1a; 
+  border-color: #333;
+}
 /* 6. АДМИНКА И ФАЙЛЫ */
 .admin-header { display: flex; align-items: center; padding: 5px 0 15px 0; justify-content: space-between; width: 100%; }
 .back-area { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; background: rgba(255, 255, 255, 0.05); }
