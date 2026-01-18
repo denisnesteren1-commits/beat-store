@@ -546,8 +546,8 @@ function App() {
       
      {/* 1. НИЖНИЙ МИНИ-ПЛЕЕР */}
       {currentBeatId && (
-        <div className="mini-player">
-          {/* Только визуальное заполнение серым цветом */}
+        <div className="mini-player" style={{ cursor: 'default' }}>
+          {/* Визуальная заливка прогресса (серый прозрачный прямоугольник) */}
           <div 
             className="player-progress-fill" 
             style={{ width: `${progress}%` }}
@@ -556,7 +556,7 @@ function App() {
           <div className="mini-player-content">
             <img 
               src={beats.find(b => b.id === currentBeatId)?.image} 
-              alt="mini-cover" 
+              alt="cover" 
               className="mini-cover" 
             />
             
@@ -567,21 +567,30 @@ function App() {
               <div className="mini-author">Fresso</div>
             </div>
 
-            <div className="mini-controls">
+            <div className="mini-controls" style={{ position: 'relative', zIndex: 100 }}>
+              {/* Кнопка Лайка */}
               <button 
                 className="mini-btn mini-fav-btn" 
-                onClick={(e) => { e.stopPropagation(); toggleFav(currentBeatId); }}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  toggleFav(currentBeatId); 
+                }}
               >
                 {favorites.includes(currentBeatId) ? "❤️" : "🤍"}
               </button>
 
+              {/* Кнопка Плей/Пауза (Серые иконки) */}
               <button 
                 className="mini-btn mini-play-btn" 
-                onClick={(e) => { e.stopPropagation(); setIsPlaying(!isPlaying); }}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setIsPlaying(!isPlaying); 
+                }}
               >
                 {isPlaying ? "⏸" : "▶"}
               </button>
               
+              {/* Кнопка Закрыть (Серый крестик) */}
               <button 
                 className="mini-btn mini-close-btn" 
                 onClick={(e) => {
@@ -597,8 +606,8 @@ function App() {
           </div>
         </div>
       )}
-    </div> // Закрывает app-container
-  ); // Закрывает return
-} // Закрывает функцию App
+    </div> // Закрывает <div className="app-container">
+  ); // Закрывает return (
+} // Закрывает функцию function App() {
 
 export default App;
