@@ -201,10 +201,13 @@ function App() {
 
   return (
     <div className="app-container">
-      <header className="main-header">
-        <div className="logo">FRESSO</div>
-        <img src={userAvatar} className="header-avatar" onClick={() => setActiveTab('profile')} />
-      </header>
+      {/* 1. ШАПКА СКРЫВАЕТСЯ, ЕСЛИ МЫ В ПРОФИЛЕ ИЛИ АДМИНКЕ */}
+      {activeTab !== 'profile' && activeTab !== 'admin' && (
+        <header className="main-header">
+          <div className="logo">FRESSO</div>
+          <img src={userAvatar} className="header-avatar" onClick={() => setActiveTab('profile')} />
+        </header>
+      )}
 
       {(activeTab === 'shop' || activeTab === 'favs') && (
         <div className="page-content">
@@ -216,13 +219,15 @@ function App() {
             {beats.filter(b => activeTab === 'favs' ? favorites.includes(b.id) : true).map(beat => (
               <div key={beat.id} className="beat-card">
                 <div className="beat-cover" onClick={() => playBeat(beat)}>
-                  <img src={beat.image} />
+                  <img src={beat.image} alt="cover" />
                   <div className="play-ico">{currentBeatId === beat.id && isPlaying ? "⏸" : "▶"}</div>
                 </div>
                 <div className="beat-body">
                   <div className="beat-name-row">
                     <span>{beat.title}</span>
-                    <span onClick={() => toggleFav(beat.id)}>{favorites.includes(beat.id) ? "❤️" : "🤍"}</span>
+                    <span onClick={() => toggleFav(beat.id)} className="fav-heart">
+                      {favorites.includes(beat.id) ? "❤️" : "🤍"}
+                    </span>
                   </div>
                   <div className="beat-meta-row">{beat.bpm} BPM • {beat.key}</div>
                   <div className="prog-bar">
@@ -238,8 +243,8 @@ function App() {
 
       {activeTab === 'profile' && (
         <div className="profile-view">
-          {/* 1. Верхняя панель со стрелкой */}
-          <div className="admin-header" style={{ width: '100%', marginBottom: '20px' }}>
+          {/* 2. СТРЕЛКА И ЗАГОЛОВОК (БЕЗ ЛИШНИХ ОТСТУПОВ) */}
+          <div className="admin-header" style={{ width: '100%' }}>
             <div className="back-area" onClick={() => setActiveTab('shop')}>
               <span className="back-arrow">←</span>
             </div>
@@ -247,27 +252,23 @@ function App() {
             <div style={{ width: 44 }}></div>
           </div>
 
-          {/* 2. Аватарка */}
           <div className="avatar-circle" onClick={() => document.getElementById('avaInp').click()}>
             <img src={userAvatar} alt="avatar" />
             <input id="avaInp" type="file" hidden onChange={changeAvatar} />
           </div>
 
-          {/* 3. Инфо о юзере */}
           <h1 className="profile-name">{tg?.initDataUnsafe?.user?.first_name || "Fresso Producer"}</h1>
           <p className="profile-handle">@{tg?.initDataUnsafe?.user?.username || "fresso"}</p>
           
-          {/* 4. Кнопка админа */}
           <button className="add-btn-main" onClick={() => setActiveTab('admin')}>ДОБАВИТЬ БИТ</button>
           
-          {/* 5. Список меню */}
           <div className="p-menu-list">
             <button className="p-menu-item">ИСТОРИЯ ЗАКАЗОВ <span>📦</span></button>
             <button className="p-menu-item" onClick={() => window.open('https://t.me/Fr1sso')}>ПОДДЕРЖКА <span>💬</span></button>
           </div>
         </div>
       )}
-    </div> // Закрывает app-container
+    </div>
   );
 }
 

@@ -74,8 +74,11 @@ body {
   display: flex; 
   flex-direction: column; 
   align-items: center; 
-  padding: 20px; 
+  padding: 5px 20px 20px; /* Уменьшили верхний отступ с 20 до 5 */
   width: 100%;
+}
+  .p-back-btn { 
+  display: none; 
 }
 .avatar-circle {
   width: 120px;
@@ -84,7 +87,7 @@ body {
   border: 3px solid var(--accent);
   overflow: hidden;
   position: relative;
-  margin-bottom: 15px;
+  margin: 10px 0 15px 0; /* Уменьшили верхний margin */
   cursor: pointer;
   background: #111;
 }
@@ -111,8 +114,9 @@ body {
 .admin-header { 
   display: flex; 
   align-items: center; 
-  padding: 15px 20px; 
-  justify-content: space-between; 
+  padding: 5px 0 15px 0; /* Прижали к самому верху */
+  justify-content: space-between;
+  width: 100%;
 }
 
 /* Удобная кнопка назад */
