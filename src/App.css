@@ -91,56 +91,114 @@ body {
   padding: 8px 12px; background: rgba(46, 204, 113, 0.1); border-radius: 10px;
 }
 
-/* 4. НИЖНИЙ МИНИ-ПЛЕЕР (БЕЗ РАМОК И ТРЕУГОЛЬНИКОВ) */
+/* 4. НИЖНИЙ МИНИ-ПЛЕЕР (ФИНАЛЬНАЯ ИСПРАВЛЕННАЯ ВЕРСИЯ) */
 .mini-player {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(25px);
-  border-top: 1px solid #1a1a1a; z-index: 1000;
-  height: 75px; display: flex; align-items: center; overflow: hidden;
+  position: fixed; 
+  bottom: 0; left: 0; right: 0;
+  background: rgba(10, 10, 10, 0.98); 
+  backdrop-filter: blur(25px);
+  border-top: 1px solid #1a1a1a; 
+  z-index: 1000;
+  height: 75px; 
+  display: flex; 
+  align-items: center; 
+  overflow: hidden;
 }
 
-/* Фоновая заливка (не мешает кликам) */
+/* Фоновая заливка — z-index: 1 */
 .player-progress-fill {
-  position: absolute; top: 0; left: 0; bottom: 0;
+  position: absolute; 
+  top: 0; left: 0; bottom: 0;
   background: rgba(255, 255, 255, 0.05); 
-  z-index: 1; pointer-events: none; transition: width 0.3s linear;
+  z-index: 1; 
+  pointer-events: none; 
+  transition: width 0.3s linear;
 }
 
+/* Контент — z-index: 10 */
 .mini-player-content { 
-  position: relative; z-index: 2; 
-  display: flex; align-items: center; width: 100%;
-  padding: 0 20px; gap: 12px; pointer-events: none; /* Клик проходит сквозь контейнер */
+  position: relative; 
+  z-index: 10; 
+  display: flex; 
+  align-items: center; 
+  width: 100%;
+  padding: 0 20px; 
+  gap: 12px; 
+  /* Убираем здесь pointer-events: none, если он мешает кнопкам */
 }
-
-/* Возвращаем кликабельность кнопкам и инфо */
-.mini-info, .mini-controls, .mini-cover { pointer-events: auto; }
 
 .mini-cover { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
-.mini-info { flex: 1; overflow: hidden; }
-.mini-title { font-size: 14px; font-weight: 800; color: #fff; }
-.mini-author { font-size: 11px; color: #444; text-transform: uppercase; }
 
-/* Кнопки плеера (Серые, без обводок) */
-.mini-controls { display: flex; align-items: center; gap: 10px; }
+.mini-info { 
+  flex: 1; 
+  overflow: hidden; 
+  pointer-events: none; /* Текст не должен мешать кликать по кнопкам рядом */
+}
+
+.mini-title { font-size: 14px; font-weight: 800; color: #fff; white-space: nowrap; }
+.mini-author { font-size: 11px; color: #555; text-transform: uppercase; }
+
+/* Кнопки — z-index: 20 */
+.mini-controls { 
+  display: flex; 
+  align-items: center; 
+  gap: 5px; 
+  position: relative;
+  z-index: 20; 
+}
 
 .mini-btn {
-  background: none !important; border: none !important; 
-  outline: none !important; box-shadow: none !important;
-  color: #888; cursor: pointer; display: flex; 
-  align-items: center; justify-content: center;
-  padding: 10px; transition: 0.2s;
+  background: none !important; 
+  border: none !important; 
+  outline: none !important; 
+  box-shadow: none !important;
+  color: #888 !important; /* Строго серый для всех кнопок */
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  padding: 10px; 
+  transition: 0.2s;
   -webkit-tap-highlight-color: transparent;
 }
 
-.mini-btn:active { transform: scale(0.9); color: #fff; }
+/* Плеер и Пауза — Единый стиль и цвет */
+.mini-btn {
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #888 !important; /* Строго серый для всех кнопок */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  transition: 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
 
-.mini-play-btn { font-size: 24px; color: #bbb; } /* Плей чуть светлее */
-.mini-fav-btn { font-size: 20px; }
-.mini-close-btn { font-size: 22px; font-weight: 300; }
+/* Выравниваем размеры иконок, чтобы они смотрелись гармонично */
+.mini-play-btn { 
+  font-size: 24px !important; 
+  color: #888 !important; 
+}
 
-@keyframes smooth-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.4); opacity: 0.3; }
+.mini-fav-btn { 
+  font-size: 19px !important; 
+  color: #888 !important; 
+}
+
+.mini-close-btn { 
+  font-size: 20px !important; 
+  font-weight: 300; 
+  color: #888 !important; 
+}
+
+/* Эффект при нажатии: кнопка становится чисто белой и немного уменьшается */
+.mini-btn:active { 
+  transform: scale(0.85); 
+  color: #ffffff !important; 
 }
 /* 5. ПРОФИЛЬ — Полная центровка и жирные шрифты */
 .profile-view { 

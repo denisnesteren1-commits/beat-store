@@ -58,6 +58,15 @@ function App() {
     });
   }, []);
 
+  // ГЛАВНЫЙ ЭФФЕКТ ПЛЕЕРА: Управляет проигрыванием/паузой
+  useEffect(() => {
+    if (isPlaying) {
+      audioRef.current.play().catch(err => console.log("Ошибка воспроизведения:", err));
+    } else {
+      audioRef.current.pause();
+    }
+  }, [isPlaying, currentBeatId]); // Срабатывает при смене трека или нажатии паузы
+
   // Синхронизация "Любимых" с памятью телефона
   useEffect(() => {
     localStorage.setItem('fresso_favs', JSON.stringify(favorites));
@@ -66,14 +75,22 @@ function App() {
   // Логика работы прогресс-бара плеера
   useEffect(() => {
     const audio = audioRef.current;
-    const updateProgress = () => setProgress((audio.currentTime / audio.duration) * 100 || 0);
+    const updateProgress = () => {
+      const val = (audio.currentTime / audio.duration) * 100 || 0;
+      setProgress(val);
+    };
     audio.addEventListener('timeupdate', updateProgress);
-    return () => audio.removeEventListener('timeupdate', updateProgress);
+    // Автоматическое переключение в режим "Пауза", когда трек доиграл до конца
+    audio.addEventListener('ended', () => setIsPlaying(false));
+    
+    return () => {
+      audio.removeEventListener('timeupdate', updateProgress);
+      audio.removeEventListener('ended', () => setIsPlaying(false));
+    };
   }, []);
 
   // ЗАГРУЗКА: Черновик и Покупки
   useEffect(() => {
-    // 1. Восстанавливаем черновик админки
     const savedDraft = localStorage.getItem('fresso_draft');
     if (savedDraft) {
       const d = JSON.parse(savedDraft);
@@ -85,18 +102,15 @@ function App() {
       setPrices(d.prices || { mp3: '', wav: '', stems: '', excl: '' });
     }
 
-    // 2. Подписываемся на покупки (у каждого свои)
     const currentUserId = tg?.initDataUnsafe?.user?.id || 856199923;
     const q = query(collection(db, "purchases"), orderBy("date", "desc"));
-
     const unsub = onSnapshot(q, (snap) => {
       const allPurchases = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const userPurchases = allPurchases.filter(p => Number(p.userId) === Number(currentUserId));
       setMyPurchases(userPurchases);
     });
-
     return () => unsub();
-  }, []); // Тут закрывается общий эффект загрузки
+  }, []);
 
   // АВТОСОХРАНЕНИЕ: Черновик
   useEffect(() => {
@@ -154,16 +168,17 @@ function App() {
   };
 
   const playBeat = (beat) => {
-    if (currentBeatId === beat.id) {
-      isPlaying ? audioRef.current.pause() : audioRef.current.play();
-      setIsPlaying(!isPlaying);
-    } else {
-      audioRef.current.src = beat.audio;
-      audioRef.current.play();
-      setCurrentBeatId(beat.id);
-      setIsPlaying(true);
-    }
-  };
+  if (currentBeatId === beat.id) {
+    // Если нажат тот же бит — просто переключаем паузу
+    setIsPlaying(!isPlaying);
+  } else {
+    // Если новый бит — меняем источник и включаем
+    audioRef.current.src = beat.audio;
+    setCurrentBeatId(beat.id);
+    setIsPlaying(true);
+    // audioRef.current.play(); // Эту строку можно убрать, так как сработает useEffect выше
+  }
+};
 
   const handleSeek = (e) => {
     const seekTime = (e.target.value / 100) * audioRef.current.duration;
