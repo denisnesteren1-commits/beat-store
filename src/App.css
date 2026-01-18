@@ -263,39 +263,46 @@ body {
   transform: scale(0.96);
   opacity: 0.9;
 }
-/* Контейнер для иконок */
+/* --- ОБНОВЛЕННЫЙ БЛОК СОЦСЕТЕЙ --- */
+.social-container-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+}
+
 .social-grid {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap; /* Чтобы иконки переносились, если их много */
-  gap: 12px;
-  margin: 20px 0;
-  padding: 0 10px;
+  gap: 15px;
 }
 
 .social-item {
-  width: 48px; /* Чуть увеличим для удобства нажатия пальцем */
-  height: 48px;
-  background: rgba(255, 255, 255, 0.03);
+  width: 55px; 
+  height: 55px;
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 26px;
   color: #fff;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Цвета при наведении (для ПК) или нажатии */
-.fa-telegram:hover { color: #0088cc; }
-.fa-tiktok:hover { color: #ff0050; }
+/* Фирменные цвета при нажатии */
+.social-item.tiktok:active     { color: #ff0050; border-color: #ff0050; box-shadow: 0 0 15px rgba(255, 0, 80, 0.3); }
+.social-item.youtube:active    { color: #ff0000; border-color: #ff0000; box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); }
+.social-item.instagram:active  { color: #e1306c; border-color: #e1306c; box-shadow: 0 0 15px rgba(225, 48, 108, 0.3); }
+.social-item.soundcloud:active { color: #ff5500; border-color: #ff5500; box-shadow: 0 0 15px rgba(255, 85, 0, 0.3); }
+.social-item.telegram:active   { color: #0088cc; border-color: #0088cc; box-shadow: 0 0 15px rgba(0, 136, 204, 0.3); }
+.social-item.vk:active         { color: #0077ff; border-color: #0077ff; box-shadow: 0 0 15px rgba(0, 119, 255, 0.3); }
 
-/* Эффект при клике в Telegram */
 .social-item:active {
-  transform: scale(0.9);
-  background: #222;
-  border-color: var(--accent); /* Цвет акцента, если он у тебя задан */
+  transform: scale(0.85);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Контейнер для фото и текста внутри карточки */

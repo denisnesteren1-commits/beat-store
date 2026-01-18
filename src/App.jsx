@@ -434,41 +434,37 @@ function App() {
 
           <h1 className="profile-name">{tg?.initDataUnsafe?.user?.first_name || "Fresso Producer"}</h1>
           <p className="profile-handle">@{tg?.initDataUnsafe?.user?.username || "fresso"}</p>
-          <div className="social-grid">
-          <div className="social-item" onClick={() => window.open('https://vk.com/fr1sso')}>
-            <i className="fa-brands fa-vk"></i>
+          {/* СОЦИАЛЬНЫЕ СЕТИ В ДВА РЯДА С ЦВЕТАМИ */}
+          <div className="social-container-main">
+            {/* Первый ряд */}
+            <div className="social-grid">
+              <div className="social-item tiktok" onClick={() => window.open('https://www.tiktok.com/@fresso10?_r=1&_t=ZS-93Addee28Pf')}>
+                <i className="fa-brands fa-tiktok"></i>
+              </div>
+              <div className="social-item youtube" onClick={() => window.open('https://youtube.com/@fressobeats3787')}>
+                <i className="fa-brands fa-youtube"></i>
+              </div>
+              <div className="social-item instagram" onClick={() => window.open('https://www.instagram.com/fresso.beatzzz')}>
+                <i className="fa-brands fa-instagram"></i>
+              </div>
+            </div>
+
+            {/* Второй ряд */}
+            <div className="social-grid">
+              <div className="social-item soundcloud" onClick={() => window.open('https://soundcloud.com/de-nys-nes321')}>
+                <i className="fa-brands fa-soundcloud"></i>
+              </div>
+              <div className="social-item telegram" onClick={() => window.open('https://t.me/fresso1')}>
+                <i className="fa-brands fa-telegram"></i>
+              </div>
+              <div className="social-item vk" onClick={() => window.open('https://vk.com/fr1sso')}>
+                <i className="fa-brands fa-vk"></i>
+              </div>
+            </div>
           </div>
-          <div className="social-item" onClick={() => window.open('https://www.instagram.com/fresso.beatzzz')}>
-            <i className="fa-brands fa-instagram"></i>
-          </div>
-          <div className="social-item" onClick={() => window.open('https://soundcloud.com/de-nys-nes321')}>
-            <i className="fa-brands fa-soundcloud"></i>
-          </div>
-          <div className="social-item" onClick={() => window.open('https://youtube.com/@fressobeats3787')}>
-            <i className="fa-brands fa-youtube"></i>
-          </div>
-        </div><div className="social-grid">
-        <div className="social-item" onClick={() => window.open('https://vk.com/fr1sso')}>
-          <i className="fa-brands fa-vk"></i>
-        </div>
-        <div className="social-item" onClick={() => window.open('https://www.instagram.com/fresso.beatzzz')}>
-          <i className="fa-brands fa-instagram"></i>
-        </div>
-        <div className="social-item" onClick={() => window.open('https://soundcloud.com/de-nys-nes321')}>
-          <i className="fa-brands fa-soundcloud"></i>
-        </div>
-        <div className="social-item" onClick={() => window.open('https://youtube.com/@fressobeats3787')}>
-          <i className="fa-brands fa-youtube"></i>
-        </div>
-        {/* НОВЫЕ: Телеграм и ТикТок */}
-        <div className="social-item" onClick={() => window.open('https://t.me/fresso1')}>
-          <i className="fa-brands fa-telegram"></i>
-        </div>
-        <div className="social-item" onClick={() => window.open('https://www.tiktok.com/@fresso10?_r=1&_t=ZS-93Addee28Pf')}>
-          <i className="fa-brands fa-tiktok"></i>
-        </div>
-      </div>
-          {tg?.initDataUnsafe?.user?.id === 856199923 && (
+
+          {/* КНОПКА АДМИНА (ТОЛЬКО ДЛЯ ТЕБЯ) */}
+          {Number(tg?.initDataUnsafe?.user?.id) === 856199923 && (
             <button className="add-btn-main" onClick={() => setActiveTab('admin')}>
               ДОБАВИТЬ БИТ
             </button>
