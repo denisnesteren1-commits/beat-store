@@ -410,17 +410,13 @@ function App() {
                       {favorites.includes(beat.id) ? "❤️" : "🤍"}
                     </span>
                   </div>
-                  <div className="beat-meta-row">{beat.bpm} BPM • {beat.key}</div>
-                  <div className="prog-container" onClick={(e) => e.stopPropagation()}>
-                  <input
-                    type="range"
-                    className="fresso-slider"
-                    value={currentBeatId === beat.id ? progress : 0}
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    onChange={handleSeek}
-                  />
+                  <div className="beat-status-row">
+                  {currentBeatId === beat.id && isPlaying ? (
+                    <div className="playing-dot"></div>
+                  ) : (
+                    <div className="idle-dot"></div>
+                  )}
+                  <div className="beat-meta-row" style={{margin: 0}}>{beat.bpm} BPM • {beat.key}</div>
                 </div>
                 </div>
                 <div className="beat-buy-btn">${beat.priceMp3}</div>
@@ -549,8 +545,36 @@ function App() {
           )}
         </div>
       )}
-    </div>
+      {/* ... здесь заканчивается блок с покупками или профилем ... */}
+      
+      {/* 1. НИЖНИЙ ПЛЕЕР */}
+      {currentBeatId && (
+        <div className="mini-player">
+          <div className="mini-player-prog-container">
+            <input
+              type="range"
+              className="fresso-slider"
+              value={progress}
+              min="0"
+              max="100"
+              step="0.1"
+              onChange={handleSeek}
+            />
+          </div>
+          <div className="mini-player-content">
+            <img src={beats.find(b => b.id === currentBeatId)?.image} alt="mini-cover" className="mini-cover" />
+            <div className="mini-info">
+              <div className="mini-title">{beats.find(b => b.id === currentBeatId)?.title}</div>
+              <div className="mini-author">Fresso</div>
+            </div>
+            <button className="mini-play-btn" onClick={() => setIsPlaying(!isPlaying)}>
+              {isPlaying ? (tg ? "⏸" : "Pause") : (tg ? "▶" : "Play")}
+            </button>
+          </div>
+        </div>
+      )}
+    </div> // Закрывает app-container
   );
-}
+} // Закрывает функцию App
 
-export default App;
+export default App; // Последняя строка файла
