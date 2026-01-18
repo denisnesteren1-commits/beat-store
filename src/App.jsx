@@ -23,17 +23,19 @@ function App() {
   const [title, setTitle] = useState('');
   const [bpm, setBpm] = useState('');
   const [key, setKey] = useState('C');
-  const [genre, setGenre] = useState(''); // НОВОЕ
-  const [prices, setPrices] = useState({ mp3: '', wav: '', stems: '', excl: '' }); // ОБНОВЛЕНО
+  const [genre, setGenre] = useState(''); 
+  const [tags, setTags] = useState(''); // НОВОЕ ПОЛЕ
+  const [prices, setPrices] = useState({ mp3: '', wav: '', stems: '', excl: '' });
   
-  // Файлы для загрузки
+  // Файлы
   const [coverFile, setCoverFile] = useState(null);
   const [mp3File, setMp3File] = useState(null);
   const [wavFile, setWavFile] = useState(null);
   const [zipFile, setZipFile] = useState(null);
-  const [exclFile, setExclFile] = useState(null); // НОВОЕ
+  const [exclFile, setExclFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0); // НОВОЕ
+  const [uploadProgress, setUploadProgress] = useState(0);
+
 
   // Плеер
   const [currentBeatId, setCurrentBeatId] = useState(null);
@@ -136,6 +138,24 @@ function App() {
     }, 50);
     return interval;
   };
+
+  const resetForm = () => {
+    setTitle('');
+    setBpm('');
+    setKey('C');
+    setGenre('');
+    setTags('');
+    setPrices({ mp3: '', wav: '', stems: '', excl: '' });
+    setCoverFile(null);
+    setMp3File(null);
+    setWavFile(null);
+    setZipFile(null);
+    setExclFile(null);
+    setCoverPreview(null);
+    // Сбрасываем сами инпуты (чтобы визуально очистить выбор файлов)
+    document.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
+  };
+
   const handlePublish = async () => {
     if (!title || !coverFile || !mp3File) return alert("Заполни базу: Название, Фото и MP3!");
     setUploading(true);
@@ -155,21 +175,23 @@ function App() {
       clearInterval(progressInterval); // Останавливаем имитацию
       setUploadProgress(90); // Файлы загружены
 
+      // ... внутри handlePublish в блоке try ...
       await addDoc(collection(db, "beats"), {
-        title, bpm, key, genre,
+        title, bpm, key, genre, tags, // Добавили tags
         image: img, audio: mp3, wavUrl: wav, zipUrl: zip, exclUrl: excl,
         priceMp3: prices.mp3, priceWav: prices.wav, 
         priceStems: prices.stems, priceExcl: prices.excl,
         createdAt: new Date()
       });
 
-      setUploadProgress(100); // Всё готово
+      setUploadProgress(100);
       
       setTimeout(() => {
         setUploading(false); 
         setActiveTab('shop');
         setUploadProgress(0);
-        if(tg) tg.HapticFeedback.notificationOccurred('success'); // Вибрация успеха
+        resetForm(); // <--- ВОТ ЭТО ОЧИСТИТ ФОРМУ
+        if(tg) tg.HapticFeedback.notificationOccurred('success');
       }, 600);
 
     } catch (e) { 
@@ -206,19 +228,34 @@ function App() {
             }} />
           </div>
 
-          <input className="fresso-input" placeholder="Название" onChange={e => setTitle(e.target.value)} />
-          <input className="fresso-input" placeholder="Жанр / Тэги" onChange={e => setGenre(e.target.value)} />
-          
+          {/* Секция текстовых полей */}
+          <input 
+            className="fresso-input" 
+            placeholder="Название" 
+            value={title} 
+            onChange={e => setTitle(e.target.value)} 
+          />
+          <input 
+            className="fresso-input" 
+            placeholder="Жанр (например, Trap)" 
+            value={genre} 
+            onChange={e => setGenre(e.target.value)} 
+          />
+          <input 
+            className="fresso-input" 
+            placeholder="Тэги (через запятую)" 
+            value={tags} 
+            onChange={e => setTags(e.target.value)} 
+          />          
           <div className="fresso-row">
-            <input className="fresso-input" placeholder="BPM" onChange={e => setBpm(e.target.value)} />
-            <input className="fresso-input" placeholder="Key" onChange={e => setKey(e.target.value)} />
-          </div>
+            <input className="fresso-input" placeholder="BPM" value={bpm} onChange={e => setBpm(e.target.value)} />
+            <input className="fresso-input" placeholder="Key" value={key} onChange={e => setKey(e.target.value)} />          </div>
 
           <div className="price-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <input className="fresso-input" placeholder="MP3 $" onChange={e => setPrices({...prices, mp3: e.target.value})} />
-            <input className="fresso-input" placeholder="WAV $" onChange={e => setPrices({...prices, wav: e.target.value})} />
-            <input className="fresso-input" placeholder="STEMS $" onChange={e => setPrices({...prices, stems: e.target.value})} />
-            <input className="fresso-input" placeholder="EXCL $" onChange={e => setPrices({...prices, excl: e.target.value})} />
+            <input className="fresso-input" placeholder="MP3 $" value={prices.mp3} onChange={e => setPrices({...prices, mp3: e.target.value})} />
+            <input className="fresso-input" placeholder="WAV $" value={prices.wav} onChange={e => setPrices({...prices, wav: e.target.value})} />
+            <input className="fresso-input" placeholder="STEMS $" value={prices.stems} onChange={e => setPrices({...prices, stems: e.target.value})} />
+            <input className="fresso-input" placeholder="EXCL $" value={prices.excl} onChange={e => setPrices({...prices, excl: e.target.value})} />
           </div>
 
           <div className="file-selectors">
