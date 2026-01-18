@@ -62,6 +62,25 @@ function App() {
     audio.addEventListener('timeupdate', updateProgress);
     return () => audio.removeEventListener('timeupdate', updateProgress);
   }, []);
+    // Эффект 1: Загрузка черновика при самом первом запуске
+  useEffect(() => {
+    const saved = localStorage.getItem('fresso_draft');
+    if (saved) {
+      const d = JSON.parse(saved);
+      setTitle(d.title || '');
+      setBpm(d.bpm || '');
+      setKey(d.key || 'C');
+      setGenre(d.genre || '');
+      setTags(d.tags || '');
+      setPrices(d.prices || { mp3: '', wav: '', stems: '', excl: '' });
+    }
+  }, []);
+
+  // Эффект 2: Сохранение черновика при каждом изменении полей
+  useEffect(() => {
+    const draft = { title, bpm, key, genre, tags, prices };
+    localStorage.setItem('fresso_draft', JSON.stringify(draft));
+  }, [title, bpm, key, genre, tags, prices]);
 
   // 3. ВСЕ ФУНКЦИИ (FUNCTIONS)
   
@@ -154,6 +173,7 @@ function App() {
     setCoverPreview(null);
     // Сбрасываем сами инпуты (чтобы визуально очистить выбор файлов)
     document.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
+    localStorage.removeItem('fresso_draft'); 
   };
 
   const handlePublish = async () => {
@@ -259,30 +279,45 @@ function App() {
           </div>
 
           <div className="file-selectors">
-            <div className={`file-row ${mp3File ? 'ready' : ''}`} onClick={() => document.getElementById('f1').click()}>
-              <span className="file-status">{mp3File ? "✅" : "📁"}</span>
-              <span className="file-name">MP3 С ТЭГОМ</span>
-              <input id="f1" type="file" accept="audio/*" hidden onChange={e => setMp3File(e.target.files[0])} />
-            </div>
+  {[
+    { id: 'f1', label: 'MP3 С ТЭГОМ', file: mp3File, set: setMp3File, accept: "audio/*" },
+    { id: 'f2', label: 'WAV БЕЗ ТЭГА', file: wavFile, set: setWavFile, accept: "audio/*" },
+    { id: 'f3', label: 'ZIP TRACKOUT', file: zipFile, set: setZipFile, accept: "*" },
+    { id: 'f4', label: 'ZIP EXCLUSIVE', file: exclFile, set: setExclFile, accept: "*" },
+  ].map((item) => (
+    <div key={item.id} className={`file-row ${item.file ? 'ready' : ''}`} style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px' }}>
+      
+      {/* Клик по этой части откроет выбор, только если файл еще НЕ выбран */}
+      <div 
+        style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer' }}
+        onClick={() => !item.file && document.getElementById(item.id).click()}
+      >
+        <span className="file-status">{item.file ? "✅" : "📁"}</span>
+        <span className="file-name" style={{ fontSize: '12px' }}>
+           {item.file ? item.file.name.substring(0, 15) + '...' : item.label}
+        </span>
+      </div>
 
-            <div className={`file-row ${wavFile ? 'ready' : ''}`} onClick={() => document.getElementById('f2').click()}>
-              <span className="file-status">{wavFile ? "✅" : "📁"}</span>
-              <span className="file-name">WAV БЕЗ ТЭГА</span>
-              <input id="f2" type="file" accept="audio/*" hidden onChange={e => setWavFile(e.target.files[0])} />
-            </div>
+      {/* Кнопка замены появляется только если файл уже есть */}
+      {item.file && (
+        <div 
+          onClick={() => document.getElementById(item.id).click()}
+          style={{ padding: '5px 10px', cursor: 'pointer', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '16px' }}
+        >
+          🔄
+        </div>
+      )}
 
-            <div className={`file-row ${zipFile ? 'ready' : ''}`} onClick={() => document.getElementById('f3').click()}>
-              <span className="file-status">{zipFile ? "✅" : "📁"}</span>
-              <span className="file-name">ZIP TRACKOUT</span>
-              <input id="f3" type="file" hidden onChange={e => setZipFile(e.target.files[0])} />
-            </div>
-
-            <div className={`file-row ${exclFile ? 'ready' : ''}`} onClick={() => document.getElementById('f4').click()}>
-              <span className="file-status">{exclFile ? "✅" : "📁"}</span>
-              <span className="file-name">ZIP EXCLUSIVE</span>
-              <input id="f4" type="file" hidden onChange={e => setExclFile(e.target.files[0])} />
-            </div>
-          </div>
+      <input 
+        id={item.id} 
+        type="file" 
+        accept={item.accept} 
+        hidden 
+        onChange={e => e.target.files[0] && item.set(e.target.files[0])} 
+      />
+    </div>
+  ))}
+</div>
 
           {uploading && (
             <div style={{ marginBottom: 20 }}>
