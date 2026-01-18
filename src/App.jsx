@@ -434,9 +434,26 @@ function App() {
 
           <h1 className="profile-name">{tg?.initDataUnsafe?.user?.first_name || "Fresso Producer"}</h1>
           <p className="profile-handle">@{tg?.initDataUnsafe?.user?.username || "fresso"}</p>
-          {/* СОЦИАЛЬНЫЕ СЕТИ В ДВА РЯДА С ЦВЕТАМИ */}
+
+          {/* КНОПКА АДМИНА (ТОЛЬКО ДЛЯ ТЕБЯ) */}
+          {Number(tg?.initDataUnsafe?.user?.id) === 856199923 && (
+            <button className="add-btn-main" onClick={() => setActiveTab('admin')}>
+              ДОБАВИТЬ БИТ
+            </button>
+          )}
+
+          {/* МЕНЮ КНОПОК */}
+          <div className="p-menu-list">
+            <button className="p-menu-item" onClick={() => setActiveTab('my_purchases')}>
+              МОИ ПОКУПКИ <span>🎹</span>
+            </button>
+            <button className="p-menu-item" onClick={() => window.open('https://t.me/Fr1sso')}>
+              ПОДДЕРЖКА <span>💬</span>
+            </button>
+          </div>
+
+          {/* СОЦИАЛЬНЫЕ СЕТИ ТЕПЕРЬ В САМОМ НИЗУ */}
           <div className="social-container-main">
-            {/* Первый ряд */}
             <div className="social-grid">
               <div className="social-item tiktok" onClick={() => window.open('https://www.tiktok.com/@fresso10?_r=1&_t=ZS-93Addee28Pf')}>
                 <i className="fa-brands fa-tiktok"></i>
@@ -449,7 +466,6 @@ function App() {
               </div>
             </div>
 
-            {/* Второй ряд */}
             <div className="social-grid">
               <div className="social-item soundcloud" onClick={() => window.open('https://soundcloud.com/de-nys-nes321')}>
                 <i className="fa-brands fa-soundcloud"></i>
@@ -461,20 +477,6 @@ function App() {
                 <i className="fa-brands fa-vk"></i>
               </div>
             </div>
-          </div>
-
-          {/* КНОПКА АДМИНА (ТОЛЬКО ДЛЯ ТЕБЯ) */}
-          {Number(tg?.initDataUnsafe?.user?.id) === 856199923 && (
-            <button className="add-btn-main" onClick={() => setActiveTab('admin')}>
-              ДОБАВИТЬ БИТ
-            </button>
-          )}
-
-          <div className="p-menu-list">
-            <button className="p-menu-item" onClick={() => setActiveTab('my_purchases')}>
-              МОИ ПОКУПКИ <span>🎹</span>
-            </button>
-            <button className="p-menu-item" onClick={() => window.open('https://t.me/Fr1sso')}>ПОДДЕРЖКА <span>💬</span></button>
           </div>
         </div>
       )}
