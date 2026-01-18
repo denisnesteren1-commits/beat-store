@@ -15,6 +15,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('shop');
   const [beats, setBeats] = useState([]);
   const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('fresso_favs')) || []);
+  const [myPurchases, setMyPurchases] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [userAvatar, setUserAvatar] = useState(
   localStorage.getItem('user_ava') || tg?.initDataUnsafe?.user?.photo_url || "https://via.placeholder.com/150"
@@ -44,29 +45,38 @@ function App() {
   const audioRef = useRef(new Audio());
 
   // 2. ЭФФЕКТЫ (EFFECTS)
+  
+  // Инициализация Telegram и загрузка основного списка битов
   useEffect(() => {
-    if (tg) { tg.ready(); tg.expand(); }
+    if (tg) { 
+      tg.ready(); 
+      tg.expand(); 
+    }
     const q = query(collection(db, "beats"), orderBy("createdAt", "desc"));
     return onSnapshot(q, (snap) => {
       setBeats(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
   }, []);
 
+  // Синхронизация "Любимых" с памятью телефона
   useEffect(() => {
     localStorage.setItem('fresso_favs', JSON.stringify(favorites));
   }, [favorites]);
 
+  // Логика работы прогресс-бара плеера
   useEffect(() => {
     const audio = audioRef.current;
     const updateProgress = () => setProgress((audio.currentTime / audio.duration) * 100 || 0);
     audio.addEventListener('timeupdate', updateProgress);
     return () => audio.removeEventListener('timeupdate', updateProgress);
   }, []);
-    // Эффект 1: Загрузка черновика при самом первом запуске
+
+  // ЗАГРУЗКА: Черновик (Draft) и Покупки (Purchases) при старте
   useEffect(() => {
-    const saved = localStorage.getItem('fresso_draft');
-    if (saved) {
-      const d = JSON.parse(saved);
+    // 1. Восстанавливаем черновик админки
+    const savedDraft = localStorage.getItem('fresso_draft');
+    if (savedDraft) {
+      const d = JSON.parse(savedDraft);
       setTitle(d.title || '');
       setBpm(d.bpm || '');
       setKey(d.key || 'C');
@@ -74,9 +84,22 @@ function App() {
       setTags(d.tags || '');
       setPrices(d.prices || { mp3: '', wav: '', stems: '', excl: '' });
     }
+
+    // 2. Подписываемся на покупки пользователя
+    const userId = tg?.initDataUnsafe?.user?.id;
+    if (userId) {
+      const q = query(collection(db, "purchases"), orderBy("date", "desc"));
+      const unsub = onSnapshot(q, (snap) => {
+        const userPurchases = snap.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(p => p.userId === userId);
+        setMyPurchases(userPurchases);
+      });
+      return () => unsub();
+    }
   }, []);
 
-  // Эффект 2: Сохранение черновика при каждом изменении полей
+  // АВТОСОХРАНЕНИЕ: Черновик при каждом изменении полей
   useEffect(() => {
     const draft = { title, bpm, key, genre, tags, prices };
     localStorage.setItem('fresso_draft', JSON.stringify(draft));
@@ -351,16 +374,17 @@ function App() {
     );
   }
 
-  return (
+ return (
     <div className="app-container">
-      {/* 1. ШАПКА СКРЫВАЕТСЯ, ЕСЛИ МЫ В ПРОФИЛЕ ИЛИ АДМИНКЕ */}
-      {activeTab !== 'profile' && activeTab !== 'admin' && (
+      {/* 1. ШАПКА */}
+      {activeTab !== 'profile' && activeTab !== 'admin' && activeTab !== 'my_purchases' && (
         <header className="main-header">
           <div className="logo">FRESSO</div>
-          <img src={userAvatar} className="header-avatar" onClick={() => setActiveTab('profile')} />
+          <img src={userAvatar} className="header-avatar" onClick={() => setActiveTab('profile')} alt="avatar" />
         </header>
       )}
 
+      {/* 2. МАГАЗИН И ЛЮБИМЫЕ */}
       {(activeTab === 'shop' || activeTab === 'favs') && (
         <div className="page-content">
           <div className="tab-menu">
@@ -393,9 +417,9 @@ function App() {
         </div>
       )}
 
+      {/* 3. ПРОФИЛЬ */}
       {activeTab === 'profile' && (
         <div className="profile-view">
-          {/* 2. СТРЕЛКА И ЗАГОЛОВОК (БЕЗ ЛИШНИХ ОТСТУПОВ) */}
           <div className="admin-header" style={{ width: '100%' }}>
             <div className="back-area" onClick={() => setActiveTab('shop')}>
               <span className="back-arrow">←</span>
@@ -412,21 +436,59 @@ function App() {
           <h1 className="profile-name">{tg?.initDataUnsafe?.user?.first_name || "Fresso Producer"}</h1>
           <p className="profile-handle">@{tg?.initDataUnsafe?.user?.username || "fresso"}</p>
           
-          {/* 4. Кнопка админа (появится только если ID совпадает) */}
-{tg?.initDataUnsafe?.user?.id === 856199923 && (
-  <button className="add-btn-main" onClick={() => setActiveTab('admin')}>
-    ДОБАВИТЬ БИТ
-  </button>
-)}
+          {tg?.initDataUnsafe?.user?.id === 856199923 && (
+            <button className="add-btn-main" onClick={() => setActiveTab('admin')}>
+              ДОБАВИТЬ БИТ
+            </button>
+          )}
           
           <div className="p-menu-list">
-            <button className="p-menu-item">ИСТОРИЯ ЗАКАЗОВ <span>📦</span></button>
+            <button className="p-menu-item" onClick={() => setActiveTab('my_purchases')}>
+              МОИ ПОКУПКИ <span>🎹</span>
+            </button>
             <button className="p-menu-item" onClick={() => window.open('https://t.me/Fr1sso')}>ПОДДЕРЖКА <span>💬</span></button>
           </div>
+        </div>
+      )}
+
+      {/* 4. МОИ ПОКУПКИ */}
+      {activeTab === 'my_purchases' && (
+        <div className="purchases-view">
+          <div className="admin-header" style={{ width: '100%' }}>
+            <div className="back-area" onClick={() => setActiveTab('profile')}>
+              <span className="back-arrow">←</span>
+            </div>
+            <div className="admin-title">МОИ ПОКУПКИ</div>
+            <div style={{ width: 44 }}></div>
+          </div>
+
+          {myPurchases.length === 0 ? (
+            <div className="empty-state">
+              <p>У вас пока нет купленных битов 🎶</p>
+              <button className="shop-now-btn" onClick={() => setActiveTab('shop')}>
+                ВЫБРАТЬ БИТ
+              </button>
+            </div>
+          ) : (
+            <div className="purchases-list" style={{ marginTop: '20px' }}>
+              {myPurchases.map((pur) => (
+                <div key={pur.id} className="purchase-card">
+                  <div className="pur-header">
+                    <span className="pur-title">{pur.beatTitle}</span>
+                    <span className="pur-license">{pur.licenseName}</span>
+                  </div>
+                  <div className="pur-meta">
+                    BPM: {pur.bpm} • KEY: {pur.key}
+                  </div>
+                  <button className="download-btn" onClick={() => window.open(pur.fileUrl)}>
+                    СКАЧАТЬ ФАЙЛ ⬇️
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
-
-export default App;

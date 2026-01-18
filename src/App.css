@@ -180,6 +180,89 @@ body {
   70% { box-shadow: 0 0 0 10px rgba(255, 51, 51, 0); }
   100% { box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); }
 }
+/* 8. МОИ ПОКУПКИ */
+.purchases-view {
+  padding: 0 20px;
+  width: 100%;
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 50px;
+  color: #666;
+}
+
+.empty-state p {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.shop-now-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.purchase-card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #222;
+}
+
+.pur-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.pur-title {
+  font-weight: 800;
+  font-size: 17px;
+}
+
+.pur-license {
+  font-size: 10px;
+  background: rgba(255, 51, 51, 0.1);
+  color: var(--accent);
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
+.pur-meta {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+.download-btn {
+  width: 100%;
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.download-btn:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
 
 .fresso-submit { 
   width: 100%; background: var(--accent); color: #fff; border: none; padding: 22px; 
