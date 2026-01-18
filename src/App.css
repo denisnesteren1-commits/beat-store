@@ -157,7 +157,7 @@ body {
 .mini-controls { 
   display: flex; 
   align-items: center; 
-  gap: 2px; /* Уменьшил зазор для компактности */
+  gap: 2px; 
   z-index: 20; 
 }
 
@@ -166,37 +166,55 @@ body {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  color: #888 !important; /* Наш фирменный серый */
+  color: #888 !important; 
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px; /* Фиксированная область нажатия */
+  width: 44px; 
   height: 44px;
   transition: 0.2s;
   -webkit-tap-highlight-color: transparent;
+  font-family: sans-serif !important;
 }
 
-/* Управление размерами иконок Font Awesome */
-.mini-btn i {
-  font-size: 18px; /* Базовый размер для иконок */
+/* --- ПУЛЬСАЦИЯ ДЛЯ КНОПКИ PLAY --- */
+.mini-play-btn.is-playing {
+  color: #fff !important;
+  position: relative;
 }
 
-.mini-play-btn i { 
-  font-size: 22px; /* Кнопка Play/Pause чуть больше остальных */
+/* Белый кружок пульсации */
+.mini-play-btn.is-playing::after {
+  content: '';
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  animation: mini-pulse 1.5s infinite;
 }
 
-.mini-close-btn i {
-  font-size: 18px;
-  font-weight: 300;
+@keyframes mini-pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
 }
 
-/* Эффект при нажатии: иконка загорается белым */
+/* Стилизация символов */
+.mini-play-btn {
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  letter-spacing: -1px; /* Для красивой паузы || */
+}
+
+.mini-close-btn {
+  font-size: 22px !important;
+  font-weight: 200 !important;
+  opacity: 0.7;
+}
+
 .mini-btn:active { 
   transform: scale(0.85); 
-}
-
-.mini-btn:active i {
   color: #ffffff !important;
 }
 /* 5. ПРОФИЛЬ — Полная центровка и жирные шрифты */

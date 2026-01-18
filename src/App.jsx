@@ -562,6 +562,7 @@ function App() {
      {/* 1. НИЖНИЙ МИНИ-ПЛЕЕР */}
       {currentBeatId && (
         <div className="mini-player">
+          {/* Визуальная заливка прогресса */}
           <div 
             className="player-progress-fill" 
             style={{ width: `${progress}%` }}
@@ -578,34 +579,34 @@ function App() {
               <div className="mini-title">
                 {beats.find(b => b.id === currentBeatId)?.title}
               </div>
-              <div className="mini-author">Fresso</div>
+              <div className="mini-author">FRESSO</div>
             </div>
 
             <div className="mini-controls">
               {/* Кнопка Лайка */}
               <button 
-                className="mini-btn" 
+                className="mini-btn mini-fav-btn" 
                 onClick={(e) => { 
                   e.stopPropagation(); 
                   toggleFav(currentBeatId); 
                 }}
               >
-                <i className={favorites.includes(currentBeatId) ? "fa-solid fa-heart" : "fa-regular fa-heart"} 
-                   style={{ color: favorites.includes(currentBeatId) ? '#ff4d4d' : '#888' }}></i>
+                {favorites.includes(currentBeatId) ? "❤️" : "🤍"}
               </button>
 
-              {/* Кнопка Плей/Пауза — ТЕПЕРЬ ЧЕРЕЗ ИКОНКИ ШРИФТА */}
+              {/* Кнопка Плей/Пауза — с динамическим классом для пульсации */}
               <button 
-                className="mini-btn mini-play-btn" 
+                className={`mini-btn mini-play-btn ${isPlaying ? 'is-playing' : ''}`} 
                 onClick={(e) => { 
                   e.stopPropagation(); 
                   setIsPlaying(!isPlaying); 
                 }}
               >
-                <i className={isPlaying ? "fa-solid fa-pause" : "fa-solid fa-play"}></i>
+                {/* Используем текстовые символы: || для паузы, треугольник для плей */}
+                {isPlaying ? "||" : "▶"}
               </button>
               
-              {/* Кнопка Закрыть */}
+              {/* Кнопка Закрыть (Крестик) */}
               <button 
                 className="mini-btn mini-close-btn" 
                 onClick={(e) => {
@@ -615,7 +616,7 @@ function App() {
                   setIsPlaying(false);
                 }}
               >
-                <i className="fa-solid fa-xmark"></i>
+                ✕
               </button>
             </div>
           </div>
