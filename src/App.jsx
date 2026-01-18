@@ -248,10 +248,10 @@ function App() {
           <button className="add-btn-main" onClick={() => setActiveTab('admin')}>ДОБАВИТЬ БИТ</button>
           
           <div className="p-menu-list">
-            <button className="p-menu-item" onClick={() => setActiveTab('favs')}>ЛЮБИМЫЕ БИТЫ <span>❤️</span></button>
-            <button className="p-menu-item">ИСТОРИЯ ЗАКАЗОВ <span>📦</span></button>
-            <button className="p-menu-item" onClick={() => window.open('https://t.me/Fr1sso')}>ПОДДЕРЖКА <span>💬</span></button>
-          </div>
+  {/* Кнопку "Любимые биты" мы удалили */}
+  <button className="p-menu-item">ИСТОРИЯ ЗАКАЗОВ <span>📦</span></button>
+  <button className="p-menu-item" onClick={() => window.open('https://t.me/Fr1sso')}>ПОДДЕРЖКА <span>💬</span></button>
+</div>
           <button className="p-back-btn" onClick={() => setActiveTab('shop')}>НАЗАД В МАГАЗИН</button>
         </div>
       )}
