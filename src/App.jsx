@@ -447,7 +447,27 @@ function App() {
           <div className="social-item" onClick={() => window.open('https://youtube.com/@fressobeats3787')}>
             <i className="fa-brands fa-youtube"></i>
           </div>
+        </div><div className="social-grid">
+        <div className="social-item" onClick={() => window.open('https://vk.com/fr1sso')}>
+          <i className="fa-brands fa-vk"></i>
         </div>
+        <div className="social-item" onClick={() => window.open('https://www.instagram.com/fresso.beatzzz')}>
+          <i className="fa-brands fa-instagram"></i>
+        </div>
+        <div className="social-item" onClick={() => window.open('https://soundcloud.com/de-nys-nes321')}>
+          <i className="fa-brands fa-soundcloud"></i>
+        </div>
+        <div className="social-item" onClick={() => window.open('https://youtube.com/@fressobeats3787')}>
+          <i className="fa-brands fa-youtube"></i>
+        </div>
+        {/* НОВЫЕ: Телеграм и ТикТок */}
+        <div className="social-item" onClick={() => window.open('https://t.me/fresso1')}>
+          <i className="fa-brands fa-telegram"></i>
+        </div>
+        <div className="social-item" onClick={() => window.open('https://www.tiktok.com/@fresso10?_r=1&_t=ZS-93Addee28Pf')}>
+          <i className="fa-brands fa-tiktok"></i>
+        </div>
+      </div>
           {tg?.initDataUnsafe?.user?.id === 856199923 && (
             <button className="add-btn-main" onClick={() => setActiveTab('admin')}>
               ДОБАВИТЬ БИТ
@@ -485,13 +505,23 @@ function App() {
             <div className="purchases-list" style={{ marginTop: '20px' }}>
               {myPurchases.map((pur) => (
                 <div key={pur.id} className="purchase-card">
-                  <div className="pur-header">
-                    <span className="pur-title">{pur.beatTitle}</span>
-                    <span className="pur-license">{pur.licenseName}</span>
+                  <div className="pur-main-info">
+                    {/* Мини-обложка слева */}
+                    <div className="pur-cover-mini">
+                      <img src={pur.image || 'https://via.placeholder.com/150'} alt="cover" />
+                    </div>
+                    
+                    <div className="pur-text-content">
+                      <div className="pur-header">
+                        <span className="pur-title">{pur.beatTitle}</span>
+                        <span className="pur-license">{pur.licenseName}</span>
+                      </div>
+                      <div className="pur-meta">
+                        BPM: {pur.bpm} • KEY: {pur.key}
+                      </div>
+                    </div>
                   </div>
-                  <div className="pur-meta">
-                    BPM: {pur.bpm} • KEY: {pur.key}
-                  </div>
+
                   <button className="download-btn" onClick={() => window.open(pur.fileUrl)}>
                     СКАЧАТЬ ФАЙЛ ⬇️
                   </button>
@@ -503,6 +533,6 @@ function App() {
       )}
     </div>
   );
-} // <--- Эта скобка закрывает функцию App
+}
 
-export default App; // <--- Экспорт всегда идет в самом конце, снаружи функции
+export default App;
