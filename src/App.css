@@ -219,18 +219,60 @@ body {
 .fresso-submit:active { transform: scale(0.98); }
 .fresso-submit:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
 
-/* 8. СОЦСЕТИ */
-.social-container-main { width: 100%; display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
-.social-grid { display: flex; justify-content: center; gap: 15px; }
-.social-item { width: 55px; height: 55px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #fff; transition: 0.3s; }
+/* 8. СОЦСЕТИ — Цветные и с поочередной пульсацией */
+.social-container-main { 
+  width: 100%; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+  margin: 20px 0; 
+}
 
-.social-item.tiktok:active     { color: #ff0050; border-color: #ff0050; }
-.social-item.youtube:active    { color: #ff0000; border-color: #ff0000; }
-.social-item.instagram:active  { color: #e1306c; border-color: #e1306c; }
-.social-item.soundcloud:active { color: #ff5500; border-color: #ff5500; }
-.social-item.telegram:active   { color: #0088cc; border-color: #0088cc; }
-.social-item.vk:active         { color: #0077ff; border-color: #0077ff; }
+.social-grid { 
+  display: flex; 
+  justify-content: center; 
+  gap: 15px; 
+}
 
+.social-item { 
+  width: 55px; 
+  height: 55px; 
+  background: rgba(255, 255, 255, 0.05); 
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  border-radius: 16px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 26px; 
+  transition: 0.3s;
+  animation: pulse-social 3s infinite; /* Общая анимация */
+}
+
+/* Родные цвета иконок */
+.social-item.tiktok { color: #ff0050; border-color: rgba(255, 0, 80, 0.3); }
+.social-item.youtube { color: #ff0000; border-color: rgba(255, 0, 0, 0.3); }
+.social-item.instagram { color: #e1306c; border-color: rgba(225, 48, 108, 0.3); }
+.social-item.soundcloud { color: #ff5500; border-color: rgba(255, 85, 0, 0.3); }
+.social-item.telegram { color: #0088cc; border-color: rgba(0, 136, 204, 0.3); }
+.social-item.vk { color: #0077ff; border-color: rgba(0, 119, 255, 0.3); }
+
+/* Эффект при нажатии */
+.social-item:active { transform: scale(0.9); filter: brightness(1.5); }
+
+/* Поочередная задержка анимации (чтобы пульсировали по очереди) */
+.social-item:nth-child(1) { animation-delay: 0s; }
+.social-item:nth-child(2) { animation-delay: 0.5s; }
+.social-item:nth-child(3) { animation-delay: 1s; }
+.social-item:nth-child(4) { animation-delay: 1.5s; }
+.social-item:nth-child(5) { animation-delay: 2s; }
+.social-item:nth-child(6) { animation-delay: 2.5s; }
+
+@keyframes pulse-social {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+  10% { transform: scale(1.1); box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); }
+  20% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+  100% { transform: scale(1); }
+}
 /* 9. ПОКУПКИ — Финальная версия */
 .purchases-view {
   display: flex;
