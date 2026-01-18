@@ -416,16 +416,15 @@ function App() {
             {beats.filter(b => activeTab === 'favs' ? favorites.includes(b.id) : true).map(beat => (
               <div key={beat.id} className="beat-card" onClick={() => playBeat(beat)}>
                 <div className="beat-cover">
-                  <img src={beat.image} alt="cover" />
-                  
-                  {/* ПУЛЬСАЦИЯ ВНУТРИ ОБЛОЖКИ: только если этот бит играет */}
-                  {currentBeatId === beat.id && isPlaying && (
-                    <div className="beat-pulse-overlay">
-                      <div className="beat-pulse-circle"></div>
-                      <div className="beat-pulse-icon">||</div>
-                    </div>
-                  )}
-                </div>
+                <img src={beat.image} alt="cover" />
+                
+                {/* ТОЛЬКО ПУЛЬСИРУЮЩАЯ ТОЧКА/КРУЖОК */}
+                {currentBeatId === beat.id && isPlaying && (
+                  <div className="beat-pulse-overlay">
+                    <div className="beat-pulse-dot"></div>
+                  </div>
+                )}
+              </div>
 
                 <div className="beat-body">
                   <div className="beat-name-row">{beat.title}</div>

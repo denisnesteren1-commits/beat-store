@@ -82,85 +82,112 @@ body {
   object-fit: cover; 
 }
 
-/* ОВЕРЛЕЙ ПРИ ВОСПРОИЗВЕДЕНИИ */
-.beat-pulse-overlay {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.45); /* Мягкое затемнение */
-  display: flex;
+/* Список битов */
+.beat-list { 
+  padding: 10px 20px; 
+  padding-bottom: 120px; 
+}
+
+.beat-card { 
+  display: flex; 
+  gap: 15px; 
+  background: var(--card); 
+  padding: 14px; 
+  border-radius: 22px; 
+  margin-bottom: 12px; 
   align-items: center;
-  justify-content: center;
-  z-index: 5;
+  border: 1px solid #1a1a1a; 
+  transition: 0.3s;
 }
 
-/* ПУЛЬСИРУЮЩИЙ КРУЖОК */
-.beat-pulse-circle {
-  position: absolute;
-  width: 28px;
-  height: 28px;
-  border: 2px solid #ffffff;
-  border-radius: 50%;
-  animation: card-pulse-wave 1.6s infinite ease-out;
-}
-
-/* ИКОНКА ПАУЗЫ ВНУТРИ */
-.beat-pulse-icon {
-  color: #fff;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: -1px;
-  z-index: 6;
-  font-family: sans-serif;
-}
-
-/* АНИМАЦИЯ ВОЛНЫ */
-@keyframes card-pulse-wave {
-  0% {
-    transform: scale(0.7);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1.6);
-    opacity: 0;
-  }
-}
-
-/* Эффект при нажатии на всю карточку */
 .beat-card:active {
   transform: scale(0.98);
   background: #151515;
 }
-/* Пульсирующая точка (только когда играет) */
+
+/* Обложка в списке */
+.beat-cover { 
+  width: 60px; 
+  height: 60px; 
+  border-radius: 12px; 
+  overflow: hidden; 
+  position: relative; 
+  flex-shrink: 0; 
+}
+
+.beat-cover img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+/* ОВЕРЛЕЙ ПУЛЬСАЦИИ (Только точка и волна) */
 .play-ico { 
-  position: absolute; inset: 0; 
-  background: rgba(0,0,0,0.3); 
-  display: flex; align-items: center; justify-content: center; 
+  position: absolute; 
+  inset: 0; 
+  background: rgba(0, 0, 0, 0.2); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  z-index: 5;
 }
 
 .center-dot {
-  width: 10px; height: 10px; 
+  width: 8px; 
+  height: 8px; 
   background: #fff; 
   border-radius: 50%;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-  animation: smooth-pulse 2s infinite ease-in-out;
+  position: relative;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
-.beat-body { flex: 1; }
+/* Сама пульсирующая волна вокруг точки */
+.center-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 30px; 
+  height: 30px; 
+  border: 2px solid #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: wave-only 1.5s infinite ease-out;
+}
+
+@keyframes wave-only {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+}
+
+/* Инфо о бите */
+.beat-body { flex: 1; overflow: hidden; }
+
 .beat-name-row { 
-  font-weight: 800; font-size: 16px; 
-  letter-spacing: -0.3px; color: #fff; margin-bottom: 4px;
+  font-weight: 800; 
+  font-size: 16px; 
+  color: #fff; 
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Нейтральные мета-данные */
 .beat-meta-row { 
-  font-size: 11px; font-weight: 600; color: #555; 
-  text-transform: uppercase; letter-spacing: 0.5px;
+  font-size: 11px; 
+  font-weight: 600; 
+  color: #555; 
+  text-transform: uppercase; 
+  letter-spacing: 0.5px;
 }
 
-/* Зеленая цена */
+/* Зеленая кнопка цены */
 .beat-buy-btn { 
-  font-weight: 900; color: #2ecc71; font-size: 15px; 
-  padding: 8px 12px; background: rgba(46, 204, 113, 0.1); border-radius: 10px;
+  font-weight: 900; 
+  color: #2ecc71; 
+  font-size: 14px; 
+  padding: 8px 14px; 
+  background: rgba(46, 204, 113, 0.1); 
+  border-radius: 12px;
 }
 
 /* 4. НИЖНИЙ МИНИ-ПЛЕЕР */
