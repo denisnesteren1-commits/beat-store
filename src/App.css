@@ -231,11 +231,75 @@ body {
 .social-item.telegram:active   { color: #0088cc; border-color: #0088cc; }
 .social-item.vk:active         { color: #0077ff; border-color: #0077ff; }
 
-/* 9. ПОКУПКИ */
-.purchase-card { background: var(--card); border-radius: 20px; padding: 15px; margin-bottom: 15px; border: 1px solid #222; }
-.pur-main-info { display: flex; gap: 15px; align-items: center; margin-bottom: 15px; }
-.pur-cover-mini { width: 60px; height: 60px; border-radius: 10px; overflow: hidden; border: 1px solid #333; flex-shrink: 0; }
+/* 9. ПОКУПКИ — Твой старый код с исправленной центровкой и шрифтами */
+.purchase-card { 
+  background: var(--card); 
+  border-radius: 20px; 
+  padding: 25px; /* Увеличил отступы для объема */
+  margin-bottom: 15px; 
+  border: 1px solid #222; 
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Всё содержимое по центру */
+  text-align: center;
+}
+
+.pur-main-info { 
+  display: flex; 
+  flex-direction: column; /* Обложка сверху, текст под ней */
+  gap: 12px; 
+  align-items: center; 
+  margin-bottom: 20px; 
+}
+
+.pur-cover-mini { 
+  width: 85px; 
+  height: 85px; 
+  border-radius: 15px; 
+  overflow: hidden; 
+  border: 1px solid #333; 
+  flex-shrink: 0; 
+  box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+}
 .pur-cover-mini img { width: 100%; height: 100%; object-fit: cover; }
-.pur-title { font-weight: 800; font-size: 17px; }
-.pur-license { font-size: 10px; background: rgba(255, 51, 51, 0.1); color: var(--accent); padding: 4px 8px; border-radius: 6px; text-transform: uppercase; font-weight: 900; }
-.download-btn { width: 100%; background: #fff; color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+.pur-title { 
+  font-weight: 900; /* Максимально жирный шрифт */
+  font-size: 20px; 
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+.pur-license { 
+  font-size: 10px; 
+  background: rgba(255, 51, 51, 0.1); 
+  color: var(--accent); 
+  padding: 4px 10px; 
+  border-radius: 6px; 
+  text-transform: uppercase; 
+  font-weight: 900; 
+}
+
+.download-btn { 
+  width: 100%; 
+  max-width: 280px; /* Кнопка не слишком широкая */
+  background: #fff; 
+  color: #000; 
+  border: none; 
+  padding: 15px; 
+  border-radius: 14px; 
+  font-weight: 900; 
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 8px; 
+  transition: transform 0.2s;
+}
+
+.download-btn:active {
+  transform: scale(0.97);
+}
