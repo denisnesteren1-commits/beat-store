@@ -561,8 +561,7 @@ function App() {
       
      {/* 1. НИЖНИЙ МИНИ-ПЛЕЕР */}
       {currentBeatId && (
-        <div className="mini-player" style={{ cursor: 'default' }}>
-          {/* Визуальная заливка прогресса (серый прозрачный прямоугольник) */}
+        <div className="mini-player">
           <div 
             className="player-progress-fill" 
             style={{ width: `${progress}%` }}
@@ -582,8 +581,7 @@ function App() {
               <div className="mini-author">Fresso</div>
             </div>
 
-            <div className="mini-controls" style={{ position: 'relative', zIndex: 100 }}>
-              {/* Кнопка Лайка */}
+            <div className="mini-controls">
               <button 
                 className="mini-btn mini-fav-btn" 
                 onClick={(e) => { 
@@ -594,7 +592,6 @@ function App() {
                 {favorites.includes(currentBeatId) ? "❤️" : "🤍"}
               </button>
 
-              {/* Кнопка Плей/Пауза (Серые иконки) */}
               <button 
                 className="mini-btn mini-play-btn" 
                 onClick={(e) => { 
@@ -602,10 +599,9 @@ function App() {
                   setIsPlaying(!isPlaying); 
                 }}
               >
-                {isPlaying ? "⏸" : "▶"}
+                {isPlaying ? "\u23F8\uFE0E" : "\u25B6\uFE0E"}
               </button>
               
-              {/* Кнопка Закрыть (Серый крестик) */}
               <button 
                 className="mini-btn mini-close-btn" 
                 onClick={(e) => {
@@ -621,8 +617,8 @@ function App() {
           </div>
         </div>
       )}
-    </div> // Закрывает <div className="app-container">
-  ); // Закрывает return (
-} // Закрывает функцию function App() {
+    </div> // Закрывает app-container
+  ); // Закрывает return
+} // Закрывает function App
 
 export default App;
