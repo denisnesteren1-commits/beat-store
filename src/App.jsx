@@ -238,24 +238,36 @@ function App() {
 
       {activeTab === 'profile' && (
         <div className="profile-view">
+          {/* 1. Верхняя панель со стрелкой */}
+          <div className="admin-header" style={{ width: '100%', marginBottom: '20px' }}>
+            <div className="back-area" onClick={() => setActiveTab('shop')}>
+              <span className="back-arrow">←</span>
+            </div>
+            <div className="admin-title">ПРОФИЛЬ</div>
+            <div style={{ width: 44 }}></div>
+          </div>
+
+          {/* 2. Аватарка */}
           <div className="avatar-circle" onClick={() => document.getElementById('avaInp').click()}>
-            <img src={userAvatar} />
+            <img src={userAvatar} alt="avatar" />
             <input id="avaInp" type="file" hidden onChange={changeAvatar} />
           </div>
+
+          {/* 3. Инфо о юзере */}
           <h1 className="profile-name">{tg?.initDataUnsafe?.user?.first_name || "Fresso Producer"}</h1>
           <p className="profile-handle">@{tg?.initDataUnsafe?.user?.username || "fresso"}</p>
           
+          {/* 4. Кнопка админа */}
           <button className="add-btn-main" onClick={() => setActiveTab('admin')}>ДОБАВИТЬ БИТ</button>
           
+          {/* 5. Список меню */}
           <div className="p-menu-list">
-  {/* Кнопку "Любимые биты" мы удалили */}
-  <button className="p-menu-item">ИСТОРИЯ ЗАКАЗОВ <span>📦</span></button>
-  <button className="p-menu-item" onClick={() => window.open('https://t.me/Fr1sso')}>ПОДДЕРЖКА <span>💬</span></button>
-</div>
-          <button className="p-back-btn" onClick={() => setActiveTab('shop')}>НАЗАД В МАГАЗИН</button>
+            <button className="p-menu-item">ИСТОРИЯ ЗАКАЗОВ <span>📦</span></button>
+            <button className="p-menu-item" onClick={() => window.open('https://t.me/Fr1sso')}>ПОДДЕРЖКА <span>💬</span></button>
+          </div>
         </div>
       )}
-    </div>
+    </div> // Закрывает app-container
   );
 }
 
