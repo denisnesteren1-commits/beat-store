@@ -405,40 +405,61 @@ function App() {
       )}
 
       {/* 2. МАГАЗИН И ЛЮБИМЫЕ */}
-      {(activeTab === 'shop' || activeTab === 'favs') && (
-        <div className="page-content">
-          <div className="tab-menu">
-            <span className={activeTab === 'shop' ? 'active' : ''} onClick={() => setActiveTab('shop')}>МАГАЗИН</span>
-            <span className={activeTab === 'favs' ? 'active' : ''} onClick={() => setActiveTab('favs')}>ЛЮБИМЫЕ ({favorites.length})</span>
-          </div>
-          
-          <div className="beat-list">
-            {beats.filter(b => activeTab === 'favs' ? favorites.includes(b.id) : true).map(beat => (
-              <div key={beat.id} className="beat-card" onClick={() => playBeat(beat)}>
-                <div className="beat-cover">
-                <img src={beat.image} alt="cover" />
-                
-                {/* ТОЛЬКО ПУЛЬСИРУЮЩАЯ ТОЧКА/КРУЖОК */}
-                {currentBeatId === beat.id && isPlaying && (
-                  <div className="beat-pulse-overlay">
-                    <div className="beat-pulse-dot"></div>
-                  </div>
-                )}
-              </div>
-
-                <div className="beat-body">
-                  <div className="beat-name-row">{beat.title}</div>
-                  <div className="beat-meta-row">
-                    {beat.bpm} BPM • {beat.key} • {beat.tags || 'PROD BY FRESSO'}
-                  </div>
+{(activeTab === 'shop' || activeTab === 'favs') && (
+  <div className="page-content">
+    <div className="tab-menu">
+      <span 
+        className={activeTab === 'shop' ? 'active' : ''} 
+        onClick={() => setActiveTab('shop')}
+      >
+        МАГАЗИН
+      </span>
+      <span 
+        className={activeTab === 'favs' ? 'active' : ''} 
+        onClick={() => setActiveTab('favs')}
+      >
+        ЛЮБИМЫЕ ({favorites.length})
+      </span>
+    </div>
+    
+    <div className="beat-list">
+      {beats
+        .filter(b => activeTab === 'favs' ? favorites.includes(b.id) : true)
+        .map(beat => (
+          <div key={beat.id} className="beat-card" onClick={() => playBeat(beat)}>
+            
+            <div className="beat-cover">
+              <img src={beat.image} alt="cover" />
+              
+              {/* ДЫШАЩАЯ ТОЧКА (Отображается только при игре этого бита) */}
+              {currentBeatId === beat.id && isPlaying && (
+                <div className="play-ico">
+                  <div className="center-dot"></div>
                 </div>
+              )}
+            </div>
 
-                <div className="beat-buy-btn">${beat.priceMp3}</div>
+            <div className="beat-body">
+              <div className="beat-name-row">{beat.title}</div>
+              <div className="beat-meta-row">
+                {beat.bpm} BPM • {beat.key} • {beat.tags || 'PROD BY FRESSO'}
               </div>
-            ))}
+            </div>
+
+            <div 
+              className="beat-buy-btn" 
+              onClick={(e) => {
+                e.stopPropagation(); // Чтобы при клике на цену не запускался плеер
+                console.log('Buy:', beat.title);
+              }}
+            >
+              ${beat.priceMp3}
+            </div>
           </div>
-        </div>
-      )}
+      ))}
+    </div>
+  </div>
+)}
 
       {/* 3. ПРОФИЛЬ */}
       {activeTab === 'profile' && (
@@ -512,59 +533,61 @@ function App() {
       )}
 
       {/* 4. МОИ ПОКУПКИ */}
-      {activeTab === 'my_purchases' && (
-        <div className="purchases-view">
-          <div className="admin-header" style={{ width: '100%' }}>
-            <div className="back-area" onClick={() => setActiveTab('profile')}>
-              <span className="back-arrow">←</span>
-            </div>
-            <div className="admin-title">МОИ ПОКУПКИ</div>
-            <div style={{ width: 44 }}></div>
-          </div>
+{activeTab === 'my_purchases' && (
+  <div className="purchases-view">
+    {/* Шапка с кнопкой назад */}
+    <div className="admin-header" style={{ width: '100%' }}>
+      <div className="back-area" onClick={() => setActiveTab('profile')}>
+        <span className="back-arrow">←</span>
+      </div>
+      <div className="admin-title">МОИ ПОКУПКИ</div>
+      <div style={{ width: 44 }}></div> {/* Пустой блок для симметрии заголовка */}
+    </div>
 
-          {myPurchases.length === 0 ? (
-            <div className="empty-state">
-              <p>У вас пока нет купленных битов 🎶</p>
-              <button className="shop-now-btn" onClick={() => setActiveTab('shop')}>
-                ВЫБРАТЬ БИТ
-              </button>
-            </div>
-          ) : (
-            <div className="purchases-list" style={{ marginTop: '20px' }}>
-              {myPurchases.map((pur) => (
-                <div key={pur.id} className="purchase-card">
-                  <div className="pur-main-info">
-                    {/* Мини-обложка слева */}
-                    <div className="pur-cover-mini">
-                      <img src={pur.image || 'https://via.placeholder.com/150'} alt="cover" />
-                    </div>
-                    
-                    <div className="pur-text-content">
-                      <div className="pur-header">
-                        <span className="pur-title">{pur.beatTitle}</span>
-                        <span className="pur-license">{pur.licenseName}</span>
-                      </div>
-                      <div className="pur-meta">
-                        BPM: {pur.bpm} • KEY: {pur.key}
-                      </div>
-                    </div>
-                  </div>
-
-                  <button className="download-btn" onClick={() => window.open(pur.fileUrl)}>
-                    СКАЧАТЬ ФАЙЛ ⬇️
-                  </button>
+    {myPurchases.length === 0 ? (
+      <div className="empty-state">
+        <p className="no-purchases-msg">У вас пока нет купленных битов 🎶</p>
+        <button className="shop-now-btn" onClick={() => setActiveTab('shop')}>
+          ВЫБРАТЬ БИТ
+        </button>
+      </div>
+    ) : (
+      <div className="purchases-list" style={{ marginTop: '20px', width: '100%' }}>
+        {myPurchases.map((pur) => (
+          <div key={pur.id} className="purchase-card">
+            <div className="pur-main-info">
+              {/* Мини-обложка */}
+              <div className="pur-cover-mini">
+                <img src={pur.image || 'https://via.placeholder.com/150'} alt="cover" />
+              </div>
+              
+              <div className="pur-text-content">
+                <div className="pur-header-row">
+                  <span className="pur-title">{pur.beatTitle}</span>
+                  <span className="pur-license">{pur.licenseName}</span>
                 </div>
-              ))}
+                <div className="pur-meta">
+                  {pur.bpm} BPM • {pur.key}
+                </div>
+              </div>
             </div>
-          )}
-        </div>
-      )}
-      {/* ... здесь заканчивается блок с покупками или профилем ... */}
-      
+
+            <button 
+              className="download-btn" 
+              onClick={() => pur.fileUrl && window.open(pur.fileUrl)}
+            >
+              СКАЧАТЬ ФАЙЛ ⬇️
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}      
      {/* 1. НИЖНИЙ МИНИ-ПЛЕЕР */}
       {currentBeatId && (
         <div className="mini-player">
-          {/* Визуальная заливка прогресса */}
+          {/* Фоновая заливка прогресса */}
           <div 
             className="player-progress-fill" 
             style={{ width: `${progress}%` }}
@@ -585,7 +608,7 @@ function App() {
             </div>
 
             <div className="mini-controls">
-              {/* Кнопка Лайка */}
+              {/* Кнопка Лайка (❤️/🤍) */}
               <button 
                 className="mini-btn mini-fav-btn" 
                 onClick={(e) => { 
@@ -596,23 +619,23 @@ function App() {
                 {favorites.includes(currentBeatId) ? "❤️" : "🤍"}
               </button>
 
-              {/* Кнопка Плей/Пауза — с динамическим классом для пульсации */}
+              {/* Кнопка Плей/Пауза (Белая по CSS) */}
               <button 
-              className="mini-btn mini-play-btn" 
-              onClick={(e) => { 
-                e.stopPropagation(); 
-                setIsPlaying(!isPlaying); 
-              }}
-            >
-              {isPlaying ? "||" : "▶"}
-            </button>
+                className="mini-btn mini-play-btn" 
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setIsPlaying(!isPlaying); 
+                }}
+              >
+                {isPlaying ? "||" : "▶"}
+              </button>
               
-              {/* Кнопка Закрыть (Крестик) */}
+              {/* Кнопка Закрыть */}
               <button 
                 className="mini-btn mini-close-btn" 
                 onClick={(e) => {
                   e.stopPropagation();
-                  audioRef.current.pause();
+                  if (audioRef.current) audioRef.current.pause();
                   setCurrentBeatId(null);
                   setIsPlaying(false);
                 }}
@@ -625,6 +648,6 @@ function App() {
       )}
     </div> // Закрывает app-container
   ); // Закрывает return
-} // Закрывает function App
+}; // Закрывает function App
 
 export default App;

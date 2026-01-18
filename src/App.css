@@ -121,42 +121,32 @@ body {
   object-fit: cover; 
 }
 
-/* ОВЕРЛЕЙ ПУЛЬСАЦИИ (Только точка и волна) */
+/* ОВЕРЛЕЙ НА ОБЛОЖКЕ */
 .play-ico { 
   position: absolute; 
   inset: 0; 
-  background: rgba(0, 0, 0, 0.2); 
+  background: rgba(0, 0, 0, 0.3); 
   display: flex; 
   align-items: center; 
   justify-content: center; 
-  z-index: 5;
+  z-index: 10;
 }
 
+/* ДЫШАЩАЯ ТОЧКА */
 .center-dot {
-  width: 8px; 
-  height: 8px; 
+  width: 12px; 
+  height: 12px; 
   background: #fff; 
   border-radius: 50%;
-  position: relative;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  /* Анимация увеличения-уменьшения */
+  animation: breathe-dot 1.2s infinite ease-in-out;
 }
 
-/* Сама пульсирующая волна вокруг точки */
-.center-dot::after {
-  content: '';
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 30px; 
-  height: 30px; 
-  border: 2px solid #fff;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  animation: wave-only 1.5s infinite ease-out;
-}
-
-@keyframes wave-only {
-  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+@keyframes breathe-dot {
+  0% { transform: scale(0.8); opacity: 0.7; }
+  50% { transform: scale(1.5); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0.7; }
 }
 
 /* Инфо о бите */
@@ -190,7 +180,8 @@ body {
   border-radius: 12px;
 }
 
-/* 4. НИЖНИЙ МИНИ-ПЛЕЕР */
+/* --- 4. НИЖНИЙ МИНИ-ПЛЕЕР И ЭФФЕКТЫ --- */
+
 .mini-player {
   position: fixed; 
   bottom: 0; left: 0; right: 0;
@@ -204,17 +195,16 @@ body {
   overflow: hidden;
 }
 
-/* Фоновая заливка прогресса */
+/* Прогресс-бар на фоне */
 .player-progress-fill {
   position: absolute; 
   top: 0; left: 0; bottom: 0;
-  background: rgba(255, 255, 255, 0.05); 
+  background: rgba(255, 255, 255, 0.08); 
   z-index: 1; 
   pointer-events: none; 
   transition: width 0.3s linear;
 }
 
-/* Контейнер с контентом */
 .mini-player-content { 
   position: relative; 
   z-index: 10; 
@@ -226,17 +216,13 @@ body {
 }
 
 .mini-cover { 
-  width: 45px; 
-  height: 45px; 
+  width: 48px; 
+  height: 48px; 
   border-radius: 8px; 
   object-fit: cover; 
 }
 
-.mini-info { 
-  flex: 1; 
-  overflow: hidden; 
-  pointer-events: none; 
-}
+.mini-info { flex: 1; overflow: hidden; }
 
 .mini-title { 
   font-size: 14px; 
@@ -249,62 +235,70 @@ body {
   font-size: 11px; 
   color: #555; 
   text-transform: uppercase; 
-  letter-spacing: 1px;
 }
 
-/* Кнопки управления */
+/* Кнопки управления (Одинаковый размер и белый Play) */
 .mini-controls { 
   display: flex; 
   align-items: center; 
-  gap: 2px; 
-  z-index: 20; 
+  gap: 4px; 
 }
 
 .mini-btn {
   background: none !important;
   border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-  color: #888 !important; 
-  cursor: pointer;
+  width: 44px; 
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px; 
-  height: 44px;
+  cursor: pointer;
   transition: 0.2s;
   -webkit-tap-highlight-color: transparent;
-  font-family: sans-serif !important;
 }
-
-/* --- КНОПКИ НИЖНЕГО ПЛЕЕРА (БЕЗ ПУЛЬСАЦИИ) --- */
 
 .mini-play-btn {
+  color: #ffffff !important; /* Кнопка Play/Pause всегда белая */
   font-family: sans-serif !important;
-  font-size: 16px !important;
+  font-size: 18px !important;
   font-weight: 900 !important;
-  letter-spacing: -1px; /* Красивое отображение паузы || */
-  color: #888 !important;
-  transition: 0.2s;
 }
 
-/* Если музыка играет, можем просто сделать кнопку чуть светлее */
-.mini-play-btn.is-playing {
-  color: #ffffff !important;
+.mini-fav-btn, .mini-close-btn {
+  color: #666 !important; /* Сердечко и крестик приглушенные */
+  font-size: 20px;
 }
 
-.mini-close-btn {
-  font-size: 22px !important;
-  font-weight: 200 !important;
-  font-family: Arial, sans-serif !important;
-  opacity: 0.6;
-}
-
-/* Эффект нажатия для всех кнопок плеера */
 .mini-btn:active { 
-  transform: scale(0.85); 
-  color: #ffffff !important;
-  opacity: 1;
+  transform: scale(0.8); 
+  color: #ffffff !important; 
+}
+
+/* --- ЭФФЕКТ ДЛЯ ОБЛОЖЕК В СПИСКЕ (ДЫШАЩАЯ ТОЧКА) --- */
+
+.play-ico { 
+  position: absolute; 
+  inset: 0; 
+  background: rgba(0, 0, 0, 0.3); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  z-index: 10;
+}
+
+.center-dot {
+  width: 10px; 
+  height: 10px; 
+  background: #fff; 
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  animation: breathe-dot 1.4s infinite ease-in-out;
+}
+
+@keyframes breathe-dot {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0.6; }
 }
 /* 5. ПРОФИЛЬ — Полная центровка и жирные шрифты */
 .profile-view { 
@@ -491,112 +485,143 @@ body {
 }
 
 .social-item:active { transform: scale(0.9); transition: 0.1s; }
-/* 9. ПОКУПКИ — Финальная версия */
+/* 9. ПОКУПКИ — Финальная корректная версия */
 .purchases-view {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: 20px;
-  text-align: center;
+  padding: 10px 20px 100px; /* Отступ снизу больше, чтобы плеер не перекрывал */
 }
 
-/* Текст "У вас нет купленных битов" */
+/* Состояние, когда пусто */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 60px;
+}
+
 .no-purchases-msg {
   font-size: 18px;
-  font-weight: 900; /* Очень жирный */
+  font-weight: 900;
   color: #fff;
   margin-bottom: 25px;
   letter-spacing: -0.5px;
 }
 
-/* Кнопка "ВЫБРАТЬ БИТ" — Большая, красная, пульсирующая */
 .shop-now-btn {
   background: var(--accent);
   color: #fff;
   border: none;
-  padding: 20px 40px;
+  padding: 18px 35px;
   border-radius: 18px;
   font-weight: 900;
-  font-size: 18px;
+  font-size: 16px;
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(255, 51, 51, 0.4);
-  animation: pulse-red-btn 2s infinite; /* Анимация пульсации */
-  transition: transform 0.2s;
+  box-shadow: 0 10px 20px rgba(255, 51, 51, 0.3);
+  animation: pulse-red-btn 2s infinite;
+  transition: 0.2s;
 }
 
-.shop-now-btn:active {
-  transform: scale(0.95);
-}
-
-@keyframes pulse-red-btn {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.7); }
-  70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(255, 51, 51, 0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); }
-}
-
-/* Карточка купленного бита */
+/* Карточка купленного бита (Горизонтальный стиль) */
 .purchase-card { 
   background: var(--card); 
-  border-radius: 20px; 
-  padding: 25px; 
-  margin-bottom: 15px; 
-  border: 1px solid #222; 
+  border-radius: 24px; 
+  padding: 16px; 
+  margin-bottom: 12px; 
+  border: 1px solid #1a1a1a; 
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
 }
 
 .pur-main-info { 
   display: flex; 
-  flex-direction: column; 
+  flex-direction: row; /* В линию */
   align-items: center; 
-  gap: 12px; 
-  margin-bottom: 20px; 
+  gap: 15px; 
+  margin-bottom: 16px; 
+  width: 100%;
+  text-align: left;
 }
 
 .pur-cover-mini { 
-  width: 90px; 
-  height: 90px; 
-  border-radius: 16px; 
+  width: 65px; 
+  height: 65px; 
+  border-radius: 12px; 
   overflow: hidden; 
-  border: 1px solid #333; 
+  border: 1px solid #222;
+  flex-shrink: 0;
 }
 .pur-cover-mini img { width: 100%; height: 100%; object-fit: cover; }
 
+.pur-text-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pur-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
 .pur-title { 
   font-weight: 900; 
-  font-size: 22px; 
+  font-size: 17px; 
+  color: #fff;
   text-transform: uppercase;
-  margin-top: 5px;
+  line-height: 1.2;
 }
 
 .pur-license { 
-  font-size: 10px; 
-  background: rgba(255, 51, 51, 0.1); 
+  font-size: 9px; 
+  background: rgba(255, 51, 51, 0.15); 
   color: var(--accent); 
-  padding: 4px 10px; 
-  border-radius: 6px; 
+  padding: 3px 8px; 
+  border-radius: 5px; 
   text-transform: uppercase; 
-  font-weight: 900; 
+  font-weight: 900;
+  white-space: nowrap;
 }
 
-/* Кнопка скачать (Белая) */
+.pur-meta {
+  font-size: 11px;
+  color: #555;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Кнопка скачать (Белая на всю ширину) */
 .download-btn { 
   width: 100%; 
-  max-width: 280px; 
-  background: #fff; 
-  color: #000; 
+  background: #ffffff; 
+  color: #000000; 
   border: none; 
-  padding: 16px; 
-  border-radius: 14px; 
+  padding: 14px; 
+  border-radius: 12px; 
   font-weight: 900; 
+  font-size: 13px;
   text-transform: uppercase;
   cursor: pointer; 
   display: flex; 
   align-items: center; 
   justify-content: center; 
-  gap: 8px; 
+  gap: 8px;
+  transition: 0.2s;
+}
+
+.download-btn:active { transform: scale(0.97); background: #eee; }
+
+/* Анимация кнопки "ВЫБРАТЬ БИТ" */
+@keyframes pulse-red-btn {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.7); }
+  70% { transform: scale(1.04); box-shadow: 0 0 0 12px rgba(255, 51, 51, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); }
 }
