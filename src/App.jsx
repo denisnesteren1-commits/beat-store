@@ -441,90 +441,104 @@ function App() {
       )}
 
       {/* 2. МАГАЗИН И ЛЮБИМЫЕ */}
-{(activeTab === 'shop' || activeTab === 'favs') && (
-  <div className="page-content">
-    <div className="tab-menu">
-      <span 
-        className={activeTab === 'shop' ? 'active' : ''} 
-        onClick={() => setActiveTab('shop')}
-      >
-        МАГАЗИН
-      </span>
-      <span 
-        className={activeTab === 'favs' ? 'active' : ''} 
-        onClick={() => setActiveTab('favs')}
-      >
-        ЛЮБИМЫЕ ({favorites.length})
-      </span>
-    </div>
+      {(activeTab === 'shop' || activeTab === 'favs') && (
+        <div className="page-content">
+          <div className="tab-menu">
+            <span 
+              className={activeTab === 'shop' ? 'active' : ''} 
+              onClick={() => setActiveTab('shop')}
+            >
+              МАГАЗИН
+            </span>
+            <span 
+              className={activeTab === 'favs' ? 'active' : ''} 
+              onClick={() => setActiveTab('favs')}
+            >
+              ЛЮБИМЫЕ ({favorites.length})
+            </span>
+          </div>
 
-    {/* ПОИСК И КНОПКА ФИЛЬТРА */}
-<div className="search-container">
-  <div className="search-bar">
-    <div className="search-input-wrapper">
-      <span className="search-icon">🔍</span>
-      <input 
-        type="text" 
-        placeholder="Search title, tags..." 
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-    </div>
-    <button 
-      className={`filter-toggle-btn ${isFilterOpen ? 'active' : ''}`}
-      onClick={() => setIsFilterOpen(!isFilterOpen)}
-    >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-        <path d="M4 6h16M4 12h10M4 18h16" />
-      </svg>
-    </button>
-  </div>
+          <div className="search-container">
+            {/* СТРОКА ПОИСКА */}
+            <div className="search-bar">
+              <div className="search-input-wrapper">
+                <span className="search-icon">🔍</span>
+                <input 
+                  type="text" 
+                  placeholder="Search title, tags..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <button 
+                className={`filter-toggle-btn ${isFilterOpen ? 'active' : ''}`}
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M4 6h16M4 12h10M4 18h16" />
+                </svg>
+              </button>
+            </div>
 
-  {/* ВЫПАДАЮЩЕЕ ОКНО ФИЛЬТРОВ */}
-  {isFilterOpen && (
-    <div className="filter-dropdown">
-      <div className="filter-group">
-        <div className="filter-label-row">
-          <label>BPM RANGE</label>
-          <span className="range-value">{filters.bpmMin} — {filters.bpmMax}</span>
-        </div>
-        <div className="range-slider-container">
-          <input 
-            type="range" min="60" max="200" step="1"
-            value={filters.bpmMin} 
-            onChange={(e) => setFilters({...filters, bpmMin: Number(e.target.value)})} 
-          />
-          <input 
-            type="range" min="60" max="200" step="1"
-            value={filters.bpmMax} 
-            onChange={(e) => setFilters({...filters, bpmMax: Number(e.target.value)})} 
-          />
-        </div>
-      </div>
+            {/* БЫСТРЫЕ ТЕГИ */}
+            <div className="quick-tags">
+              {availableGenres.map(g => (
+                <button 
+                  key={g} 
+                  className={`tag-btn ${filters.genre === g ? 'active' : ''}`}
+                  onClick={() => setFilters({...filters, genre: g})}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
 
-      <div className="filter-row">
-        <div className="filter-group">
-          <label>GENRE</label>
-          <select value={filters.genre} onChange={(e) => setFilters({...filters, genre: e.target.value})}>
-            {availableGenres.map(g => <option key={g} value={g}>{g}</option>)}
-          </select>
-        </div>
+            {/* ВЫПАДАЮЩЕЕ ОКНО ФИЛЬТРОВ */}
+            {isFilterOpen && (
+              <div className="filter-dropdown">
+                <div className="filter-group">
+                  <div className="filter-label-row">
+                    <label>BPM RANGE</label>
+                    <span className="range-value">{filters.bpmMin} — {filters.bpmMax}</span>
+                  </div>
+                  <div className="range-slider-container">
+                    <input 
+                      type="range" min="60" max="200" step="1"
+                      value={filters.bpmMin} 
+                      onChange={(e) => setFilters({...filters, bpmMin: Number(e.target.value)})} 
+                    />
+                    <input 
+                      type="range" min="60" max="200" step="1"
+                      value={filters.bpmMax} 
+                      onChange={(e) => setFilters({...filters, bpmMax: Number(e.target.value)})} 
+                    />
+                  </div>
+                </div>
 
-        <div className="filter-group">
-          <label>KEY</label>
-          <select value={filters.key} onChange={(e) => setFilters({...filters, key: e.target.value})}>
-            {availableKeys.map(k => <option key={k} value={k}>{k}</option>)}
-          </select>
-        </div>
-      </div>
+                <div className="filter-row">
+                  <div className="filter-group">
+                    <label>GENRE</label>
+                    <select value={filters.genre} onChange={(e) => setFilters({...filters, genre: e.target.value})}>
+                      {availableGenres.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                  </div>
 
-      <div className="filter-actions">
-        <button className="reset-btn" onClick={() => setFilters({bpmMin: 60, bpmMax: 200, genre: 'All', key: 'All'})}>RESET</button>
-        <button className="apply-btn" onClick={() => setIsFilterOpen(false)}>DONE</button>
-      </div>
-    </div>
-  )}
-</div>
+                  <div className="filter-group">
+                    <label>KEY</label>
+                    <select value={filters.key} onChange={(e) => setFilters({...filters, key: e.target.value})}>
+                      {availableKeys.map(k => <option key={k} value={k}>{k}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="filter-actions">
+                  <button className="reset-btn" onClick={() => setFilters({bpmMin: 60, bpmMax: 200, genre: 'All', key: 'All'})}>RESET</button>
+                  <button className="apply-btn" onClick={() => setIsFilterOpen(false)}>DONE</button>
+                </div>
+              </div>
+            )}
+          </div> {/* Конец search-container */}
+
     
     <div className="beat-list">
       {(activeTab === 'favs' ? filteredBeats.filter(b => favorites.includes(b.id)) : filteredBeats).map(beat => (
