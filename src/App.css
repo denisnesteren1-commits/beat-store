@@ -921,3 +921,201 @@ body {
   border-radius: 12px;
   font-weight: 900;
 }
+
+/* --- СТИЛИ РАЗВЕРНУТОГО ПЛЕЕРА --- */
+
+.full-player {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 2000;
+  transform: translateY(100%); /* Спрятан внизу */
+  transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  display: flex;
+  flex-direction: column;
+  padding: 40px 25px;
+  overflow-y: auto; /* На случай, если описание длинное */
+}
+
+.full-player.open {
+  transform: translateY(0); /* Вылетает вверх */
+}
+
+.close-player {
+  background: none;
+  border: none;
+  color: #fff;
+  padding: 10px 0;
+  margin-bottom: 10px;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.full-player-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.full-cover {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+  margin-bottom: 30px;
+}
+
+.beat-info-full {
+  width: 100%;
+}
+
+.full-main-info h1 {
+  font-size: 28px;
+  margin: 0;
+  color: #fff;
+}
+
+.full-genre {
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 5px 0 25px;
+}
+
+/* --- ПОЛОСА ПРОКРУТКИ --- */
+.full-progress-container {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.full-seek-bar {
+  width: 100%;
+  height: 6px;
+  appearance: none;
+  background: #222;
+  border-radius: 3px;
+  outline: none;
+}
+
+.full-seek-bar::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #666;
+  margin-top: 10px;
+  font-family: monospace;
+}
+
+/* --- КНОПКИ УПРАВЛЕНИЯ --- */
+.full-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.control-btn.secondary {
+  opacity: 0.4;
+  font-size: 20px;
+}
+
+.control-btn.secondary.active {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.control-btn.play-pause {
+  background: #fff;
+  color: #000;
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* --- ХАРАКТЕРИСТИКИ --- */
+.full-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-box {
+  background: #111;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #1a1a1a;
+  text-align: center;
+}
+
+.stat-box span {
+  display: block;
+  font-size: 10px;
+  color: #555;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.stat-box strong {
+  font-size: 18px;
+  color: #fff;
+}
+
+/* --- ОПИСАНИЕ И АДМИН-КНОПКА --- */
+.full-description label {
+  font-size: 10px;
+  color: #555;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.full-description p {
+  color: #888;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.edit-beat-btn {
+  width: 100%;
+  padding: 18px;
+  background: transparent;
+  border: 1px solid #333;
+  color: #fff;
+  border-radius: 15px;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 50px;
+}

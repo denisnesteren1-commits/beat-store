@@ -303,6 +303,41 @@ function App() {
       setUploadProgress(0);
     }
   };
+  // --- ЛОГИКА УЛУЧШЕННОГО ПЛЕЕРА ---
+  
+  // 1. Состояние для зацикливания трека
+  const [isLooping, setIsLooping] = useState(false);
+
+  // 2. Функция включения/выключения повтора
+  const toggleLoop = (e) => {
+    if (e) e.stopPropagation();
+    const newLoop = !isLooping;
+    setIsLooping(newLoop);
+    if (audioRef.current) {
+      audioRef.current.loop = newLoop;
+    }
+    if (tg) tg.HapticFeedback.impactOccurred('light');
+  };
+
+  // 3. Функция для переключения на СЛЕДУЮЩИЙ бит
+  const playNext = (e) => {
+    if (e) e.stopPropagation();
+    if (beats.length === 0) return;
+    const currentIndex = beats.findIndex(b => b.id === currentBeatId);
+    const nextIndex = (currentIndex + 1) % beats.length;
+    playBeat(beats[nextIndex]);
+    if (tg) tg.HapticFeedback.impactOccurred('medium');
+  };
+
+  // 4. Функция для переключения на ПРЕДЫДУЩИЙ бит
+  const playPrev = (e) => {
+    if (e) e.stopPropagation();
+    if (beats.length === 0) return;
+    const currentIndex = beats.findIndex(b => b.id === currentBeatId);
+    const prevIndex = (currentIndex - 1 + beats.length) % beats.length;
+    playBeat(beats[prevIndex]);
+    if (tg) tg.HapticFeedback.impactOccurred('medium');
+  };
 
   // 4. ОТОБРАЖЕНИЕ (RENDER)
   if (activeTab === 'admin') {
@@ -706,67 +741,32 @@ function App() {
      {/* 1. НИЖНИЙ МИНИ-ПЛЕЕР */}
       {currentBeatId && (
         <div className="mini-player" onClick={() => setIsPlayerExpanded(true)} style={{ cursor: 'pointer' }}>
-          {/* Фоновая заливка прогресса */}
-          <div 
-            className="player-progress-fill" 
-            style={{ width: `${progress}%` }}
-          ></div>
-
+          <div className="player-progress-fill" style={{ width: `${progress}%` }}></div>
           <div className="mini-player-content">
-            <img 
-              src={beats.find(b => b.id === currentBeatId)?.image} 
-              alt="cover" 
-              className="mini-cover" 
-            />
-            
+            <img src={beats.find(b => b.id === currentBeatId)?.image} alt="cover" className="mini-cover" />
             <div className="mini-info">
-              <div className="mini-title">
-                {beats.find(b => b.id === currentBeatId)?.title}
-              </div>
+              <div className="mini-title">{beats.find(b => b.id === currentBeatId)?.title}</div>
               <div className="mini-author">FRESSO</div>
             </div>
-
             <div className="mini-controls">
-              {/* Кнопка Лайка */}
-              <button 
-                className="mini-btn mini-fav-btn" 
-                onClick={(e) => { 
-                  e.stopPropagation(); // Важно: не открывает плеер
-                  toggleFav(currentBeatId); 
-                }}
-              >
+              <button className="mini-btn mini-fav-btn" onClick={(e) => { e.stopPropagation(); toggleFav(currentBeatId); }}>
                 {favorites.includes(currentBeatId) ? "❤️" : "🤍"}
               </button>
-
-              {/* Кнопка Плей/Пауза */}
-              <button 
-                className="mini-btn mini-play-btn" 
-                onClick={(e) => { 
-                  e.stopPropagation(); // Важно: не открывает плеер
-                  setIsPlaying(!isPlaying); 
-                }}
-              >
+              <button className="mini-btn mini-play-btn" onClick={(e) => { e.stopPropagation(); setIsPlaying(!isPlaying); }}>
                 {isPlaying ? "||" : "▶"}
               </button>
-              
-              {/* Кнопка Закрыть */}
-              <button 
-                className="mini-btn mini-close-btn" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (audioRef.current) audioRef.current.pause();
-                  setCurrentBeatId(null);
-                  setIsPlaying(false);
-                }}
-              >
-                ✕
-              </button>
+              <button className="mini-btn mini-close-btn" onClick={(e) => {
+                e.stopPropagation();
+                if (audioRef.current) audioRef.current.pause();
+                setCurrentBeatId(null);
+                setIsPlaying(false);
+              }}>✕</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* РАЗВЕРНУТАЯ КАРТОЧКА БИТА (FULL PLAYER) */}
+      {/* 2. РАЗВЕРНУТАЯ КАРТОЧКА БИТА (FULL PLAYER) */}
       <div className={`full-player ${isPlayerExpanded ? 'open' : ''}`}>
         <button className="close-player" onClick={(e) => { 
           e.stopPropagation(); 
@@ -788,12 +788,39 @@ function App() {
             
             {!isEditing ? (
               <div className="beat-info-full">
-                <h1>{beats.find(b => b.id === currentBeatId).title}</h1>
-                <p className="full-genre">{beats.find(b => b.id === currentBeatId).genre}</p>
-                
-                <div className="full-stats">
-                  <div className="stat"><span>BPM</span><strong>{beats.find(b => b.id === currentBeatId).bpm}</strong></div>
-                  <div className="stat"><span>KEY</span><strong>{beats.find(b => b.id === currentBeatId).key}</strong></div>
+                <div className="full-main-info">
+                  <h1>{beats.find(b => b.id === currentBeatId).title}</h1>
+                  <p className="full-genre">{beats.find(b => b.id === currentBeatId).genre}</p>
+                </div>
+
+                <div className="full-progress-container">
+                  <input type="range" className="full-seek-bar" value={progress} onChange={handleSeek} />
+                  <div className="time-info">
+                    <span>{Math.floor(audioRef.current?.currentTime || 0 / 60)}:{( '0' + Math.floor(audioRef.current?.currentTime || 0 % 60)).slice(-2)}</span>
+                    <span>{Math.floor(audioRef.current?.duration || 0 / 60)}:{( '0' + Math.floor(audioRef.current?.duration || 0 % 60)).slice(-2)}</span>
+                  </div>
+                </div>
+
+                <div className="full-controls">
+                  <button className={`control-btn secondary ${isLooping ? 'active' : ''}`} onClick={toggleLoop}>🔁</button>
+                  <button className="control-btn main" onClick={playPrev}>⏮</button>
+                  <button className="control-btn play-pause" onClick={() => setIsPlaying(!isPlaying)}>
+                    {isPlaying ? "||" : "▶"}
+                  </button>
+                  <button className="control-btn main" onClick={playNext}>⏭</button>
+                  <button className="control-btn secondary" onClick={() => toggleFav(currentBeatId)}>
+                    {favorites.includes(currentBeatId) ? "❤️" : "🤍"}
+                  </button>
+                </div>
+
+                <div className="full-stats-grid">
+                  <div className="stat-box"><span>BPM</span><strong>{beats.find(b => b.id === currentBeatId).bpm}</strong></div>
+                  <div className="stat-box"><span>KEY</span><strong>{beats.find(b => b.id === currentBeatId).key}</strong></div>
+                </div>
+
+                <div className="full-description">
+                  <label>DESCRIPTION</label>
+                  <p>{beats.find(b => b.id === currentBeatId).description || "Original production by FRESSO. High quality industry standard beat."}</p>
                 </div>
 
                 {tg?.initDataUnsafe?.user?.id === ADMIN_ID && (
@@ -801,18 +828,17 @@ function App() {
                 )}
               </div>
             ) : (
-              <div className="edit-mode-placeholder">
-                <h2 style={{color: 'var(--accent)'}}>Editing Mode</h2>
-                <p>Форма редактора будет здесь...</p>
-                <button className="reset-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+              <div className="edit-form-full">
+                 <h2 style={{color: 'var(--accent)', marginBottom: '20px'}}>Edit Mode</h2>
+                 <p style={{color: '#666'}}>Форма редактирования...</p>
+                 <button className="apply-btn" style={{marginTop: '20px'}} onClick={() => setIsEditing(false)}>Back</button>
               </div>
             )}
           </div>
         )}
       </div>
-
-    </div> // Закрывает app-container
+    </div> // Конец app-container
   );
-}
+}; // Конец App
 
 export default App;
