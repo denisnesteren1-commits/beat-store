@@ -760,8 +760,7 @@ function App() {
                       {('0' + Math.floor((audioRef.current?.currentTime || 0) % 60)).slice(-2)}
                     </span>
                     <span>
-                      {Math.floor((audioRef.current?.duration || 0) / 60)}:
-                      {('0' + Math.floor((audioRef.current?.duration || 0) % 60)).slice(-2)}
+                     {Math.floor(audioRef.current?.duration / 60)}:{('0' + Math.floor(audioRef.current?.duration % 60)).slice(-2)}
                     </span>
                   </div>
                 </div>
