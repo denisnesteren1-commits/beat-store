@@ -627,9 +627,10 @@ body {
 }
 /* --- СТИЛИ ПОИСКА И ФИЛЬТРОВ --- */
 .search-container {
-  padding: 10px 20px;
+  padding: 15px 20px;
   position: relative;
   z-index: 100;
+  background: #000;
 }
 
 .search-bar {
@@ -664,7 +665,6 @@ body {
   outline: none;
 }
 
-/* Кнопка открытия фильтров */
 .filter-toggle-btn {
   width: 48px;
   height: 48px;
@@ -734,6 +734,7 @@ body {
   pointer-events: none;
   appearance: none;
   background: none;
+  outline: none;
 }
 
 .range-slider-container input::-webkit-slider-thumb {
@@ -747,7 +748,7 @@ body {
   border: 2px solid var(--accent);
 }
 
-/* Ряд жанров и тональностей */
+/* Ряд жанров */
 .filter-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -765,7 +766,6 @@ body {
   outline: none;
 }
 
-/* Кнопки действий */
 .filter-actions {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
@@ -793,15 +793,6 @@ body {
   font-size: 12px;
 }
 
-/* Состояние "Ничего не найдено" */
-.empty-search {
-  text-align: center;
-  padding: 50px;
-  color: #444;
-  font-weight: 700;
-  font-size: 14px;
-}
-
 /* --- КАРТОЧКА БИТА (ЧИСТАЯ ВЕРСИЯ) --- */
 .beat-card {
   background: #0f0f0f;
@@ -812,6 +803,7 @@ body {
   gap: 15px;
   margin-bottom: 10px;
   transition: background 0.2s;
+  border: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 .beat-card:active {
@@ -820,8 +812,8 @@ body {
 
 .beat-cover {
   position: relative;
-  width: 50px;
-  height: 50px;
+  width: 52px;
+  height: 52px;
   flex-shrink: 0;
 }
 
@@ -832,7 +824,6 @@ body {
   object-fit: cover;
 }
 
-/* Индикатор проигрывания на обложке */
 .play-ico {
   position: absolute;
   top: 0;
@@ -856,7 +847,7 @@ body {
 
 .beat-body {
   flex-grow: 1;
-  min-width: 0; /* Важно для обрезки текста */
+  min-width: 0;
 }
 
 .beat-name-row {
@@ -885,24 +876,23 @@ body {
   flex-shrink: 0;
 }
 
-/* --- КНОПКИ ПЛЕЕРА (ИСПРАВЛЕНИЕ ЦВЕТА) --- */
-/* Чтобы кнопки не были черными */
+/* --- КНОПКИ УПРАВЛЕНИЯ ПЛЕЕРОМ --- */
 .control-btn, .mini-play-btn, .main-skip {
   color: #fff !important;
   fill: #fff !important;
   background: none;
   border: none;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
-.control-btn svg, .mini-play-btn svg {
+.control-btn svg, .mini-play-btn svg, .main-skip svg {
   fill: #fff !important;
 }
 
-/* Белый круг для основной кнопки Play в развернутом плеере */
+/* Главная кнопка в развернутом плеере */
 .play-pause-circle {
   width: 72px;
   height: 72px;
@@ -912,8 +902,17 @@ body {
   align-items: center;
   justify-content: center;
   border: none;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
 .play-pause-circle svg {
-  fill: #000 !important; /* На белом круге иконка черная */
+  fill: #000 !important; /* Черная иконка на белой кнопке */
+}
+
+.empty-search {
+  text-align: center;
+  padding: 60px 20px;
+  color: #444;
+  font-size: 14px;
+  font-weight: 600;
 }
