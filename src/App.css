@@ -859,32 +859,38 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 13px;
 }
 
-/* Слайдеры BPM */
+/* ИСПРАВЛЕННЫЕ СЛАЙДЕРЫ BPM (Без перечеркивания) */
 .range-slider-container {
   position: relative;
-  height: 20px;
+  height: 4px; /* Тонкая линия */
+  background: #252525;
+  margin: 15px 0;
   display: flex;
   align-items: center;
+  border-radius: 2px;
 }
 
 .range-slider-container input {
   position: absolute;
   width: 100%;
-  pointer-events: none;
+  pointer-events: none; /* Клик проходит сквозь инпут */
   appearance: none;
+  -webkit-appearance: none;
   background: none;
   outline: none;
 }
 
 .range-slider-container input::-webkit-slider-thumb {
-  pointer-events: auto;
+  pointer-events: auto; /* Кликабелен только сам кружок */
   appearance: none;
-  width: 18px;
-  height: 18px;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
   background: #fff;
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid var(--accent);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
 /* Ряд жанров */
@@ -932,28 +938,30 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 12px;
 }
 
-/* --- КАРТОЧКА БИТА (ЧИСТАЯ ВЕРСИЯ) --- */
+/* --- КАРТОЧКА БИТА (APPLE MUSIC STYLE) --- */
 .beat-card {
-  background: #0f0f0f;
+  background: rgba(255, 255, 255, 0.03); /* Едва заметный фон */
   border-radius: 12px;
   padding: 12px;
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-bottom: 10px;
-  transition: background 0.2s;
-  border: 1px solid rgba(255, 255, 255, 0.02);
+  margin-bottom: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.05); /* Тонкая линия разделитель */
 }
 
 .beat-card:active {
-  background: #1a1a1a;
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(0.98);
 }
 
 .beat-cover {
   position: relative;
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4); /* Объемная тень обложки */
 }
 
 .beat-cover img {
@@ -969,19 +977,20 @@ input[type="range"]::-webkit-slider-thumb {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
+  opacity: 1;
 }
 
 .center-dot {
   width: 10px;
   height: 10px;
-  background: var(--accent);
+  background: #fff; /* Белая точка как в плеере Apple */
   border-radius: 50%;
-  box-shadow: 0 0 12px var(--accent);
+  box-shadow: 0 0 12px rgba(255,255,255,0.8);
 }
 
 .beat-body {
@@ -990,29 +999,31 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .beat-name-row {
-  font-weight: 700;
-  font-size: 15px;
+  font-weight: 600;
+  font-size: 16px; /* Более крупный шрифт заголовка */
   color: #fff;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: -0.2px;
 }
 
 .beat-meta-row {
-  font-size: 12px;
-  color: #666;
-  font-weight: 500;
+  font-size: 13px;
+  color: #8a8a8e; /* Фирменный серый Apple */
+  font-weight: 400;
 }
 
 .beat-buy-btn {
-  background: #fff;
-  color: #000;
-  font-weight: 800;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 13px;
+  background: rgba(255, 255, 255, 0.08); /* Полупрозрачная кнопка */
+  color: #fff;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
   flex-shrink: 0;
+  border: none;
 }
 
 /* --- КНОПКИ УПРАВЛЕНИЯ ПЛЕЕРОМ --- */
