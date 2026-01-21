@@ -43,6 +43,42 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const audioRef = useRef(new Audio());
+  // --- ЛОГИКА ФИЛЬТРАЦИИ (START) ---
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const [filters, setFilters] = useState({
+    bpmMin: 60,
+    bpmMax: 200,
+    genre: 'All',
+    key: 'All'
+  });
+
+  // Автоматический сбор жанров из имеющихся битов
+  const availableGenres = ['All', ...new Set(beats.map(b => b.genre).filter(Boolean))];
+
+  // Список тональностей
+  const availableKeys = ['All', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm'];
+  // --- ЛОГИКА ФИЛЬТРАЦИИ (END) ---
+
+  // Вычисляем список битов, подходящих под условия
+  const filteredBeats = beats.filter(beat => {
+    // 1. Поиск (по названию или тегам)
+    const matchesSearch = 
+      beat.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      beat.tags?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // 2. Диапазон BPM
+    const matchesBPM = beat.bpm >= filters.bpmMin && beat.bpm <= filters.bpmMax;
+    
+    // 3. Жанр (если выбрано 'All' — подходят все)
+    const matchesGenre = filters.genre === 'All' || beat.genre === filters.genre;
+    
+    // 4. Тональность (Key)
+    const matchesKey = filters.key === 'All' || beat.key === filters.key;
+
+    return matchesSearch && matchesBPM && matchesGenre && matchesKey;
+  });
 
   // 2. ЭФФЕКТЫ (EFFECTS)
 
@@ -421,11 +457,77 @@ function App() {
         ЛЮБИМЫЕ ({favorites.length})
       </span>
     </div>
+
+    {/* ПОИСК И КНОПКА ФИЛЬТРА */}
+<div className="search-container">
+  <div className="search-bar">
+    <div className="search-input-wrapper">
+      <span className="search-icon">🔍</span>
+      <input 
+        type="text" 
+        placeholder="Search title, tags..." 
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+    </div>
+    <button 
+      className={`filter-toggle-btn ${isFilterOpen ? 'active' : ''}`}
+      onClick={() => setIsFilterOpen(!isFilterOpen)}
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+        <path d="M4 6h16M4 12h10M4 18h16" />
+      </svg>
+    </button>
+  </div>
+
+  {/* ВЫПАДАЮЩЕЕ ОКНО ФИЛЬТРОВ */}
+  {isFilterOpen && (
+    <div className="filter-dropdown">
+      <div className="filter-group">
+        <div className="filter-label-row">
+          <label>BPM RANGE</label>
+          <span className="range-value">{filters.bpmMin} — {filters.bpmMax}</span>
+        </div>
+        <div className="range-slider-container">
+          <input 
+            type="range" min="60" max="200" step="1"
+            value={filters.bpmMin} 
+            onChange={(e) => setFilters({...filters, bpmMin: Number(e.target.value)})} 
+          />
+          <input 
+            type="range" min="60" max="200" step="1"
+            value={filters.bpmMax} 
+            onChange={(e) => setFilters({...filters, bpmMax: Number(e.target.value)})} 
+          />
+        </div>
+      </div>
+
+      <div className="filter-row">
+        <div className="filter-group">
+          <label>GENRE</label>
+          <select value={filters.genre} onChange={(e) => setFilters({...filters, genre: e.target.value})}>
+            {availableGenres.map(g => <option key={g} value={g}>{g}</option>)}
+          </select>
+        </div>
+
+        <div className="filter-group">
+          <label>KEY</label>
+          <select value={filters.key} onChange={(e) => setFilters({...filters, key: e.target.value})}>
+            {availableKeys.map(k => <option key={k} value={k}>{k}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div className="filter-actions">
+        <button className="reset-btn" onClick={() => setFilters({bpmMin: 60, bpmMax: 200, genre: 'All', key: 'All'})}>RESET</button>
+        <button className="apply-btn" onClick={() => setIsFilterOpen(false)}>DONE</button>
+      </div>
+    </div>
+  )}
+</div>
     
     <div className="beat-list">
-      {beats
-        .filter(b => activeTab === 'favs' ? favorites.includes(b.id) : true)
-        .map(beat => (
+      {(activeTab === 'favs' ? filteredBeats.filter(b => favorites.includes(b.id)) : filteredBeats).map(beat => (
           <div key={beat.id} className="beat-card" onClick={() => playBeat(beat)}>
             
             <div className="beat-cover">

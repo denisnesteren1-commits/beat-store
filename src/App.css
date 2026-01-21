@@ -625,3 +625,179 @@ body {
   70% { transform: scale(1.04); box-shadow: 0 0 0 12px rgba(255, 51, 51, 0); }
   100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); }
 }
+/* --- СТИЛИ ПОИСКА И ФИЛЬТРОВ --- */
+.search-container {
+  padding: 10px 20px;
+  position: relative;
+  z-index: 100;
+}
+
+.search-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-input-wrapper {
+  flex: 1;
+  background: #121212;
+  border: 1px solid #222;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  height: 48px;
+}
+
+.search-icon {
+  margin-right: 10px;
+  font-size: 14px;
+  opacity: 0.5;
+}
+
+.search-input-wrapper input {
+  background: none;
+  border: none;
+  color: #fff;
+  width: 100%;
+  font-size: 15px;
+  outline: none;
+}
+
+/* Кнопка открытия фильтров */
+.filter-toggle-btn {
+  width: 48px;
+  height: 48px;
+  background: #121212;
+  border: 1px solid #222;
+  border-radius: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.filter-toggle-btn.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(255, 51, 51, 0.05);
+}
+
+/* Выпадающее окно фильтров */
+.filter-dropdown {
+  background: #121212;
+  border: 1px solid #222;
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 10px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.filter-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.range-value {
+  color: var(--accent);
+  font-weight: 900;
+  font-size: 13px;
+}
+
+/* Слайдеры BPM */
+.range-slider-container {
+  position: relative;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.range-slider-container input {
+  position: absolute;
+  width: 100%;
+  pointer-events: none;
+  appearance: none;
+  background: none;
+}
+
+.range-slider-container input::-webkit-slider-thumb {
+  pointer-events: auto;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--accent);
+}
+
+/* Ряд жанров и тональностей */
+.filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.filter-group select {
+  width: 100%;
+  background: #000;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  outline: none;
+}
+
+/* Кнопки действий */
+.filter-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.reset-btn {
+  background: none;
+  border: 1px solid #333;
+  color: #666;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.apply-btn {
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+/* Состояние "Ничего не найдено" */
+.empty-search {
+  text-align: center;
+  padding: 50px;
+  color: #444;
+  font-weight: 700;
+  font-size: 14px;
+}
