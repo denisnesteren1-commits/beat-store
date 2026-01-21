@@ -625,153 +625,142 @@ body {
   70% { transform: scale(1.04); box-shadow: 0 0 0 12px rgba(255, 51, 51, 0); }
   100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); }
 }
-/* --- ГЛОБАЛЬНЫЕ ИСПРАВЛЕНИЯ --- */
+/* --- 1. ГЛОБАЛЬНЫЕ ИСПРАВЛЕНИЯ ЦВЕТОВ И ПОЛЗУНКОВ --- */
 :root {
   --accent: #ff3333;
 }
 
-/* СТИЛЬ ПОЛЗУНКОВ (BPM и Плеер) — убираем синий цвет */
+/* Убираем синий цвет и настраиваем ползунки (BPM и время) */
 input[type="range"] {
   -webkit-appearance: none;
   width: 100%;
   background: transparent;
+  outline: none;
+  margin: 0;
 }
 
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  background: #fff; /* Белый ползунок */
-  cursor: pointer;
-  margin-top: -6px; 
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
-}
-
+/* Дорожка слайдера */
 input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
   height: 4px;
-  background: #333; /* Цвет дорожки */
+  background: #333;
   border-radius: 2px;
 }
 
-/* --- ВЫПАДАЮЩИЕ ФИЛЬТРЫ (Кнопки и Списки) --- */
-.filter-dropdown {
-  background: #111;
-  border-radius: 24px;
-  padding: 24px;
-  border: 1px solid #222;
+/* Сам кружок (thumb) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: #fff; /* Чисто белый */
+  cursor: pointer;
+  margin-top: -7px; /* Центрируем относительно дорожки */
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
+/* --- 2. ПОИСК И ФИЛЬТРЫ (Более сочный вид) --- */
+.search-input-wrapper {
+  background: #111;
+  border: 1px solid #222;
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-input-wrapper:focus-within {
+  border-color: #444;
+  background: #161616;
+}
+
+.filter-toggle-btn.active {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+/* Кнопки в фильтрах - теперь не "стремные" */
 .filter-group select {
-  appearance: none;
-  background: #1a1a1a;
+  appearance: none; /* Убирает стандартную стрелочку браузера */
+  background: #1a1a1a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C2.185 5.355 2.403 5 2.808 5h10.384a.25.25 0 0 1 .19.408l-4.796 5.48a.25.25 0 0 1-.375 0z'/%3E%3C/svg%3E") no-repeat calc(100% - 12px) center;
   border: 1px solid #333;
-  color: #fff;
-  padding: 12px;
-  border-radius: 12px;
-  font-weight: 600;
+  padding: 12px 35px 12px 15px;
   font-size: 14px;
-  outline: none;
 }
 
 .apply-btn {
-  background: #fff !important;
-  color: #000 !important;
-  border-radius: 14px !important;
-  font-weight: 900 !important;
-  text-transform: uppercase;
+  background: #fff;
+  color: #000;
+  transition: transform 0.1s;
 }
 
-/* --- FULL PLAYER (Та самая карта, которая выезжает снизу) --- */
+.apply-btn:active {
+  transform: scale(0.95);
+}
+
+/* --- 3. КАРТОЧКА БИТА (С анимацией появления) --- */
+.beat-card {
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  /* Анимация: вылет снизу вверх при рендере */
+  animation: cardSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes cardSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Равномерные задержки, чтобы карточки вылетали по очереди */
+.beat-card:nth-child(1) { animation-delay: 0.1s; }
+.beat-card:nth-child(2) { animation-delay: 0.15s; }
+.beat-card:nth-child(3) { animation-delay: 0.2s; }
+
+.beat-name-row {
+  font-size: 16px; /* Чуть крупнее для читаемости */
+  letter-spacing: -0.3px;
+}
+
+/* --- 4. FULL PLAYER (Выдвижной экран) --- */
 .full-player {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   background: #000;
-  z-index: 999;
+  z-index: 9999;
   display: flex;
   flex-direction: column;
-  padding: 40px 30px;
+  padding: 40px 25px;
   
-  /* Начальное состояние — спрятан внизу */
+  /* Эффект выдвижения */
   transform: translateY(100%);
-  transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .full-player.open {
-  transform: translateY(0); /* Выезжает вверх */
+  transform: translateY(0);
 }
 
-.full-cover {
-  width: 100%;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+.full-player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 30px;
 }
 
-.full-main-info h1 {
-  font-size: 28px;
-  font-weight: 900;
-  margin-bottom: 5px;
-  color: #fff;
-}
-
-.full-genre {
-  color: #666;
-  font-size: 16px;
-  font-weight: 500;
-}
-
-/* --- КНОПКИ УПРАВЛЕНИЯ В ПЛЕЕРЕ --- */
-.main-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 30px;
-  margin-top: 40px;
-}
-
-.play-pause-circle {
-  width: 80px;
-  height: 80px;
-  background: #fff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #000;
-  border: none;
-}
-
-.control-btn.secondary {
+.close-player-btn {
   background: none;
   border: none;
-  color: #555;
-  transition: 0.2s;
+  color: #fff;
+  font-size: 24px;
 }
 
-.control-btn.secondary.active {
-  color: var(--accent);
-}
-
-/* --- МИНИ-ПЛЕЕР (Узкая полоска внизу) --- */
-.mini-player {
-  position: fixed;
-  bottom: 20px;
-  left: 15px;
-  right: 15px;
-  height: 64px;
-  background: rgba(20, 20, 20, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  z-index: 500;
-  border: 1px solid rgba(255,255,255,0.05);
+/* Кнопка Play в развернутом плеере */
+.play-pause-circle {
+  width: 75px;
+  height: 75px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 15px 35px rgba(255, 255, 255, 0.1);
 }
