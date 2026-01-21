@@ -20,12 +20,13 @@ function App() {
   const [userAvatar, setUserAvatar] = useState(
     localStorage.getItem('user_ava') || tg?.initDataUnsafe?.user?.photo_url || "https://via.placeholder.com/150"
   );
+
   // Данные для админки
   const [title, setTitle] = useState('');
   const [bpm, setBpm] = useState('');
   const [key, setKey] = useState('C');
   const [genre, setGenre] = useState('');
-  const [tags, setTags] = useState(''); // НОВОЕ ПОЛЕ
+  const [tags, setTags] = useState(''); 
   const [prices, setPrices] = useState({ mp3: '', wav: '', stems: '', excl: '' });
 
   // Файлы
@@ -37,16 +38,16 @@ function App() {
   const [coverPreview, setCoverPreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-
   // Плеер
   const [currentBeatId, setCurrentBeatId] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLooping, setIsLooping] = useState(false); // Добавлено сюда для стабильности
   const [progress, setProgress] = useState(0);
   const audioRef = useRef(new Audio());
-  // --- ЛОГИКА ФИЛЬТРАЦИИ (START) ---
+
+  // --- ЛОГИКА ФИЛЬТРАЦИИ ---
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-
   const [filters, setFilters] = useState({
     bpmMin: 60,
     bpmMax: 200,
@@ -57,27 +58,18 @@ function App() {
   const [isPlayerExpanded, setIsPlayerExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Автоматический сбор жанров из имеющихся битов
+  // Списки для выбора
   const availableGenres = ['All', ...new Set(beats.map(b => b.genre).filter(Boolean))];
-
-  // Список тональностей
   const availableKeys = ['All', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm'];
-  // --- ЛОГИКА ФИЛЬТРАЦИИ (END) ---
 
-  // Вычисляем список битов, подходящих под условия
+  // Вычисляем отфильтрованные биты
   const filteredBeats = beats.filter(beat => {
-    // 1. Поиск (по названию или тегам)
     const matchesSearch = 
       beat.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
       beat.tags?.toLowerCase().includes(searchQuery.toLowerCase());
     
-    // 2. Диапазон BPM
-    const matchesBPM = beat.bpm >= filters.bpmMin && beat.bpm <= filters.bpmMax;
-    
-    // 3. Жанр (если выбрано 'All' — подходят все)
+    const matchesBPM = Number(beat.bpm) >= filters.bpmMin && Number(beat.bpm) <= filters.bpmMax;
     const matchesGenre = filters.genre === 'All' || beat.genre === filters.genre;
-    
-    // 4. Тональность (Key)
     const matchesKey = filters.key === 'All' || beat.key === filters.key;
 
     return matchesSearch && matchesBPM && matchesGenre && matchesKey;
@@ -92,19 +84,22 @@ function App() {
       tg.expand();
     }
     const q = query(collection(db, "beats"), orderBy("createdAt", "desc"));
-    return onSnapshot(q, (snap) => {
+    const unsub = onSnapshot(q, (snap) => {
       setBeats(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
+    return () => unsub();
   }, []);
 
   // ГЛАВНЫЙ ЭФФЕКТ ПЛЕЕРА: Управляет проигрыванием/паузой
   useEffect(() => {
+    if (!audioRef.current.src && currentBeatId) return; // Защита от пустого источника
+
     if (isPlaying) {
       audioRef.current.play().catch(err => console.log("Ошибка воспроизведения:", err));
     } else {
       audioRef.current.pause();
     }
-  }, [isPlaying, currentBeatId]); // Срабатывает при смене трека или нажатии паузы
+  }, [isPlaying, currentBeatId]);
 
   // Синхронизация "Любимых" с памятью телефона
   useEffect(() => {
@@ -116,7 +111,6 @@ function App() {
     const audio = audioRef.current;
     
     const updateProgress = () => {
-      // Проверяем, что duration — это число, чтобы избежать NaN
       if (audio.duration && !isNaN(audio.duration)) {
         const val = (audio.currentTime / audio.duration) * 100;
         setProgress(val);
@@ -125,12 +119,11 @@ function App() {
 
     const handleTrackEnd = () => {
       if (isLooping) {
-        // Если включен повтор, просто играем заново
         audio.currentTime = 0;
         audio.play();
       } else {
-        // Если повтор выключен — включаем следующий бит
-        playNext();
+        // Вызываем функцию переключения (она будет в следующем блоке)
+        if (typeof playNext === 'function') playNext();
       }
     };
 
@@ -141,7 +134,7 @@ function App() {
       audio.removeEventListener('timeupdate', updateProgress);
       audio.removeEventListener('ended', handleTrackEnd);
     };
-  }, [isLooping, currentBeatId, beats]); // Важные зависимости!
+  }, [isLooping, currentBeatId, beats]); 
 
   // ЗАГРУЗКА: Черновик и Покупки
   useEffect(() => {
@@ -188,14 +181,14 @@ function App() {
     return data.secure_url;
   };
 
-  // Смена аватара профиля с сохранением в память
+  // Смена аватара профиля
   const changeAvatar = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const url = await uploadFile(file, 'image'); // Загружаем в облако
-      setUserAvatar(url); // Меняем в текущем окне
-      localStorage.setItem('user_ava', url); // СОХРАНЯЕМ В ПАМЯТЬ ТЕЛЕФОНА
+      const url = await uploadFile(file, 'image');
+      setUserAvatar(url);
+      localStorage.setItem('user_ava', url);
       if (tg) tg.showAlert("Фото профиля сохранено!");
     } catch (err) {
       alert("Ошибка загрузки фото");
@@ -208,38 +201,32 @@ function App() {
       const updated = isFav
         ? prev.filter(i => i !== id)
         : [...prev, id];
-
-      // 1. Сохраняем в память телефона
       localStorage.setItem('fresso_favs', JSON.stringify(updated));
-
-      // 2. Добавляем вибрацию для Telegram (приятный отклик)
       if (tg && !isFav) {
         tg.HapticFeedback.impactOccurred('light');
       }
-
       return updated;
     });
   };
 
   const playBeat = (beat) => {
-  if (currentBeatId === beat.id) {
-    // Если нажат тот же бит — просто переключаем паузу
-    setIsPlaying(!isPlaying);
-  } else {
-    // Если новый бит — меняем источник и включаем
-    audioRef.current.src = beat.audio;
-    setCurrentBeatId(beat.id);
-    setIsPlaying(true);
-    // audioRef.current.play(); // Эту строку можно убрать, так как сработает useEffect выше
-  }
-};
+    if (currentBeatId === beat.id) {
+      setIsPlaying(!isPlaying);
+    } else {
+      audioRef.current.src = beat.audio;
+      setCurrentBeatId(beat.id);
+      setIsPlaying(true);
+    }
+  };
 
   const handleSeek = (e) => {
-    const seekTime = (e.target.value / 100) * audioRef.current.duration;
-    audioRef.current.currentTime = seekTime;
-    setProgress(e.target.value);
+    if (audioRef.current.duration) {
+      const seekTime = (e.target.value / 100) * audioRef.current.duration;
+      audioRef.current.currentTime = seekTime;
+      setProgress(e.target.value);
+    }
   };
-  // Функция для плавной анимации процентов
+
   const simulateProgress = (start, end, duration) => {
     let current = start;
     const step = (end - start) / (duration / 50);
@@ -268,7 +255,6 @@ function App() {
     setZipFile(null);
     setExclFile(null);
     setCoverPreview(null);
-    // Сбрасываем сами инпуты (чтобы визуально очистить выбор файлов)
     document.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
     localStorage.removeItem('fresso_draft');
   };
@@ -276,8 +262,6 @@ function App() {
   const handlePublish = async () => {
     if (!title || !coverFile || !mp3File) return alert("Заполни базу: Название, Фото и MP3!");
     setUploading(true);
-
-    // Запускаем плавное движение до 85% (пока грузятся файлы)
     const progressInterval = simulateProgress(0, 85, 5000);
 
     try {
@@ -289,12 +273,11 @@ function App() {
         uploadFile(exclFile, 'video')
       ]);
 
-      clearInterval(progressInterval); // Останавливаем имитацию
-      setUploadProgress(90); // Файлы загружены
+      clearInterval(progressInterval);
+      setUploadProgress(90);
 
-      // ... внутри handlePublish в блоке try ...
       await addDoc(collection(db, "beats"), {
-        title, bpm, key, genre, tags, // Добавили tags
+        title, bpm: Number(bpm), key, genre, tags,
         image: img, audio: mp3, wavUrl: wav, zipUrl: zip, exclUrl: excl,
         priceMp3: prices.mp3, priceWav: prices.wav,
         priceStems: prices.stems, priceExcl: prices.excl,
@@ -302,15 +285,13 @@ function App() {
       });
 
       setUploadProgress(100);
-
       setTimeout(() => {
         setUploading(false);
         setActiveTab('shop');
         setUploadProgress(0);
-        resetForm(); // <--- ВОТ ЭТО ОЧИСТИТ ФОРМУ
+        resetForm();
         if (tg) tg.HapticFeedback.notificationOccurred('success');
       }, 600);
-
     } catch (e) {
       clearInterval(progressInterval);
       alert("Ошибка: " + e.message);
@@ -318,12 +299,7 @@ function App() {
       setUploadProgress(0);
     }
   };
-  // --- ЛОГИКА УЛУЧШЕННОГО ПЛЕЕРА ---
-  
-  // 1. Состояние для зацикливания трека
-  const [isLooping, setIsLooping] = useState(false);
 
-  // 2. Функция включения/выключения повтора
   const toggleLoop = (e) => {
     if (e) e.stopPropagation();
     const newLoop = !isLooping;
@@ -334,7 +310,6 @@ function App() {
     if (tg) tg.HapticFeedback.impactOccurred('light');
   };
 
-  // 3. Функция для переключения на СЛЕДУЮЩИЙ бит
   const playNext = (e) => {
     if (e) e.stopPropagation();
     if (beats.length === 0) return;
@@ -344,7 +319,6 @@ function App() {
     if (tg) tg.HapticFeedback.impactOccurred('medium');
   };
 
-  // 4. Функция для переключения на ПРЕДЫДУЩИЙ бит
   const playPrev = (e) => {
     if (e) e.stopPropagation();
     if (beats.length === 0) return;
@@ -375,12 +349,13 @@ function App() {
           <div className="upload-square" onClick={() => document.getElementById('cInp').click()}>
             {coverPreview ? <img src={coverPreview} alt="preview" /> : <span>ОБЛОЖКА</span>}
             <input id="cInp" type="file" hidden onChange={e => {
-              setCoverFile(e.target.files[0]);
-              setCoverPreview(URL.createObjectURL(e.target.files[0]));
+              if (e.target.files[0]) {
+                setCoverFile(e.target.files[0]);
+                setCoverPreview(URL.createObjectURL(e.target.files[0]));
+              }
             }} />
           </div>
 
-          {/* Секция текстовых полей */}
           <input
             className="fresso-input"
             placeholder="Название"
@@ -401,7 +376,8 @@ function App() {
           />
           <div className="fresso-row">
             <input className="fresso-input" placeholder="BPM" value={bpm} onChange={e => setBpm(e.target.value)} />
-            <input className="fresso-input" placeholder="Key" value={key} onChange={e => setKey(e.target.value)} />          </div>
+            <input className="fresso-input" placeholder="Key" value={key} onChange={e => setKey(e.target.value)} />
+          </div>
 
           <div className="price-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <input className="fresso-input" placeholder="MP3 $" value={prices.mp3} onChange={e => setPrices({ ...prices, mp3: e.target.value })} />
@@ -418,8 +394,6 @@ function App() {
               { id: 'f4', label: 'ZIP EXCLUSIVE', file: exclFile, set: setExclFile, accept: "*" },
             ].map((item) => (
               <div key={item.id} className={`file-row ${item.file ? 'ready' : ''}`}>
-
-                {/* Клик по этой части откроет выбор, только если файл еще НЕ выбран */}
                 <div
                   style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer' }}
                   onClick={() => !item.file && document.getElementById(item.id).click()}
@@ -430,26 +404,10 @@ function App() {
                   </span>
                 </div>
 
-                {/* Кнопка удаления и замены появляются только если файл уже есть */}
                 {item.file && (
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    {/* Кнопка УДАЛИТЬ */}
-                    <div
-                      onClick={() => item.set(null)}
-                      className="file-action-btn delete"
-                      title="Удалить"
-                    >
-                      🗑
-                    </div>
-
-                    {/* Кнопка ЗАМЕНИТЬ */}
-                    <div
-                      onClick={() => document.getElementById(item.id).click()}
-                      className="file-action-btn replace"
-                      title="Заменить"
-                    >
-                      🔄
-                    </div>
+                    <div onClick={() => item.set(null)} className="file-action-btn delete">🗑</div>
+                    <div onClick={() => document.getElementById(item.id).click()} className="file-action-btn replace">🔄</div>
                   </div>
                 )}
 
@@ -590,45 +548,41 @@ function App() {
                 </div>
               </div>
             )}
-          </div> {/* Конец search-container */}
-
-    
-    <div className="beat-list">
-      {(activeTab === 'favs' ? filteredBeats.filter(b => favorites.includes(b.id)) : filteredBeats).map(beat => (
-          <div key={beat.id} className="beat-card" onClick={() => playBeat(beat)}>
-            
-            <div className="beat-cover">
-              <img src={beat.image} alt="cover" />
-              
-              {/* ДЫШАЩАЯ ТОЧКА (Отображается только при игре этого бита) */}
-              {currentBeatId === beat.id && isPlaying && (
-                <div className="play-ico">
-                  <div className="center-dot"></div>
-                </div>
-              )}
-            </div>
-
-            <div className="beat-body">
-              <div className="beat-name-row">{beat.title}</div>
-              <div className="beat-meta-row">
-                {beat.bpm} BPM • {beat.key} • {beat.tags || 'PROD BY FRESSO'}
-              </div>
-            </div>
-
-            <div 
-              className="beat-buy-btn" 
-              onClick={(e) => {
-                e.stopPropagation(); // Чтобы при клике на цену не запускался плеер
-                console.log('Buy:', beat.title);
-              }}
-            >
-              ${beat.priceMp3}
-            </div>
           </div>
-      ))}
-    </div>
-  </div>
-)}
+
+          <div className="beat-list">
+            {(activeTab === 'favs' ? filteredBeats.filter(b => favorites.includes(b.id)) : filteredBeats).map(beat => (
+              <div key={beat.id} className="beat-card" onClick={() => playBeat(beat)}>
+                <div className="beat-cover">
+                  <img src={beat.image} alt="cover" />
+                  {currentBeatId === beat.id && isPlaying && (
+                    <div className="play-ico">
+                      <div className="center-dot"></div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="beat-body">
+                  <div className="beat-name-row">{beat.title}</div>
+                  <div className="beat-meta-row">
+                    {beat.bpm} BPM • {beat.key} • {beat.tags || 'PROD BY FRESSO'}
+                  </div>
+                </div>
+
+                <div 
+                  className="beat-buy-btn" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log('Buy:', beat.title);
+                  }}
+                >
+                  ${beat.priceMp3}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 3. ПРОФИЛЬ */}
       {activeTab === 'profile' && (
@@ -649,33 +603,27 @@ function App() {
           <h1 className="profile-name">{tg?.initDataUnsafe?.user?.first_name || "Fresso Producer"}</h1>
           <p className="profile-handle">@{tg?.initDataUnsafe?.user?.username || "fresso"}</p>
 
-          {/* КНОПКА АДМИНА (ТОЛЬКО ДЛЯ ТЕБЯ) */}
           {Number(tg?.initDataUnsafe?.user?.id) === 856199923 && (
             <button className="add-btn-main" onClick={() => setActiveTab('admin')}>
               ДОБАВИТЬ БИТ
             </button>
           )}
 
-          {/* МЕНЮ КНОПОК */}
           <div className="p-menu-list">
             <button className="p-menu-item" onClick={() => setActiveTab('my_purchases')}>
               МОИ ПОКУПКИ <span>🎹</span>
             </button>
-            
-            {/* НОВАЯ КНОПКА (ЗАГЛУШКА) */}
             <button className="p-menu-item" onClick={() => tg?.showAlert("Настройка оплаты появится в ближайшем обновлении!")}>
               СПОСОБЫ ОПЛАТЫ <span>💳</span>
             </button>
-
             <button className="p-menu-item" onClick={() => window.open('https://t.me/Fr1sso')}>
               ПОДДЕРЖКА <span>💬</span>
             </button>
           </div>
 
-          {/* СОЦИАЛЬНЫЕ СЕТИ ТЕПЕРЬ В САМОМ НИЗУ */}
           <div className="social-container-main">
             <div className="social-grid">
-              <div className="social-item tiktok" onClick={() => window.open('https://www.tiktok.com/@fresso10?_r=1&_t=ZS-93Addee28Pf')}>
+              <div className="social-item tiktok" onClick={() => window.open('https://www.tiktok.com/@fresso10')}>
                 <i className="fa-brands fa-tiktok"></i>
               </div>
               <div className="social-item youtube" onClick={() => window.open('https://youtube.com/@fressobeats3787')}>
@@ -685,7 +633,6 @@ function App() {
                 <i className="fa-brands fa-instagram"></i>
               </div>
             </div>
-
             <div className="social-grid">
               <div className="social-item soundcloud" onClick={() => window.open('https://soundcloud.com/de-nys-nes321')}>
                 <i className="fa-brands fa-soundcloud"></i>
@@ -702,60 +649,57 @@ function App() {
       )}
 
       {/* 4. МОИ ПОКУПКИ */}
-{activeTab === 'my_purchases' && (
-  <div className="purchases-view">
-    {/* Шапка с кнопкой назад */}
-    <div className="admin-header" style={{ width: '100%' }}>
-      <div className="back-area" onClick={() => setActiveTab('profile')}>
-        <span className="back-arrow">←</span>
-      </div>
-      <div className="admin-title">МОИ ПОКУПКИ</div>
-      <div style={{ width: 44 }}></div> {/* Пустой блок для симметрии заголовка */}
-    </div>
-
-    {myPurchases.length === 0 ? (
-      <div className="empty-state">
-        <p className="no-purchases-msg">У вас пока нет купленных битов 🎶</p>
-        <button className="shop-now-btn" onClick={() => setActiveTab('shop')}>
-          ВЫБРАТЬ БИТ
-        </button>
-      </div>
-    ) : (
-      <div className="purchases-list" style={{ marginTop: '20px', width: '100%' }}>
-        {myPurchases.map((pur) => (
-          <div key={pur.id} className="purchase-card">
-            <div className="pur-main-info">
-              {/* Мини-обложка */}
-              <div className="pur-cover-mini">
-                <img src={pur.image || 'https://via.placeholder.com/150'} alt="cover" />
-              </div>
-              
-              <div className="pur-text-content">
-                <div className="pur-header-row">
-                  <span className="pur-title">{pur.beatTitle}</span>
-                  <span className="pur-license">{pur.licenseName}</span>
-                </div>
-                <div className="pur-meta">
-                  {pur.bpm} BPM • {pur.key}
-                </div>
-              </div>
+      {activeTab === 'my_purchases' && (
+        <div className="purchases-view">
+          <div className="admin-header" style={{ width: '100%' }}>
+            <div className="back-area" onClick={() => setActiveTab('profile')}>
+              <span className="back-arrow">←</span>
             </div>
-
-            <button 
-              className="download-btn" 
-              onClick={() => pur.fileUrl && window.open(pur.fileUrl)}
-            >
-              СКАЧАТЬ ФАЙЛ ⬇️
-            </button>
+            <div className="admin-title">МОИ ПОКУПКИ</div>
+            <div style={{ width: 44 }}></div>
           </div>
-        ))}
-      </div>
-    )}
-  </div>
-)}      
-     {/* 1. НИЖНИЙ МИНИ-ПЛЕЕР */}
+
+          {myPurchases.length === 0 ? (
+            <div className="empty-state">
+              <p className="no-purchases-msg">У вас пока нет купленных битов 🎶</p>
+              <button className="shop-now-btn" onClick={() => setActiveTab('shop')}>
+                ВЫБРАТЬ БИТ
+              </button>
+            </div>
+          ) : (
+            <div className="purchases-list" style={{ marginTop: '20px', width: '100%' }}>
+              {myPurchases.map((pur) => (
+                <div key={pur.id} className="purchase-card">
+                  <div className="pur-main-info">
+                    <div className="pur-cover-mini">
+                      <img src={pur.image || 'https://via.placeholder.com/150'} alt="cover" />
+                    </div>
+                    <div className="pur-text-content">
+                      <div className="pur-header-row">
+                        <span className="pur-title">{pur.beatTitle}</span>
+                        <span className="pur-license">{pur.licenseName}</span>
+                      </div>
+                      <div className="pur-meta">
+                        {pur.bpm} BPM • {pur.key}
+                      </div>
+                    </div>
+                  </div>
+                  <button 
+                    className="download-btn" 
+                    onClick={() => pur.fileUrl && window.open(pur.fileUrl)}
+                  >
+                    СКАЧАТЬ ФАЙЛ ⬇️
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 5. НИЖНИЙ МИНИ-ПЛЕЕР */}
       {currentBeatId && (
-        <div className="mini-player" onClick={() => setIsPlayerExpanded(true)} style={{ cursor: 'pointer' }}>
+        <div className="mini-player" onClick={() => setIsPlayerExpanded(true)}>
           <div className="player-progress-fill" style={{ width: `${progress}%` }}></div>
           <div className="mini-player-content">
             <img src={beats.find(b => b.id === currentBeatId)?.image} alt="cover" className="mini-cover" />
@@ -781,7 +725,7 @@ function App() {
         </div>
       )}
 
-      {/* 2. РАЗВЕРНУТАЯ КАРТОЧКА БИТА (FULL PLAYER) */}
+      {/* 6. РАЗВЕРНУТАЯ КАРТОЧКА БИТА (FULL PLAYER) */}
       <div className={`full-player ${isPlayerExpanded ? 'open' : ''}`}>
         <button className="close-player" onClick={(e) => { 
           e.stopPropagation(); 
@@ -802,14 +746,12 @@ function App() {
             />
             
             {!isEditing ? (
-              /* РЕЖИМ ПРОСМОТРА (Плеер) */
               <div className="beat-info-full">
                 <div className="full-main-info">
                   <h1>{beats.find(b => b.id === currentBeatId)?.title}</h1>
                   <p className="full-genre">{beats.find(b => b.id === currentBeatId)?.genre}</p>
                 </div>
 
-                {/* ПОЛОСА ПЕРЕМОТКИ */}
                 <div className="full-progress-container">
                   <input type="range" className="full-seek-bar" value={progress} onChange={handleSeek} />
                   <div className="time-info">
@@ -824,7 +766,6 @@ function App() {
                   </div>
                 </div>
 
-                {/* КНОПКИ УПРАВЛЕНИЯ */}
                 <div className="full-controls">
                   <div className="side-controls">
                     <button className={`control-btn secondary ${isLooping ? 'active' : ''}`} onClick={toggleLoop}>
@@ -836,14 +777,12 @@ function App() {
                     <button className="control-btn main-skip" onClick={playPrev}>
                       <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"></path></svg>
                     </button>
-                    
                     <button className="control-btn play-pause-circle" onClick={() => setIsPlaying(!isPlaying)}>
                       {isPlaying ? 
                         <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg> : 
                         <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" style={{marginLeft: '4px'}}><path d="M8 5v14l11-7z"></path></svg>
                       }
                     </button>
-                    
                     <button className="control-btn main-skip" onClick={playNext}>
                       <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"></path></svg>
                     </button>
@@ -869,12 +808,11 @@ function App() {
                   <p>{beats.find(b => b.id === currentBeatId)?.description || "High quality production by FRESSO."}</p>
                 </div>
 
-                {tg?.initDataUnsafe?.user?.id === ADMIN_ID && (
+                {Number(tg?.initDataUnsafe?.user?.id) === ADMIN_ID && (
                   <button className="edit-beat-btn" onClick={() => setIsEditing(true)}>EDIT BEAT DATA</button>
                 )}
               </div>
             ) : (
-              /* РЕЖИМ РЕДАКТИРОВАНИЯ */
               <div className="edit-form-full">
                 <h2 style={{color: 'var(--accent)', marginBottom: '20px'}}>Edit Mode</h2>
                 <p style={{color: '#666'}}>Форма редактирования скоро будет готова...</p>
@@ -884,8 +822,8 @@ function App() {
           </div>
         )}
       </div>
-    </div> // Конец app-container
+    </div>
   );
-}; // Конец App
+}
 
 export default App;
