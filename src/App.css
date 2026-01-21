@@ -802,7 +802,7 @@ body {
   font-size: 14px;
 }
 
-/* --- КАРТОЧКА БИТА --- */
+/* --- КАРТОЧКА БИТА (ЧИСТАЯ ВЕРСИЯ) --- */
 .beat-card {
   background: #0f0f0f;
   border-radius: 12px;
@@ -832,14 +832,14 @@ body {
   object-fit: cover;
 }
 
-/* Точка активности в карточке */
+/* Индикатор проигрывания на обложке */
 .play-ico {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -856,7 +856,7 @@ body {
 
 .beat-body {
   flex-grow: 1;
-  min-width: 0;
+  min-width: 0; /* Важно для обрезки текста */
 }
 
 .beat-name-row {
@@ -872,153 +872,37 @@ body {
 .beat-meta-row {
   font-size: 12px;
   color: #666;
-}
-
-/* ПОЛЗУНОК В КАРТОЧКЕ */
-.card-seek-container {
-  width: 100%;
-  height: 14px;
-  display: flex;
-  align-items: center;
-}
-
-.card-seek-bar {
-  width: 100%;
-  height: 3px;
-  -webkit-appearance: none;
-  background: #333;
-  border-radius: 2px;
-  outline: none;
-}
-
-.card-seek-bar::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 8px;
-  height: 8px;
-  background: var(--accent);
-  border-radius: 50%;
+  font-weight: 500;
 }
 
 .beat-buy-btn {
   background: #fff;
   color: #000;
   font-weight: 800;
-  padding: 8px 12px;
+  padding: 8px 14px;
   border-radius: 8px;
   font-size: 13px;
+  flex-shrink: 0;
 }
 
-/* --- КОНТЕЙНЕР РАЗВЕРНУТОГО ПЛЕЕРА --- */
-.full-player {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #000;
-  z-index: 2000;
-  transform: translateY(100%);
-  transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
-  display: flex;
-  flex-direction: column;
-  padding: 20px 25px;
-  box-sizing: border-box;
-}
-
-.full-player.open {
-  transform: translateY(0);
-}
-
-.close-player {
+/* --- КНОПКИ ПЛЕЕРА (ИСПРАВЛЕНИЕ ЦВЕТА) --- */
+/* Чтобы кнопки не были черными */
+.control-btn, .mini-play-btn, .main-skip {
+  color: #fff !important;
+  fill: #fff !important;
   background: none;
   border: none;
-  color: #fff;
-  padding: 15px 0;
   cursor: pointer;
-}
-
-.full-cover {
-  width: 100%;
-  aspect-ratio: 1/1;
-  border-radius: 20px;
-  object-fit: cover;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-  margin-bottom: 25px;
-}
-
-.full-main-info h1 {
-  font-size: 26px;
-  margin: 0;
-  color: #fff;
-}
-
-.full-genre {
-  color: var(--accent);
-  font-weight: 800;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin: 5px 0 20px;
-}
-
-/* ПОЛОСА ПРОКРУТКИ В ПЛЕЕРЕ */
-.full-progress-container {
-  width: 100%;
-  margin-bottom: 25px;
-}
-
-.full-seek-bar {
-  width: 100%;
-  height: 4px;
-  -webkit-appearance: none;
-  background: #222;
-  border-radius: 10px;
-  outline: none;
-  /* Градиент для заливки (используем переменную --p) */
-  background-image: linear-gradient(var(--accent), var(--accent));
-  background-size: var(--p, 0%) 100%;
-  background-repeat: no-repeat;
-}
-
-.full-seek-bar::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  background: #fff;
-  border-radius: 50%;
-  border: 2px solid var(--accent);
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
-}
-
-.time-info {
   display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #666;
-  margin-top: 10px;
-}
-
-/* КНОПКИ УПРАВЛЕНИЯ (ИСПРАВЛЕНО: НЕ ЧЕРНЫЕ) */
-.full-controls {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 100%;
-  margin: 10px 0 35px;
-}
-
-.side-controls {
-  width: 44px;
-  display: flex;
   justify-content: center;
 }
 
-.main-controls {
-  display: flex;
-  align-items: center;
-  gap: 25px;
+.control-btn svg, .mini-play-btn svg {
+  fill: #fff !important;
 }
 
+/* Белый круг для основной кнопки Play в развернутом плеере */
 .play-pause-circle {
   width: 72px;
   height: 72px;
@@ -1027,75 +911,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #000 !important; /* Иконка черная на белом круге */
   border: none;
 }
 
 .play-pause-circle svg {
-  fill: #000 !important;
-}
-
-.control-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  color: #fff !important; /* Иконки белые */
-}
-
-.control-btn svg {
-  fill: #fff !important;
-}
-
-.control-btn.secondary {
-  color: #444 !important;
-}
-
-.control-btn.secondary.active {
-  color: var(--accent) !important;
-}
-
-.control-btn.secondary.active svg {
-  fill: var(--accent) !important;
-}
-
-/* ОСТАЛЬНЫЕ СТИЛИ (ХАРАКТЕРИСТИКИ) */
-.full-stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin-bottom: 25px;
-}
-
-.stat-box {
-  background: #111;
-  padding: 15px;
-  border-radius: 12px;
-  border: 1px solid #1a1a1a;
-  text-align: center;
-}
-
-.stat-box span {
-  display: block;
-  font-size: 10px;
-  color: #555;
-  font-weight: 800;
-  margin-bottom: 4px;
-}
-
-.stat-box strong {
-  font-size: 18px;
-  color: #fff;
-}
-
-.edit-beat-btn {
-  width: 100%;
-  padding: 18px;
-  background: transparent;
-  border: 1px solid #333;
-  color: #fff;
-  border-radius: 15px;
-  font-weight: 800;
-  text-transform: uppercase;
+  fill: #000 !important; /* На белом круге иконка черная */
 }
