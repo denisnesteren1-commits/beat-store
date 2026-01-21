@@ -942,7 +942,7 @@ body {
   transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
   display: flex;
   flex-direction: column;
-  padding: 20px 25px; /* Немного уменьшил верхний отступ */
+  padding: 20px 25px;
   overflow-y: auto;
 }
 
@@ -956,6 +956,8 @@ body {
   color: #fff;
   padding: 15px 0;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
 }
 
 .full-cover {
@@ -971,6 +973,7 @@ body {
   font-size: 26px;
   margin: 0;
   color: #fff;
+  text-align: center;
 }
 
 .full-genre {
@@ -980,9 +983,10 @@ body {
   text-transform: uppercase;
   letter-spacing: 2px;
   margin: 5px 0 20px;
+  text-align: center;
 }
 
-/* --- ПОЛОСА ПРОКРУТКИ --- */
+/* --- ПОЛОСА ПРОКРУТКИ (FULL PLAYER) --- */
 .full-progress-container {
   width: 100%;
   margin-bottom: 25px;
@@ -990,21 +994,51 @@ body {
 
 .full-seek-bar {
   width: 100%;
-  height: 4px;
+  height: 5px;
   appearance: none;
   background: #222;
   border-radius: 10px;
   outline: none;
-  overflow: hidden; /* Чтобы прогресс заливался */
+  position: relative;
+  overflow: hidden; /* Создает эффект заполнения */
 }
 
-/* Заливка прогресса цветом */
+/* Ползунок в Full Player */
 .full-seek-bar::-webkit-slider-thumb {
   appearance: none;
   width: 0;
-  box-shadow: -400px 0 0 400px var(--accent);
+  box-shadow: -400px 0 0 400px var(--accent); /* Заливка слева */
 }
 
+/* --- ПОЛЗУНОК ВНУТРИ КАРТОЧКИ БИТА --- */
+.card-seek-container {
+  width: 100%;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.card-seek-bar {
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+}
+
+.card-seek-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--accent);
+}
+
+/* --- ВРЕМЯ --- */
 .time-info {
   display: flex;
   justify-content: space-between;
@@ -1013,10 +1047,6 @@ body {
   margin-top: 10px;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
-}
-
-.time-info span {
-  font-variant-numeric: tabular-nums;
 }
 
 /* --- КНОПКИ УПРАВЛЕНИЯ (ИСПРАВЛЕНО) --- */
@@ -1034,51 +1064,49 @@ body {
   gap: 25px;
 }
 
-.side-controls {
-  width: 44px;
-  display: flex;
-  justify-content: center;
-}
-
 .play-pause-circle {
   width: 72px;
   height: 72px;
-  background: #fff;
+  background: #fff; /* Белый фон круга */
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #000 !important;
-  box-shadow: 0 4px 20px rgba(255,255,255,0.15);
+  color: #000 !important; /* Иконка внутри ВСЕГДА черная для контраста */
+  box-shadow: 0 4px 20px rgba(255,255,255,0.2);
   transition: transform 0.1s ease;
+  border: none;
 }
 
-.play-pause-circle:active {
-  transform: scale(0.92);
+.play-pause-circle svg {
+  fill: #000 !important; /* Черная иконка на белом круге */
 }
 
 .control-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
+  color: #fff !important; /* Все остальные кнопки белые */
 }
 
-.control-btn.main-skip {
-  color: #fff;
-  opacity: 0.8;
+.control-btn svg {
+  fill: #fff !important;
 }
 
 .control-btn.secondary {
-  color: #444;
-  transition: color 0.3s;
+  color: #444 !important;
 }
 
 .control-btn.secondary.active {
-  color: var(--accent);
+  color: var(--accent) !important;
   filter: drop-shadow(0 0 5px var(--accent));
+}
+
+.control-btn.secondary svg {
+  fill: currentColor !important;
 }
 
 /* --- ХАРАКТЕРИСТИКИ --- */

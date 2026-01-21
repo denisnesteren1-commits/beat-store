@@ -553,6 +553,7 @@ function App() {
           <div className="beat-list">
             {(activeTab === 'favs' ? filteredBeats.filter(b => favorites.includes(b.id)) : filteredBeats).map(beat => (
               <div key={beat.id} className="beat-card" onClick={() => playBeat(beat)}>
+                
                 <div className="beat-cover">
                   <img src={beat.image} alt="cover" />
                   {currentBeatId === beat.id && isPlaying && (
@@ -564,9 +565,22 @@ function App() {
 
                 <div className="beat-body">
                   <div className="beat-name-row">{beat.title}</div>
-                  <div className="beat-meta-row">
-                    {beat.bpm} BPM • {beat.key} • {beat.tags || 'PROD BY FRESSO'}
-                  </div>
+                  
+                  {/* Если бит играет — показываем ползунок, если нет — мета-данные */}
+                  {currentBeatId === beat.id ? (
+                    <div className="card-seek-container" onClick={(e) => e.stopPropagation()}>
+                      <input 
+                        type="range" 
+                        className="card-seek-bar" 
+                        value={progress} 
+                        onChange={handleSeek} 
+                      />
+                    </div>
+                  ) : (
+                    <div className="beat-meta-row">
+                      {beat.bpm} BPM • {beat.key} • {beat.tags || 'PROD BY FRESSO'}
+                    </div>
+                  )}
                 </div>
 
                 <div 
@@ -580,9 +594,9 @@ function App() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      )}
+          </div> {/* Конец beat-list */}
+        </div> /* Конец page-content */
+      )} {/* Конец условия (activeTab === 'shop' || activeTab === 'favs') */}
 
       {/* 3. ПРОФИЛЬ */}
       {activeTab === 'profile' && (
