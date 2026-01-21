@@ -626,32 +626,39 @@ body {
   100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); }
 }
 /* ============================================================
-   1. ГЛАВНЫЙ ЭКРАН: ПОИСК И ТЕГИ (Quick Tags)
+   /* ============================================================
+   1. ОБНОВЛЕННЫЙ ПОИСК И ТЕГИ
    ============================================================ */
 .search-container {
   padding: 15px 20px;
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #000; /* Чтобы список не просвечивал при скролле */
+  background: #000;
 }
 
 .search-bar {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .search-input-wrapper {
   flex: 1;
-  background: #121212;
+  background: #111; /* Глубокий черный */
   border: 1px solid #222;
-  border-radius: 14px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
-  padding: 0 15px;
-  height: 48px;
+  padding: 0 16px;
+  height: 52px; /* Чуть выше для удобства */
+  transition: 0.3s;
+}
+
+.search-input-wrapper:focus-within {
+  border-color: #444;
+  background: #161616;
 }
 
 .search-input-wrapper input {
@@ -659,18 +666,19 @@ body {
   border: none;
   color: #fff;
   width: 100%;
-  font-size: 15px;
+  font-size: 16px;
+  font-weight: 500;
   outline: none;
-  margin-left: 8px;
+  margin-left: 10px;
 }
 
 .filter-toggle-btn {
-  width: 48px;
-  height: 48px;
-  background: #121212;
+  width: 52px;
+  height: 52px;
+  background: #111;
   border: 1px solid #222;
-  border-radius: 14px;
-  color: #666;
+  border-radius: 16px;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -678,32 +686,28 @@ body {
 }
 
 .filter-toggle-btn.active {
-  color: #fff;
-  border-color: #fff;
-  background: #222;
+  background: #fff;
+  color: #000;
 }
 
-/* БЫСТРЫЕ ТЕГИ (Quick Tags) */
+/* КНОПКИ ЖАНРОВ (Quick Tags) */
 .quick-tags {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   overflow-x: auto;
-  white-space: nowrap;
-  padding-bottom: 5px;
-  scrollbar-width: none;
+  padding: 0 0 10px 0;
 }
 
-.quick-tags::-webkit-scrollbar { display: none; }
-
 .tag-btn {
-  background: #121212;
+  background: #111;
   border: 1px solid #222;
-  color: #666;
-  padding: 8px 16px;
-  border-radius: 50px;
-  font-size: 12px;
-  font-weight: 800;
+  color: #888;
+  padding: 10px 18px;
+  border-radius: 12px; /* Более современный вид */
+  font-size: 13px;
+  font-weight: 700;
   transition: 0.2s;
+  flex-shrink: 0;
 }
 
 .tag-btn.active {
@@ -713,118 +717,114 @@ body {
 }
 
 /* ============================================================
-   2. ВЫПАДАЮЩЕЕ ОКНО ФИЛЬТРОВ (Double Slider Fix)
+   2. ФИЛЬТРЫ (Кнопки и Текст)
    ============================================================ */
 .filter-dropdown {
-  background: #121212;
+  background: #111;
   border: 1px solid #222;
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 24px;
+  padding: 24px;
   margin-top: 10px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.filter-group label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.range-value {
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.filter-actions {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+  gap: 12px;
+  margin-top: 10px;
 }
 
-.range-slider-container {
-  position: relative;
-  height: 4px;
-  background: #222;
-  margin: 15px 0;
-  border-radius: 2px;
+.reset-btn, .apply-btn {
+  height: 50px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.range-slider-container input[type="range"] {
-  position: absolute;
-  width: 100%;
-  pointer-events: none;
-  appearance: none;
-  background: none;
-  top: -8px;
+.reset-btn {
+  flex: 1;
+  background: transparent;
+  color: #666;
+  border: 1px solid #222;
 }
 
-.range-slider-container input::-webkit-slider-thumb {
-  pointer-events: auto;
-  appearance: none;
-  width: 18px;
-  height: 18px;
+.apply-btn {
+  flex: 2;
   background: #fff;
-  border-radius: 50%;
-  border: 2px solid #000;
+  color: #000;
+  border: none;
 }
 
 /* ============================================================
-   3. КАРТОЧКА БИТА (Beat Card) - ТВОЙ JSX
+   3. КАРТОЧКА БИТА (С анимацией)
    ============================================================ */
 .beat-list {
-  padding: 0 20px 100px; /* Отступ снизу для плеера */
+  padding: 10px 20px 120px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .beat-card {
-  background: #0a0a0a;
-  border-radius: 12px;
-  padding: 10px;
+  background: #0d0d0d;
+  border-radius: 16px;
+  padding: 12px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  border: 1px solid rgba(255,255,255,0.03);
+  gap: 14px;
+  border: 1px solid #1a1a1a;
+  /* АНИМАЦИЯ ПОЯВЛЕНИЯ */
+  animation: beatAppear 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes beatAppear {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .beat-cover {
-  width: 54px;
-  height: 54px;
-  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 10px;
+  overflow: hidden;
   flex-shrink: 0;
-}
-
-.beat-cover img {
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.play-ico {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-}
-
-.center-dot {
-  width: 8px;
-  height: 8px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 0 10px #fff;
-}
-
-.beat-body {
-  flex: 1;
-  min-width: 0;
 }
 
 .beat-name-row {
   font-weight: 700;
-  font-size: 15px;
+  font-size: 16px;
   color: #fff;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  letter-spacing: -0.2px;
 }
 
 .beat-meta-row {
-  font-size: 11px;
+  font-size: 12px;
   color: #555;
   font-weight: 600;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .beat-buy-btn {
@@ -832,7 +832,7 @@ body {
   color: #000;
   font-size: 13px;
   font-weight: 900;
-  padding: 8px 12px;
-  border-radius: 8px;
-  flex-shrink: 0;
+  padding: 10px 16px;
+  border-radius: 12px;
+  margin-left: auto; /* Выравнивает кнопку по правому краю */
 }
