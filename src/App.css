@@ -834,3 +834,90 @@ body {
   border-color: var(--accent);
   box-shadow: 0 5px 15px rgba(255, 51, 51, 0.2);
 }
+
+.full-player {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 2000;
+  transform: translateY(100%); /* Прячем вниз */
+  transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  display: flex;
+  flex-direction: column;
+  padding: 40px 20px;
+}
+
+.full-player.open {
+  transform: translateY(0); /* Выдвигаем */
+}
+
+.close-player {
+  background: none;
+  border: none;
+  color: #fff;
+  align-self: flex-start;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.full-cover {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 24px;
+  object-fit: cover;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+
+.beat-info-full h1 {
+  font-size: 32px;
+  margin-top: 30px;
+  margin-bottom: 5px;
+}
+
+.full-genre {
+  color: var(--accent);
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+}
+
+.full-stats {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+.stat span {
+  display: block;
+  font-size: 10px;
+  color: #555;
+  font-weight: 800;
+}
+
+.stat strong {
+  font-size: 20px;
+}
+
+.tag-chip {
+  display: inline-block;
+  background: #121212;
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin-right: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.edit-beat-btn {
+  margin-top: 40px;
+  width: 100%;
+  padding: 15px;
+  background: #222;
+  border: none;
+  color: #fff;
+  border-radius: 12px;
+  font-weight: 900;
+}

@@ -54,6 +54,9 @@ function App() {
     key: 'All'
   });
 
+  const [isPlayerExpanded, setIsPlayerExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
   // Автоматический сбор жанров из имеющихся битов
   const availableGenres = ['All', ...new Set(beats.map(b => b.genre).filter(Boolean))];
 
@@ -702,7 +705,7 @@ function App() {
 )}      
      {/* 1. НИЖНИЙ МИНИ-ПЛЕЕР */}
       {currentBeatId && (
-        <div className="mini-player">
+        <div className="mini-player" onClick={() => setIsPlayerExpanded(true)} style={{ cursor: 'pointer' }}>
           {/* Фоновая заливка прогресса */}
           <div 
             className="player-progress-fill" 
@@ -724,22 +727,22 @@ function App() {
             </div>
 
             <div className="mini-controls">
-              {/* Кнопка Лайка (❤️/🤍) */}
+              {/* Кнопка Лайка */}
               <button 
                 className="mini-btn mini-fav-btn" 
                 onClick={(e) => { 
-                  e.stopPropagation(); 
+                  e.stopPropagation(); // Важно: не открывает плеер
                   toggleFav(currentBeatId); 
                 }}
               >
                 {favorites.includes(currentBeatId) ? "❤️" : "🤍"}
               </button>
 
-              {/* Кнопка Плей/Пауза (Белая по CSS) */}
+              {/* Кнопка Плей/Пауза */}
               <button 
                 className="mini-btn mini-play-btn" 
                 onClick={(e) => { 
-                  e.stopPropagation(); 
+                  e.stopPropagation(); // Важно: не открывает плеер
                   setIsPlaying(!isPlaying); 
                 }}
               >
@@ -762,8 +765,54 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* РАЗВЕРНУТАЯ КАРТОЧКА БИТА (FULL PLAYER) */}
+      <div className={`full-player ${isPlayerExpanded ? 'open' : ''}`}>
+        <button className="close-player" onClick={(e) => { 
+          e.stopPropagation(); 
+          setIsPlayerExpanded(false); 
+          setIsEditing(false); 
+        }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+
+        {beats.find(b => b.id === currentBeatId) && (
+          <div className="full-player-content">
+            <img 
+              src={beats.find(b => b.id === currentBeatId).image} 
+              alt="cover" 
+              className="full-cover" 
+            />
+            
+            {!isEditing ? (
+              <div className="beat-info-full">
+                <h1>{beats.find(b => b.id === currentBeatId).title}</h1>
+                <p className="full-genre">{beats.find(b => b.id === currentBeatId).genre}</p>
+                
+                <div className="full-stats">
+                  <div className="stat"><span>BPM</span><strong>{beats.find(b => b.id === currentBeatId).bpm}</strong></div>
+                  <div className="stat"><span>KEY</span><strong>{beats.find(b => b.id === currentBeatId).key}</strong></div>
+                </div>
+
+                {tg?.initDataUnsafe?.user?.id === ADMIN_ID && (
+                  <button className="edit-beat-btn" onClick={() => setIsEditing(true)}>EDIT BEAT DATA</button>
+                )}
+              </div>
+            ) : (
+              <div className="edit-mode-placeholder">
+                <h2 style={{color: 'var(--accent)'}}>Editing Mode</h2>
+                <p>Форма редактора будет здесь...</p>
+                <button className="reset-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
     </div> // Закрывает app-container
-  ); // Закрывает return
-}; // Закрывает function App
+  );
+}
 
 export default App;
