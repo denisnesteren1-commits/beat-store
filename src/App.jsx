@@ -766,19 +766,26 @@ function App() {
                   <p className="full-genre">{beats.find(b => b.id === currentBeatId)?.genre}</p>
                 </div>
 
-                <div className="full-progress-container">
-                  <input type="range" className="full-seek-bar" value={progress} onChange={handleSeek} />
-                  <div className="time-info">
-                    <span>
-                      {Math.floor((audioRef.current?.currentTime || 0) / 60)}:
-                      {('0' + Math.floor((audioRef.current?.currentTime || 0) % 60)).slice(-2)}
-                    </span>
-                    <span>
-                      {Math.floor((audioRef.current?.duration || 0) / 60)}:
-                      {('0' + Math.floor((audioRef.current?.duration || 0) % 60)).slice(-2)}
-                    </span>
-                  </div>
+                {/* ПОЛОСА ПЕРЕМОТКИ С ДИНАМИЧЕСКИМ ПРОГРЕССОМ */}
+              <div className="full-progress-container">
+                <input 
+                  type="range" 
+                  className="full-seek-bar" 
+                  value={progress} 
+                  onChange={handleSeek}
+                  style={{ '--progress-percent': `${progress}%` }} // Магия здесь
+                />
+                <div className="time-info">
+                  <span>
+                    {Math.floor((audioRef.current?.currentTime || 0) / 60)}:
+                    {('0' + Math.floor((audioRef.current?.currentTime || 0) % 60)).slice(-2)}
+                  </span>
+                  <span>
+                    {Math.floor((audioRef.current?.duration || 0) / 60)}:
+                    {('0' + Math.floor((audioRef.current?.duration || 0) % 60)).slice(-2)}
+                  </span>
                 </div>
+              </div>
 
                 <div className="full-controls">
                   <div className="side-controls">
