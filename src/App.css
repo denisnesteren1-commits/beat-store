@@ -675,16 +675,60 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
 }
 
-/* --- 2. ПОИСК И ФИЛЬТРЫ (Более сочный вид) --- */
+/* --- 0. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ (если еще нет) --- */
+:root {
+  --accent: #fff; /* Или твой цвет, например #00ff88 */
+}
+
+/* --- 2. ПОИСК И ФИЛЬТРЫ (Адаптация под твой JSX) --- */
+.search-container {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .search-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
   background: #111;
   border: 1px solid #222;
+  border-radius: 12px;
+  padding: 0 15px;
   transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-input-wrapper input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 12px 10px;
+  width: 100%;
+  font-size: 15px;
 }
 
 .search-input-wrapper:focus-within {
   border-color: #444;
   background: #161616;
+}
+
+.search-bar {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-toggle-btn {
+  background: #111;
+  border: 1px solid #222;
+  color: #fff;
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .filter-toggle-btn.active {
@@ -693,28 +737,74 @@ input[type="range"]::-webkit-slider-thumb {
   border-color: #fff;
 }
 
-/* Кнопки в фильтрах - теперь не "стремные" */
+/* Кнопки тегов */
+.quick-tags {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+  scrollbar-width: none; /* Убираем скроллбар в Firefox */
+}
+.quick-tags::-webkit-scrollbar { display: none; }
+
+.tag-btn {
+  padding: 8px 16px;
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 20px;
+  color: #666;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tag-btn.active {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+/* --- ВЫПАДАЮЩЕЕ ОКНО ФИЛЬТРОВ --- */
+.filter-dropdown {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 5px;
+  animation: cardSlideUp 0.3s ease;
+}
+
+.filter-group { margin-bottom: 20px; }
+.filter-label-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.filter-label-row label { font-size: 12px; font-weight: 800; color: #444; }
+.range-value { font-size: 12px; color: #fff; font-family: monospace; }
+
+.filter-row { display: flex; gap: 15px; margin-bottom: 20px; }
+.filter-row .filter-group { flex: 1; margin-bottom: 0; }
+
 .filter-group select {
-  appearance: none; /* Убирает стандартную стрелочку браузера */
+  width: 100%;
+  appearance: none;
   background: #1a1a1a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C2.185 5.355 2.403 5 2.808 5h10.384a.25.25 0 0 1 .19.408l-4.796 5.48a.25.25 0 0 1-.375 0z'/%3E%3C/svg%3E") no-repeat calc(100% - 12px) center;
   border: 1px solid #333;
-  padding: 12px 35px 12px 15px;
+  padding: 12px 15px;
+  border-radius: 10px;
+  color: #fff;
   font-size: 14px;
 }
 
+.filter-actions { display: flex; gap: 10px; }
 .apply-btn {
-  background: #fff;
-  color: #000;
-  transition: transform 0.1s;
+  flex: 2; background: #fff; color: #000; border: none; padding: 12px;
+  border-radius: 10px; font-weight: 800;
+}
+.reset-btn {
+  flex: 1; background: transparent; color: #444; border: 1px solid #222;
+  padding: 12px; border-radius: 10px; font-weight: 800;
 }
 
-.apply-btn:active {
-  transform: scale(0.95);
-}
-
-/* --- 3. КАРТОЧКА БИТА (ТОЛЬКО АНИМАЦИЯ) --- */
+/* --- 3. КАРТОЧКА БИТА (АНИМАЦИЯ) --- */
 .beat-card {
-  /* Мы НЕ пишем здесь background и padding, чтобы не сломать дизайн из начала файла */
   animation: cardSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
@@ -728,19 +818,15 @@ input[type="range"]::-webkit-slider-thumb {
 .beat-card:nth-child(2) { animation-delay: 0.15s; }
 .beat-card:nth-child(3) { animation-delay: 0.2s; }
 .beat-card:nth-child(4) { animation-delay: 0.25s; }
-.beat-card:nth-child(5) { animation-delay: 0.3s; }
 
-/* Настройка текста (оставляем крупным) */
 .beat-name-row {
   font-size: 16px;
   letter-spacing: -0.3px;
   font-weight: 800;
+  color: #fff;
 }
 
-/* ============================================================
-   ФИНАЛЬНЫЙ ПЛЕЕР: ВСЁ В ОДНОМ (ИСПРАВЛЕННЫЙ)
-   ============================================================ */
-
+/* --- ФИНАЛЬНЫЙ ПЛЕЕР (Твой исправленный вариант) --- */
 .full-player {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -750,23 +836,21 @@ input[type="range"]::-webkit-slider-thumb {
   flex-direction: column;
   transform: translateY(100%);
   transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
-  overflow: hidden; /* Чтобы сама база не дергалась */
+  overflow: hidden;
 }
 
 .full-player.open { transform: translateY(0); }
 
-/* Зона скролла — именно здесь живет контент */
 .full-player-scroll-area {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 20px 60px;
+  padding: 0 20px 100px; /* Увеличил отступ снизу */
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* Свайп-индикатор (вместо стрелки) */
 .swipe-handle-container {
   width: 100%;
   padding: 15px 0 10px;
@@ -781,10 +865,9 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 10px;
 }
 
-/* Обложка */
 .full-cover {
   width: 85% !important;
-  max-width: 320px;
+  max-width: 300px;
   aspect-ratio: 1/1;
   border-radius: 28px;
   object-fit: cover;
@@ -793,22 +876,13 @@ input[type="range"]::-webkit-slider-thumb {
   flex-shrink: 0;
 }
 
-/* Информация о бите */
 .beat-info-full { text-align: center; margin-bottom: 30px; width: 100%; }
 .beat-info-full h1 { font-size: 26px; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.5px; }
-.full-genre { color: var(--accent); font-weight: 700; font-size: 14px; text-transform: uppercase; margin-top: 8px; opacity: 0.8; }
-
-/* ПОЛЗУНОК С ЗАПОЛНЕНИЕМ (Progress Bar) */
-.full-progress-container {
-  width: 100%;
-  max-width: 320px;
-  margin-bottom: 35px;
-}
 
 .progress-bar-wrapper {
   position: relative;
   width: 100%;
-  height: 4px;
+  height: 6px; /* Чуть толще для удобства клика */
   background: rgba(255,255,255,0.1);
   border-radius: 10px;
 }
@@ -816,83 +890,69 @@ input[type="range"]::-webkit-slider-thumb {
 .progress-fill {
   position: absolute;
   left: 0; top: 0; height: 100%;
-  background: #fff; /* Белая линия прогресса */
+  background: #fff;
   border-radius: 10px;
   z-index: 1;
+  pointer-events: none; /* Чтобы не мешал кликать по input */
 }
 
 .full-seek-bar {
   position: absolute;
-  top: -6px; left: 0;
+  top: -8px; left: 0;
   width: 100% !important;
   appearance: none; -webkit-appearance: none;
   background: transparent !important;
   z-index: 5;
   margin: 0;
-  cursor: pointer;
 }
 
 .full-seek-bar::-webkit-slider-thumb {
   appearance: none; -webkit-appearance: none;
-  width: 14px; height: 14px; background: #fff;
-  border-radius: 50%; border: none;
+  width: 16px; height: 16px; background: #fff;
+  border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
-.time-info {
-  display: flex; justify-content: space-between;
-  margin-top: 12px; font-size: 11px; color: rgba(255,255,255,0.4); font-family: monospace;
-}
-
-/* КНОПКИ УПРАВЛЕНИЯ */
 .full-controls-layout {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 330px;
+  max-width: 320px;
   margin-bottom: 40px;
 }
 
-.main-controls { display: flex; align-items: center; gap: 20px; }
-
 .play-pause-circle {
-  width: 72px; height: 72px;
+  width: 70px; height: 70px;
   background: #fff !important;
   border-radius: 50%;
   color: #000 !important;
+  display: flex; align-items: center; justify-content: center;
+  border: none;
 }
 
 .secondary-action {
-  color: #444; /* Изначально серые */
+  color: #444;
   background: none !important;
   border: none !important;
+  padding: 10px;
 }
 
-.secondary-action.active { color: var(--accent) !important; opacity: 1; }
+.secondary-action.active { color: #fff !important; }
 
-/* ЭСТЕТИЧНЫЕ СТАТЫ (BPM / KEY) */
 .aesthetic-stats {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 40px;
   background: #111;
-  padding: 18px 0;
+  padding: 20px 0;
   border-radius: 20px;
   width: 100%;
   max-width: 300px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
-.stat-item { text-align: center; }
-.stat-item span { display: block; font-size: 10px; color: #444; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; }
-.stat-item strong { color: #fff; font-size: 18px; font-weight: 700; }
-.stat-divider { width: 1px; height: 30px; background: #222; }
+.stat-item strong { color: #fff; font-size: 18px; }
 
-/* ОПИСАНИЕ */
-.full-description { width: 100%; max-width: 320px; text-align: left; }
-.full-description label { font-size: 10px; color: #444; font-weight: 900; letter-spacing: 1px; display: block; margin-bottom: 10px; }
-.description-text { font-size: 14px; color: #888; line-height: 1.6; margin: 0; }
-
-/* Убираем выделение везде */
+/* Убираем выделение */
 * { -webkit-tap-highlight-color: transparent; outline: none !important; }

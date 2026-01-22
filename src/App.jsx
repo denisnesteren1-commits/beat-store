@@ -565,7 +565,7 @@ function App() {
                 <div className="beat-body">
                   <div className="beat-name-row">{beat.title}</div>
                   <div className="beat-meta-row">
-                    {beat.bpm} BPM • {beat.key} • {beat.tags || 'PROD BY FRESSO'}
+                    {beat.bpm} BPM • {beat.key} • {beat.genre || 'PROD BY FRESSO'}
                   </div>
                 </div>
 
@@ -580,6 +580,7 @@ function App() {
                 </div>
               </div>
             ))}
+            {filteredBeats.length === 0 && <p className="empty-msg">No beats found...</p>}
           </div>
         </div>
       )}
@@ -758,13 +759,9 @@ function App() {
                     <p className="full-genre">{beats.find(b => b.id === currentBeatId)?.genre}</p>
                   </div>
 
-                  {/* Прогресс-бар */}
                   <div className="full-progress-container">
                     <div className="progress-bar-wrapper">
-                      <div 
-                        className="progress-fill" 
-                        style={{ width: `${progress}%` }}
-                      ></div>
+                      <div className="progress-fill" style={{ width: `${progress}%` }}></div>
                       <input 
                         type="range" 
                         className="full-seek-bar" 
@@ -784,7 +781,6 @@ function App() {
                     </div>
                   </div>
 
-                  {/* Управление */}
                   <div className="full-controls-layout">
                     <button className={`control-btn secondary-action ${isLooping ? 'active' : ''}`} onClick={toggleLoop}>
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
@@ -813,7 +809,6 @@ function App() {
                     </button>
                   </div>
 
-                  {/* Эстетичные статы */}
                   <div className="aesthetic-stats">
                     <div className="stat-item">
                       <span>BPM</span>
@@ -833,7 +828,7 @@ function App() {
                     </p>
                   </div>
 
-                  {Number(tg?.initDataUnsafe?.user?.id) === ADMIN_ID && (
+                  {Number(tg?.initDataUnsafe?.user?.id) === 856199923 && (
                     <button className="edit-beat-btn" onClick={() => setIsEditing(true)}>EDIT BEAT DATA</button>
                   )}
                 </div>
@@ -841,9 +836,6 @@ function App() {
                 <div className="edit-form-full">
                   <h2 style={{color: 'var(--accent)', marginBottom: '20px', fontSize: '18px', fontWeight: '800'}}>EDIT MODE</h2>
                   <p style={{color: '#888', marginBottom: '20px', fontSize: '14px'}}>Modify beat information here.</p>
-                  
-                  {/* Можно добавить поля ввода здесь позже */}
-                  
                   <button className="apply-btn" style={{width: '100%'}} onClick={() => setIsEditing(false)}>SAVE CHANGES</button>
                   <button className="reset-btn" style={{width: '100%', marginTop: '10px', background: 'transparent', border: '1px solid #333'}} onClick={() => setIsEditing(false)}>CANCEL</button>
                 </div>
