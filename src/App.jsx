@@ -459,9 +459,9 @@ const formatTime = (time) => {
     );
   }
 
- return (
+return (
   <div className="app-container">
-    {/* СЛОЙ 1: Только фон и летающие логотипы. Он закрывается СРАЗУ после цикла */}
+    {/* 1. ФОНОВЫЙ СЛОЙ */}
     <div className="bg-animation">
       {[...Array(12)].map((_, i) => (
         <img 
@@ -470,18 +470,17 @@ const formatTime = (time) => {
           className="bg-fl-logo" 
           alt="" 
           style={{
+            position: 'absolute',
             left: (i * 137 % 100) + '%',
             top: (i * 193 % 100) + '%',
-            width: (40 + (i * 7 % 50)) + 'px', 
-            opacity: 0.15, 
+            width: (60 + (i * 7 % 50)) + 'px',
+            opacity: 0.2, 
             animationDuration: (15 + (i % 15)) + 's',
             animationDelay: -(i * 2) + 's'
           }}
         />
       ))}
     </div>
-
-      {/* Дальше продолжается твой остальной код (шапка и т.д.) */}
 
       
       {/* 1. ШАПКА */}

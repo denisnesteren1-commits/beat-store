@@ -1286,37 +1286,41 @@ input[type="range"]::-webkit-slider-thumb {
   overflow: hidden;
   pointer-events: none;
   /* Глубокий антрацит переходящий в мягкий винный оттенок */
-  background: linear-gradient(135deg, #000000 0%, #080808 40%, #1a0002 70%, #000000 100%);
+  background: linear-gradient(135deg, #000000 0%, #0c0c0c 40%, #250101 70%, #000000 100%);
   background-size: 300% 300%;
-  animation: grad 12s ease-in-out infinite;
+  animation: grad 15s ease-in-out infinite;
 }
 
 .bg-fl-logo {
   position: absolute;
-  width: 130px; /* Оптимальный размер для фона */
-  height: auto;
-  
-  /* Возвращаем сочный оригинальный цвет + добавляем объемное свечение */
-  filter: saturate(1.4) contrast(1.1) drop-shadow(0 0 25px rgba(255, 74, 0, 0.35)); 
-  
-  /* Поднимаем прозрачность, чтобы цвет был виден, но не перебивал текст */
-  opacity: 0.28; 
-  
-  animation: floatBackground 22s linear infinite;
+  /* width и height теперь управляются через React-style, но тут оставим базу */
   pointer-events: none;
-  /* Улучшает производительность анимации на мобилках */
+  /* Сочный оригинальный цвет + объемное свечение */
+  filter: saturate(1.5) contrast(1.1) drop-shadow(0 0 20px rgba(255, 74, 0, 0.4)); 
+  /* Анимация берет название отсюда, а время — из React */
+  animation-name: floatBackground;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
   will-change: transform;
 }
 
+/* Анимация плавного перелива градиента (ВАЖНО!) */
+@keyframes grad {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Анимация полета логотипов */
 @keyframes floatBackground {
   0% { 
     transform: translate(0, 0) rotate(0deg) scale(1); 
   }
   33% { 
-    transform: translate(40px, 60px) rotate(120deg) scale(1.15); 
+    transform: translate(40px, 60px) rotate(120deg) scale(1.1); 
   }
   66% { 
-    transform: translate(-30px, 120px) rotate(240deg) scale(0.85); 
+    transform: translate(-30px, 120px) rotate(240deg) scale(0.9); 
   }
   100% { 
     transform: translate(0, 0) rotate(360deg) scale(1); 
