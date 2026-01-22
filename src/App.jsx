@@ -483,20 +483,7 @@ const formatTime = (time) => {
         ))}
       </div>
 
-      {/* 1. ШАПКА */}
-      {activeTab !== 'profile' && activeTab !== 'admin' && activeTab !== 'my_purchases' && (
-        <header className="main-header">
-          <div className="logo logo-anim">FRESSO</div>
-          <img 
-            src={userAvatar} 
-            className="header-avatar" 
-            onClick={() => setActiveTab('profile')} 
-            alt="avatar" 
-          />
-        </header>
-      )}
-
-
+      
       {/* 1. ШАПКА */}
 {activeTab !== 'profile' && activeTab !== 'admin' && activeTab !== 'my_purchases' && (
   <header className="main-header">

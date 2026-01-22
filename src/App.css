@@ -1321,3 +1321,6 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
   width: 100%;
 }
+div {
+  background-color: transparent !important;
+}
