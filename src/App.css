@@ -632,7 +632,8 @@ body {
 
 /* Убираем синий цвет и настраиваем ползунки (BPM и время) */
 input[type="range"] {
-  -webkit-appearance: none;
+  -webkit-appearance: none; /* Для Chrome/Safari */
+  appearance: none;         /* СТАНДАРТНОЕ СВОЙСТВО (добавь это) */
   width: 100%;
   background: transparent;
   outline: none;
