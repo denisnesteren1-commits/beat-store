@@ -1014,3 +1014,30 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 18px; 
   font-family: 'Inter', sans-serif;
 }
+/* Настройка блока с цифрами времени под полоской */
+.time-info {
+  display: flex;                /* Включаем гибкий контейнер */
+  justify-content: space-between; /* Расталкиваем цифры: лево и право */
+  width: 100%;                  /* Растягиваем на всю ширину полоски */
+  margin-top: 12px;             /* Отступ от прогресс-бара */
+  padding: 0 4px;               /* Чтобы цифры не касались краев */
+}
+
+.time-info span {
+  font-size: 12px;
+  font-weight: 700;             /* Жирный шрифт, чтобы лучше читалось */
+  color: #555;                  /* Правое время (общее) будет серым */
+  font-family: 'Inter', sans-serif;
+  min-width: 45px;              /* Фиксированное место под цифры */
+}
+
+/* Сделаем текущее (бегущее) время белым */
+.time-info span:first-child {
+  color: #ffffff;
+  text-align: left;
+}
+
+/* Общее время прижмем к правому краю */
+.time-info span:last-child {
+  text-align: right;
+}
