@@ -39,19 +39,30 @@ function App() {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   // Плеер
-const [currentBeatId, setCurrentBeatId] = useState(null);
-const [isPlaying, setIsPlaying] = useState(false);
-const [isLooping, setIsLooping] = useState(false);
-const [progress, setProgress] = useState(0);
-const [currentTime, setCurrentTime] = useState(0); // <-- ДОБАВИЛ СЮДА
-const audioRef = useRef(new Audio());
+  const [currentBeatId, setCurrentBeatId] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLooping, setIsLooping] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0); 
+  const audioRef = useRef(new Audio());
 
-const formatTime = (time) => {
-  if (isNaN(time) || time === undefined) return "0:00";
-  const mins = Math.floor(time / 60);
-  const secs = Math.floor(time % 60);
-  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-};
+  // --- ЛОГИКА ЗАГРУЗКИ ---
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2500);
+    return () => clearTimeout(timer);
+  }, []);
+  // --- КОНЕЦ ЛОГИКИ ЗАГРУЗКИ ---
+
+  const formatTime = (time) => {
+    if (isNaN(time) || time === undefined) return "0:00";
+    const mins = Math.floor(time / 60);
+    const secs = Math.floor(time % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+
+  // ... дальше идут твои остальные функции (handlePlay, useEffect для плеера и т.д.)
 
   // --- ЛОГИКА ФИЛЬТРАЦИИ ---
   const [searchQuery, setSearchQuery] = useState('');
