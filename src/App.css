@@ -394,24 +394,25 @@ body {
   background: #1a1a1a; 
   border-color: #333;
 }
-/* 6. АДМИНКА И ФАЙЛЫ (Финальная ровная версия) */
+/* 6. АДМИНКА И ФАЙЛЫ (Компактная и ровная версия) */
 
 .admin-view {
   width: 100%;
-  max-width: 450px; /* Ширина всего контейнера приложения */
+  max-width: 450px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   padding-bottom: 40px;
 }
 
-/* ШАПКА: как в профиле, с отступами по бокам */
+/* ШАПКА: Уменьшили padding сверху, чтобы поднять контент */
 .admin-header { 
   display: flex; 
   align-items: center; 
   justify-content: space-between; 
-  padding: 20px; /* Стандартный отступ как в остальном приложении */
+  padding: 10px 20px 15px; /* Уменьшили верхний отступ с 20 до 10 */
   width: 100%; 
+  box-sizing: border-box;
 }
 
 .back-area { 
@@ -426,39 +427,27 @@ body {
   transition: 0.2s;
 }
 
-.back-area:active {
-  transform: scale(0.9);
-  background: rgba(255, 255, 255, 0.1);
-}
+.back-area:active { transform: scale(0.9); background: rgba(255, 255, 255, 0.1); }
+.back-arrow { font-size: 22px; color: var(--accent); font-weight: bold; }
+.admin-title { font-size: 18px; font-weight: 900; color: var(--accent); letter-spacing: 0.5px; }
 
-.back-arrow { 
-  font-size: 22px; 
-  color: var(--accent); 
-  font-weight: bold; 
-}
-
-.admin-title { 
-  font-size: 18px; 
-  font-weight: 900; 
-  color: var(--accent); 
-  letter-spacing: 0.5px;
-}
-
-/* КОНТЕНТ: Всё, что ниже шапки, центрируем и сужаем */
+/* КОНТЕНТ: Центрируем и сужаем */
 .admin-form-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: 0 40px; /* Сдавливаем форму к центру */
+  padding: 0 40px; 
+  box-sizing: border-box;
 }
 
+/* ОБЛОЖКА: Уменьшили margin-top, чтобы поднять еще выше */
 .upload-square {
   width: 120px;
   height: 120px;
   border: 2px dashed #333;
   border-radius: 18px;
-  margin: 10px auto 25px;
+  margin: 5px auto 20px; /* Было 10px сверху и 25px снизу */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -468,13 +457,8 @@ body {
   cursor: pointer;
 }
 
-.upload-square img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.upload-square img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Поля ввода и кнопки: центровка через margin auto и max-width */
 .fresso-input { 
   width: 100%; 
   max-width: 300px; 
@@ -503,7 +487,7 @@ body {
 .file-selectors { 
   width: 100%;
   max-width: 300px;
-  margin: 15px auto; 
+  margin: 12px auto; 
   display: flex; 
   flex-direction: column; 
   gap: 10px; 
@@ -518,55 +502,32 @@ body {
   border: 1px solid #222; 
   padding: 14px; 
   border-radius: 14px; 
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.file-name { 
-  font-size: 12px; 
-  font-weight: 700; 
-  color: #555; 
-  text-transform: uppercase; 
-}
+.file-name { font-size: 12px; font-weight: 700; color: #555; text-transform: uppercase; }
 
 /* 7. АНИМАЦИИ И КНОПКА ОТПРАВКИ */
 
-/* Анимация галочки */
-@keyframes popCheck { 
-  0% { transform: scale(0); opacity: 0; } 
-  70% { transform: scale(1.2); } 
-  100% { transform: scale(1); opacity: 1; } 
-}
+@keyframes popCheck { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
 
-/* Анимация пульсации кнопки (исправленная) */
 @keyframes pulse-red { 
-  0% { 
-    background: var(--accent); 
-    color: #fff; 
-    box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.4); 
-  } 
-  50% { 
-    background: #ffffff; 
-    color: #000000; 
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); 
-  } 
-  100% { 
-    background: var(--accent); 
-    color: #fff; 
-    box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); 
-  } 
+  0% { background: var(--accent); color: #fff; box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.4); } 
+  50% { background: #ffffff; color: #000000; box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); } 
+  100% { background: var(--accent); color: #fff; box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); } 
 }
 
-/* Сама кнопка: теперь она ОДНА и с правильными размерами */
 .fresso-submit { 
   width: 100%;
-  max-width: 300px;        /* Чтобы была в размер полей ввода */
-  margin: 20px auto 0;    /* Центрируем её */
+  max-width: 300px;
+  margin: 15px auto 0; 
   display: block; 
-  
   background: var(--accent); 
   color: #fff; 
   border: none; 
-  padding: 16px;          /* Хорошая высота */
-  border-radius: 15px;    /* Скругление как у полей */
+  padding: 16px; 
+  border-radius: 15px; 
   font-weight: 900; 
   font-size: 15px; 
   cursor: pointer; 
@@ -574,20 +535,9 @@ body {
   transition: all 0.2s; 
 }
 
-/* Состояния кнопки */
-.fresso-submit:not(:disabled) { 
-  animation: pulse-red 2s infinite; 
-}
-
-.fresso-submit:active { 
-  transform: scale(0.96); 
-}
-
-.fresso-submit:disabled { 
-  opacity: 0.5; 
-  filter: grayscale(1); 
-  cursor: not-allowed; 
-}
+.fresso-submit:not(:disabled) { animation: pulse-red 2s infinite; }
+.fresso-submit:active { transform: scale(0.96); }
+.fresso-submit:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
 /* 8. СОЦСЕТИ — Медленная и плавная волна по рядам */
 .social-container-main { 
   width: 100%; 
