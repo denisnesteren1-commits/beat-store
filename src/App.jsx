@@ -475,7 +475,7 @@ const formatTime = (time) => {
               animationDelay: `${Math.random() * 5}s`,
               animationDuration: `${15 + Math.random() * 20}s`,
               width: `${10 + Math.random() * 30}px`,
-              opacity: 0.1
+              opacity: 0.5
             }}
           />
         ))}
