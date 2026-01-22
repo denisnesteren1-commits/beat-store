@@ -6,7 +6,18 @@
 
 * { 
   box-sizing: border-box; 
-  -webkit-tap-highlight-color: transparent; 
+  /* Полностью убираем любые рамки и подсветки при нажатии */
+  -webkit-tap-highlight-color: transparent !important; 
+  outline: none !important;
+  /* Запрещаем выделение текста на кнопках и карточках (чтобы не «синели») */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Возвращаем возможность выделять текст только там, где это нужно (в поиске) */
+input, textarea {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 /* 1. БАЗОВЫЕ СТИЛИ И ФОН */
@@ -866,12 +877,13 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .full-cover {
+  display: block;          /* Обязательно, чтобы margin auto сработал */
+  margin: 10px auto 30px;  /* auto выравнивает обложку четко по центру */
   width: 85% !important;
   max-width: 300px;
   aspect-ratio: 1/1;
   border-radius: 28px;
   object-fit: cover;
-  margin: 10px 0 30px;
   box-shadow: 0 20px 50px rgba(0,0,0,0.7);
   flex-shrink: 0;
 }

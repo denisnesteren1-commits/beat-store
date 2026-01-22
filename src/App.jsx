@@ -39,12 +39,14 @@ function App() {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   // Плеер
-  const [currentBeatId, setCurrentBeatId] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isLooping, setIsLooping] = useState(false); // Добавлено сюда для стабильности
-  const [progress, setProgress] = useState(0);
-  const audioRef = useRef(new Audio());
-  const formatTime = (time) => {
+const [currentBeatId, setCurrentBeatId] = useState(null);
+const [isPlaying, setIsPlaying] = useState(false);
+const [isLooping, setIsLooping] = useState(false);
+const [progress, setProgress] = useState(0);
+const [currentTime, setCurrentTime] = useState(0); // <-- ДОБАВИЛ СЮДА
+const audioRef = useRef(new Audio());
+
+const formatTime = (time) => {
   if (isNaN(time) || time === undefined) return "0:00";
   const mins = Math.floor(time / 60);
   const secs = Math.floor(time % 60);
@@ -120,6 +122,8 @@ function App() {
       if (audio.duration && !isNaN(audio.duration)) {
         const val = (audio.currentTime / audio.duration) * 100;
         setProgress(val);
+        // ДОБАВЛЯЕМ ЭТУ СТРОКУ НИЖЕ:
+        setCurrentTime(audio.currentTime); 
       }
     };
 
@@ -128,7 +132,6 @@ function App() {
         audio.currentTime = 0;
         audio.play();
       } else {
-        // Вызываем функцию переключения (она будет в следующем блоке)
         if (typeof playNext === 'function') playNext();
       }
     };
@@ -140,7 +143,7 @@ function App() {
       audio.removeEventListener('timeupdate', updateProgress);
       audio.removeEventListener('ended', handleTrackEnd);
     };
-  }, [isLooping, currentBeatId, beats]); 
+  }, [isLooping, currentBeatId, beats]);
 
   // ЗАГРУЗКА: Черновик и Покупки
   useEffect(() => {
@@ -776,9 +779,10 @@ function App() {
                       />
                     </div>
                     <div className="time-info">
-                      <span>{formatTime(audioRef.current?.currentTime)}</span>
-                      <span>{formatTime(audioRef.current?.duration)}</span>
-                    </div>
+                    {/* Теперь здесь currentTime вместо audioRef */}
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(audioRef.current?.duration)}</span>
+                  </div>
                   </div>
 
                   <div className="full-controls-layout">
