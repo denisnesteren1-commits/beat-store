@@ -394,33 +394,71 @@ body {
   background: #1a1a1a; 
   border-color: #333;
 }
-/* 6. АДМИНКА И ФАЙЛЫ (Финальная компактная версия) */
+/* 6. АДМИНКА И ФАЙЛЫ (Финальная ровная версия) */
 
 .admin-view {
-  /* Увеличиваем боковые отступы до 40px, чтобы сузить поля */
-  padding: 0 40px 40px; 
+  width: 100%;
+  max-width: 450px; /* Ширина всего контейнера приложения */
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Центрируем всё содержимое */
-  max-width: 450px;
-  margin: 0 auto;
+  padding-bottom: 40px;
 }
 
+/* ШАПКА: как в профиле, с отступами по бокам */
 .admin-header { 
   display: flex; 
   align-items: center; 
-  padding: 15px 0; 
   justify-content: space-between; 
+  padding: 20px; /* Стандартный отступ как в остальном приложении */
   width: 100%; 
 }
 
-/* НОВЫЙ БЛОК: Квадратная обложка сверху */
+.back-area { 
+  width: 44px; 
+  height: 44px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  cursor: pointer; 
+  border-radius: 50%; 
+  background: rgba(255, 255, 255, 0.05); 
+  transition: 0.2s;
+}
+
+.back-area:active {
+  transform: scale(0.9);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.back-arrow { 
+  font-size: 22px; 
+  color: var(--accent); 
+  font-weight: bold; 
+}
+
+.admin-title { 
+  font-size: 18px; 
+  font-weight: 900; 
+  color: var(--accent); 
+  letter-spacing: 0.5px;
+}
+
+/* КОНТЕНТ: Всё, что ниже шапки, центрируем и сужаем */
+.admin-form-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0 40px; /* Сдавливаем форму к центру */
+}
+
 .upload-square {
   width: 120px;
   height: 120px;
   border: 2px dashed #333;
   border-radius: 18px;
-  margin: 10px auto 25px; /* Центровка и отступ вниз */
+  margin: 10px auto 25px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -428,7 +466,6 @@ body {
   overflow: hidden;
   color: #444;
   cursor: pointer;
-  flex-shrink: 0; /* Чтобы не сжимался */
 }
 
 .upload-square img {
@@ -437,46 +474,39 @@ body {
   object-fit: cover;
 }
 
-.upload-square span {
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-/* Поля ввода: Узкие и аккуратные */
+/* Поля ввода и кнопки: центровка через margin auto и max-width */
 .fresso-input { 
   width: 100%; 
-  max-width: 300px; /* Ограничиваем ширину инпутов */
+  max-width: 300px; 
   background: #111; 
   border: 1px solid #222; 
   color: #fff; 
-  padding: 10px 14px; 
-  border-radius: 10px; 
-  margin-bottom: 8px; 
+  padding: 12px 15px; 
+  border-radius: 12px; 
+  margin: 0 auto 10px; 
   font-size: 14px; 
   outline: none; 
+  display: block;
 }
 
 .fresso-input:focus { border-color: var(--accent); background: #161616; }
 
-/* Сетка для цен и строк (делаем их компактнее) */
 .fresso-row, .price-grid { 
   display: grid; 
   grid-template-columns: 1fr 1fr; 
-  gap: 8px; 
+  gap: 10px; 
   width: 100%;
   max-width: 300px;
-  margin-bottom: 4px; 
+  margin: 0 auto 5px;
 }
 
-/* Селекторы файлов */
 .file-selectors { 
   width: 100%;
   max-width: 300px;
-  margin: 15px 0; 
+  margin: 15px auto; 
   display: flex; 
   flex-direction: column; 
-  gap: 8px; 
+  gap: 10px; 
 }
 
 .file-row { 
@@ -486,31 +516,30 @@ body {
   gap: 12px; 
   background: #111; 
   border: 1px solid #222; 
-  padding: 12px; 
-  border-radius: 12px; 
-  cursor: pointer; 
+  padding: 14px; 
+  border-radius: 14px; 
 }
 
 .file-name { 
-  font-size: 11px; 
+  font-size: 12px; 
   font-weight: 700; 
   color: #555; 
   text-transform: uppercase; 
 }
 
-/* Кнопка Опубликовать — в размер полей */
+/* Кнопка опубликовать */
 .fresso-submit { 
   width: 100%;
   max-width: 300px;
   background: var(--accent); 
   color: #fff; 
   border: none; 
-  padding: 14px; 
-  border-radius: 12px; 
+  padding: 16px; 
+  border-radius: 15px; 
   font-weight: 900; 
-  font-size: 14px; 
-  margin-top: 10px; 
-  cursor: pointer;
+  font-size: 15px; 
+  margin: 15px auto 0; 
+  display: block;
 }
 /* 7. АНИМАЦИИ И КНОПКА ОТПРАВКИ */
 @keyframes popCheck { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
