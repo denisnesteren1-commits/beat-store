@@ -48,6 +48,8 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
+  /* ДОБАВЬ ЭТО: */
+  background: transparent !important;
 }
 
 /* 2. ШАПКА И ТАБЫ */
@@ -1224,9 +1226,10 @@ input[type="range"]::-webkit-slider-thumb {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 0; /* Чтобы было за кнопками */
+  z-index: -1; /* Уходит в самый низ */
   overflow: hidden;
   pointer-events: none;
+  background: #000; /* Черный фон теперь живет здесь */
 }
 
 .bg-fl-logo {
