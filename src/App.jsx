@@ -44,6 +44,12 @@ function App() {
   const [isLooping, setIsLooping] = useState(false); // Добавлено сюда для стабильности
   const [progress, setProgress] = useState(0);
   const audioRef = useRef(new Audio());
+  const formatTime = (time) => {
+  if (isNaN(time) || time === undefined) return "0:00";
+  const mins = Math.floor(time / 60);
+  const secs = Math.floor(time % 60);
+  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+};
 
   // --- ЛОГИКА ФИЛЬТРАЦИИ ---
   const [searchQuery, setSearchQuery] = useState('');
@@ -770,14 +776,8 @@ function App() {
                       />
                     </div>
                     <div className="time-info">
-                      <span>
-                        {Math.floor((audioRef.current?.currentTime || 0) / 60)}:
-                        {('0' + Math.floor((audioRef.current?.currentTime || 0) % 60)).slice(-2)}
-                      </span>
-                      <span>
-                        {Math.floor((audioRef.current?.duration || 0) / 60)}:
-                        {('0' + Math.floor((audioRef.current?.duration || 0) % 60)).slice(-2)}
-                      </span>
+                      <span>{formatTime(audioRef.current?.currentTime)}</span>
+                      <span>{formatTime(audioRef.current?.duration)}</span>
                     </div>
                   </div>
 

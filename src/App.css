@@ -879,80 +879,126 @@ input[type="range"]::-webkit-slider-thumb {
 .beat-info-full { text-align: center; margin-bottom: 30px; width: 100%; }
 .beat-info-full h1 { font-size: 26px; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.5px; }
 
+/* 1. ИСПРАВЛЕННЫЙ PROGRESS BAR (Ползунок теперь идеально по центру) */
 .progress-bar-wrapper {
   position: relative;
   width: 100%;
-  height: 6px; /* Чуть толще для удобства клика */
+  height: 6px; 
   background: rgba(255,255,255,0.1);
   border-radius: 10px;
+  /* Центрируем содержимое по вертикали */
+  display: flex;
+  align-items: center;
 }
 
 .progress-fill {
   position: absolute;
-  left: 0; top: 0; height: 100%;
+  left: 0; 
+  top: 0; 
+  height: 100%;
   background: #fff;
   border-radius: 10px;
   z-index: 1;
-  pointer-events: none; /* Чтобы не мешал кликать по input */
+  pointer-events: none;
 }
 
 .full-seek-bar {
   position: absolute;
-  top: -8px; left: 0;
+  left: 0;
   width: 100% !important;
-  appearance: none; -webkit-appearance: none;
+  appearance: none; 
+  -webkit-appearance: none;
   background: transparent !important;
   z-index: 5;
   margin: 0;
+  height: 30px; /* Увеличиваем область нажатия пальцем */
+  cursor: pointer;
+  /* Центрируем сам инпут относительно родителя */
+  top: 50%;
+  transform: translateY(-50%);
 }
 
+/* Настройка кружка (thumb) */
 .full-seek-bar::-webkit-slider-thumb {
-  appearance: none; -webkit-appearance: none;
-  width: 16px; height: 16px; background: #fff;
-  border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px; 
+  height: 16px; 
+  background: #fff;
+  border-radius: 50%; 
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  border: 2px solid #000; /* Добавим тонкий бортик, чтобы он выделялся */
 }
 
+/* 2. ИСПРАВЛЕННЫЕ КНОПКИ (В одну линию, без перекосов) */
 .full-controls-layout {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 320px;
-  margin-bottom: 40px;
+  max-width: 330px;
+  margin: 0 auto 40px;
+}
+
+.main-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Стилизация самих кнопок-иконок */
+.control-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
 }
 
 .play-pause-circle {
-  width: 70px; height: 70px;
+  width: 72px; 
+  height: 72px;
   background: #fff !important;
   border-radius: 50%;
   color: #000 !important;
-  display: flex; align-items: center; justify-content: center;
-  border: none;
+  flex-shrink: 0; /* Чтобы круг не сплющило */
+  box-shadow: 0 4px 15px rgba(255,255,255,0.2);
 }
 
 .secondary-action {
   color: #444;
-  background: none !important;
-  border: none !important;
-  padding: 10px;
+  transition: color 0.2s;
 }
 
-.secondary-action.active { color: #fff !important; }
+.secondary-action.active { 
+  color: #fff !important; 
+}
 
+/* 3. ИСПРАВЛЕННЫЕ СТАТЫ (BPM/KEY) */
 .aesthetic-stats {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 40px;
+  justify-content: space-evenly; /* Более ровное распределение */
   background: #111;
-  padding: 20px 0;
+  padding: 18px 0;
   border-radius: 20px;
   width: 100%;
   max-width: 300px;
-  margin-bottom: 30px;
+  margin: 0 auto 30px;
 }
 
-.stat-item strong { color: #fff; font-size: 18px; }
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-/* Убираем выделение */
-* { -webkit-tap-highlight-color: transparent; outline: none !important; }
+.stat-item strong { 
+  color: #fff; 
+  font-size: 18px; 
+  font-family: 'Inter', sans-serif;
+}
