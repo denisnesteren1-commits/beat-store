@@ -402,8 +402,8 @@ body {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  /* Добавили 60px снизу, чтобы кнопка не упиралась в край */
-  padding-bottom: 60px; 
+  /* Увеличили отступ снизу до максимума */
+  padding-bottom: 80px; 
 }
 
 /* ШАПКА: Уменьшили padding сверху, чтобы поднять контент */
@@ -522,7 +522,8 @@ body {
 .fresso-submit { 
   width: 100%;
   max-width: 300px;
-  margin: 15px auto 0; 
+  /* Добавили большой margin снизу (50px) */
+  margin: 15px auto 50px; 
   display: block; 
   background: var(--accent); 
   color: #fff; 
@@ -539,6 +540,8 @@ body {
 .fresso-submit:not(:disabled) { animation: pulse-red 2s infinite; }
 .fresso-submit:active { transform: scale(0.96); }
 .fresso-submit:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+
+
 /* 8. СОЦСЕТИ — Медленная и плавная волна по рядам */
 .social-container-main { 
   width: 100%; 
