@@ -47,42 +47,38 @@ body {
 .tab-menu { display: flex; gap: 20px; padding: 10px 20px; font-size: 14px; font-weight: 800; color: #444; }
 .tab-menu .active { color: #fff; border-bottom: 2px solid var(--accent); }
 
-/* 3. КАРТОЧКА БИТА (ЧИСТЫЙ СТИЛЬ С ПУЛЬСАЦИЕЙ) */
-.beat-list { 
-  padding: 10px 20px; 
-  padding-bottom: 120px; 
+/* --- НОВЫЙ БЛОК: ТЭГИ КАТЕГОРИЙ --- */
+.quick-tags {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;       /* Включаем горизонтальный скролл */
+  padding: 10px 20px;
+  white-space: nowrap;    /* Запрещаем перенос на новую строку */
+  scrollbar-width: none;  /* Скрываем скроллбар для Firefox */
 }
 
-.beat-card { 
-  display: flex; 
-  gap: 15px; 
-  background: var(--card); 
-  padding: 14px; 
-  border-radius: 22px; 
-  margin-bottom: 12px; 
-  align-items: center;
-  border: 1px solid #1a1a1a; 
-  transition: 0.3s;
+.quick-tags::-webkit-scrollbar {
+  display: none;          /* Скрываем скроллбар для Chrome/Safari */
 }
 
-/* ОБЛОЖКА: Основа для пульсации */
-.beat-cover { 
-  width: 60px; 
-  height: 60px; 
-  border-radius: 12px; 
-  overflow: hidden; 
-  position: relative; 
-  flex-shrink: 0; 
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+.tag-btn {
+  flex-shrink: 0;         /* Чтобы кнопки не сжимались */
+  background: #121212;
+  border: 1px solid #222;
+  color: #888;
+  padding: 6px 14px;      /* Компактный размер */
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.beat-cover img { 
-  width: 100%; 
-  height: 100%; 
-  object-fit: cover; 
+.tag-btn.active {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
 }
-
-/* Список битов */
+/* 3. КАРТОЧКА БИТА (ЧИСТЫЙ СТИЛЬ С ПУЛЬСАЦИЕЙ И ЗЕЛЕНЫМИ ЦЕНАМИ) */
 .beat-list { 
   padding: 10px 20px; 
   padding-bottom: 120px; 
@@ -105,7 +101,7 @@ body {
   background: #151515;
 }
 
-/* Обложка в списке */
+/* ОБЛОЖКА: Основа для пульсации */
 .beat-cover { 
   width: 60px; 
   height: 60px; 
@@ -113,6 +109,7 @@ body {
   overflow: hidden; 
   position: relative; 
   flex-shrink: 0; 
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 .beat-cover img { 
@@ -134,23 +131,26 @@ body {
 
 /* ДЫШАЩАЯ ТОЧКА */
 .center-dot {
-  width: 12px; 
-  height: 12px; 
+  width: 10px; 
+  height: 10px; 
   background: #fff; 
   border-radius: 50%;
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-  /* Анимация увеличения-уменьшения */
-  animation: breathe-dot 1.2s infinite ease-in-out;
+  animation: breathe-dot 1.4s infinite ease-in-out;
 }
 
 @keyframes breathe-dot {
-  0% { transform: scale(0.8); opacity: 0.7; }
-  50% { transform: scale(1.5); opacity: 1; }
-  100% { transform: scale(0.8); opacity: 0.7; }
+  0% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0.6; }
 }
 
 /* Инфо о бите */
-.beat-body { flex: 1; overflow: hidden; }
+.beat-body { 
+  flex: 1; 
+  min-width: 0; /* Чтобы текст правильно обрезался */
+  overflow: hidden; 
+}
 
 .beat-name-row { 
   font-weight: 800; 
@@ -170,14 +170,16 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Зеленая кнопка цены */
+/* Кнопка цены: прозрачный фон и сочный зеленый текст */
 .beat-buy-btn { 
   font-weight: 900; 
-  color: #2ecc71; 
-  font-size: 14px; 
-  padding: 8px 14px; 
-  background: rgba(46, 204, 113, 0.1); 
-  border-radius: 12px;
+  color: #2ecc71;          /* Тот самый сочный зеленый */
+  font-size: 15px; 
+  padding: 8px 12px; 
+  background: transparent; /* Убрали фон, чтобы акцент был на цене */
+  border: none;
+  flex-shrink: 0;
+  letter-spacing: -0.5px;
 }
 
 /* --- 4. НИЖНИЙ МИНИ-ПЛЕЕР И ЭФФЕКТЫ --- */
@@ -195,14 +197,9 @@ body {
   overflow: hidden;
 }
 
-/* Прогресс-бар на фоне */
+/* Прогресс-бар в мини-плеере отключен по просьбе пользователя */
 .player-progress-fill {
-  position: absolute; 
-  top: 0; left: 0; bottom: 0;
-  background: rgba(255, 255, 255, 0.08); 
-  z-index: 1; 
-  pointer-events: none; 
-  transition: width 0.3s linear;
+  display: none; 
 }
 
 .mini-player-content { 
@@ -630,35 +627,52 @@ body {
   --accent: #ff3333;
 }
 
-/* Убираем синий цвет и настраиваем ползунки (BPM и время) */
+/* Базовая настройка для всех range-инпутов */
 input[type="range"] {
-  -webkit-appearance: none; /* Для Chrome/Safari */
-  appearance: none;         /* СТАНДАРТНОЕ СВОЙСТВО (добавь это) */
+  -webkit-appearance: none; 
+  appearance: none;         /* Исправляет ошибку в терминале */
   width: 100%;
   background: transparent;
   outline: none;
   margin: 0;
+  position: absolute;       /* Важно для наложения в двойных слайдерах */
+  pointer-events: none;     /* Пропускаем клики сквозь полоску */
 }
 
-/* Дорожка слайдера */
+/* Дорожка слайдера (Track) */
 input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
   height: 4px;
-  background: #333;
+  background: transparent; /* Делаем фон прозрачным, чтобы не перекрывать нижний слой */
   border-radius: 2px;
 }
 
-/* Сам кружок (thumb) */
+/* Сам кружок (Thumb) */
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  height: 18px;
-  width: 18px;
+  appearance: none;
+  height: 20px;
+  width: 20px;
   border-radius: 50%;
-  background: #fff; /* Чисто белый */
+  background: #fff; 
   cursor: pointer;
-  margin-top: -7px; /* Центрируем относительно дорожки */
+  margin-top: -8px; /* Выравнивание по центру дорожки */
   border: 2px solid var(--accent);
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  pointer-events: auto; /* ВОЗВРАЩАЕМ кликабельность кружку */
+  position: relative;
+  z-index: 5;
+}
+
+/* Настройка для контейнера, где лежат ползунки (чтобы линия была видна) */
+.range-slider-container {
+  position: relative;
+  height: 4px;
+  background: #333; /* Теперь линия рисуется один раз тут */
+  margin: 20px 0;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
 }
 
 /* --- 2. ПОИСК И ФИЛЬТРЫ (Более сочный вид) --- */
@@ -698,11 +712,9 @@ input[type="range"]::-webkit-slider-thumb {
   transform: scale(0.95);
 }
 
-/* --- 3. КАРТОЧКА БИТА (С анимацией появления) --- */
+/* --- 3. КАРТОЧКА БИТА (ТОЛЬКО АНИМАЦИЯ) --- */
 .beat-card {
-  background: #0d0d0d;
-  border: 1px solid #1a1a1a;
-  /* Анимация: вылет снизу вверх при рендере */
+  /* Мы НЕ пишем здесь background и padding, чтобы не сломать дизайн из начала файла */
   animation: cardSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
@@ -711,14 +723,18 @@ input[type="range"]::-webkit-slider-thumb {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Равномерные задержки, чтобы карточки вылетали по очереди */
+/* Плавное появление карточек друг за другом */
 .beat-card:nth-child(1) { animation-delay: 0.1s; }
 .beat-card:nth-child(2) { animation-delay: 0.15s; }
 .beat-card:nth-child(3) { animation-delay: 0.2s; }
+.beat-card:nth-child(4) { animation-delay: 0.25s; }
+.beat-card:nth-child(5) { animation-delay: 0.3s; }
 
+/* Настройка текста (оставляем крупным) */
 .beat-name-row {
-  font-size: 16px; /* Чуть крупнее для читаемости */
+  font-size: 16px;
   letter-spacing: -0.3px;
+  font-weight: 800;
 }
 
 /* --- 4. FULL PLAYER (Выдвижной экран) --- */
@@ -732,7 +748,7 @@ input[type="range"]::-webkit-slider-thumb {
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  padding: 40px 25px;
+  padding: 60px 25px; /* Увеличили отступ сверху для красоты */
   
   /* Эффект выдвижения */
   transform: translateY(100%);
@@ -754,16 +770,66 @@ input[type="range"]::-webkit-slider-thumb {
   background: none;
   border: none;
   color: #fff;
-  font-size: 24px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/* === ПОЛЗУНОК ВРЕМЕНИ (Пункт 2) === */
+.full-player-progress-area {
+  width: 100%;
+  margin: 40px 0 10px;
+  pointer-events: auto; 
+}
+
+.full-player-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #222; 
+  border-radius: 10px;
+  outline: none;
+}
+
+.full-player-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #fff; 
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.time-display {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  color: #666;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: monospace;
 }
 
 /* Кнопка Play в развернутом плеере */
 .play-pause-circle {
-  width: 75px;
-  height: 75px;
+  width: 80px;
+  height: 80px;
   background: #fff;
   border-radius: 50%;
   box-shadow: 0 15px 35px rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 30px auto; /* Отцентрировали и добавили отступы */
+}
+
+/* Иконка внутри кнопки */
+.play-pause-circle svg {
+  fill: #000 !important;
+  width: 30px;
+  height: 30px;
 }
 /* --- СТИЛИ ПОИСКА И ФИЛЬТРОВ --- */
 .search-container {
@@ -939,125 +1005,14 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 12px;
 }
 
-/* --- КАРТОЧКА БИТА (APPLE MUSIC STYLE) --- */
+/* --- ТОЛЬКО АНИМАЦИЯ (ФИНАЛ) --- */
 .beat-card {
-  background: rgba(255, 255, 255, 0.03); /* Едва заметный фон */
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 8px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  border-bottom: 0.5px solid rgba(255, 255, 255, 0.05); /* Тонкая линия разделитель */
+  animation: cardSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-.beat-card:active {
-  background: rgba(255, 255, 255, 0.1);
-  transform: scale(0.98);
-}
-
-.beat-cover {
-  position: relative;
-  width: 54px;
-  height: 54px;
-  flex-shrink: 0;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.4); /* Объемная тень обложки */
-}
-
-.beat-cover img {
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.play-ico {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  opacity: 1;
-}
-
-.center-dot {
-  width: 10px;
-  height: 10px;
-  background: #fff; /* Белая точка как в плеере Apple */
-  border-radius: 50%;
-  box-shadow: 0 0 12px rgba(255,255,255,0.8);
-}
-
-.beat-body {
-  flex-grow: 1;
-  min-width: 0;
-}
-
-.beat-name-row {
-  font-weight: 600;
-  font-size: 16px; /* Более крупный шрифт заголовка */
-  color: #fff;
-  margin-bottom: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  letter-spacing: -0.2px;
-}
-
-.beat-meta-row {
-  font-size: 13px;
-  color: #8a8a8e; /* Фирменный серый Apple */
-  font-weight: 400;
-}
-
-.beat-buy-btn {
-  background: rgba(255, 255, 255, 0.08); /* Полупрозрачная кнопка */
-  color: #fff;
-  font-weight: 700;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 12px;
-  flex-shrink: 0;
-  border: none;
-}
-
-/* --- КНОПКИ УПРАВЛЕНИЯ ПЛЕЕРОМ --- */
-.control-btn, .mini-play-btn, .main-skip {
-  color: #fff !important;
-  fill: #fff !important;
-  background: none;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.control-btn svg, .mini-play-btn svg, .main-skip svg {
-  fill: #fff !important;
-}
-
-/* Главная кнопка в развернутом плеере */
-.play-pause-circle {
-  width: 72px;
-  height: 72px;
-  background: #fff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-}
-
-.play-pause-circle svg {
-  fill: #000 !important;
+@keyframes cardSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .empty-search {
