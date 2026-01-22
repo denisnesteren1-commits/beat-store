@@ -25,15 +25,15 @@ body {
   margin: 0; 
   color: #fff; 
   font-family: -apple-system, system-ui, sans-serif;
-  background: linear-gradient(-45deg, #000000, #1a0505, #0a0a0a, #000000);
-  background-size: 400% 400%; 
-  animation: grad 15s ease infinite;
+  /* ИЗМЕНЕНИЕ: Убираем градиент отсюда, оставляем просто черный или прозрачный */
+  background: #000; 
   display: flex; 
   justify-content: center; 
   min-height: 100vh;
   overflow-x: hidden;
 }
 
+/* Эту анимацию оставляем, но использовать её будем в .bg-animation */
 @keyframes grad { 
   0%{ background-position: 0% 50% } 
   50%{ background-position: 100% 50% } 
@@ -48,7 +48,7 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  /* ДОБАВЬ ЭТО: */
+  /* Оставляем прозрачным, чтобы видеть логотипы насквозь */
   background: transparent !important;
 }
 
@@ -1226,10 +1226,13 @@ input[type="range"]::-webkit-slider-thumb {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1; /* Уходит в самый низ */
+  z-index: -1; 
   overflow: hidden;
   pointer-events: none;
-  background: #000; /* Черный фон теперь живет здесь */
+  /* Добавляем градиент сюда: */
+  background: linear-gradient(-45deg, #000000, #1a0505, #0a0a0a, #000000);
+  background-size: 400% 400%;
+  animation: grad 15s ease infinite; /* Та самая анимация перелива */
 }
 
 .bg-fl-logo {
@@ -1320,9 +1323,4 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 12px;
   cursor: pointer;
   width: 100%;
-}
-/* Делаем так, чтобы фон БЫЛ ВИДЕН поверх всего на время теста */
-.bg-animation {
-  z-index: -1 !important; /* Теперь уводим в самый низ, ПОД контент */
-  pointer-events: none;
 }
