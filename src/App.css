@@ -1321,6 +1321,8 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
   width: 100%;
 }
-div {
-  background-color: transparent !important;
+/* Делаем так, чтобы фон БЫЛ ВИДЕН поверх всего на время теста */
+.bg-animation {
+  z-index: 9999 !important; /* Выносим на самый передний план */
+  pointer-events: none;
 }

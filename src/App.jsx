@@ -462,7 +462,7 @@ const formatTime = (time) => {
  return (
     <div className="app-container">
       {/* ФОНОВЫЕ ЛОГОТИПЫ */}
-      <div className="bg-animation">
+      <div className="bg-animation" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: -1, pointerEvents: 'none' }}>
         {[...Array(15)].map((_, i) => (
           <img 
             key={i} 
@@ -470,18 +470,20 @@ const formatTime = (time) => {
             className="bg-fl-logo" 
             alt="" 
             style={{
-              left: `${(i * 137) % 100}%`,
-              top: `${(i * 193) % 100}%`,
-              animationDelay: `${(i * 0.5)}s`,
-              animationDuration: `${15 + (i % 10)}s`,
-              width: `${20 + (i % 15)}px`,
+              position: 'absolute',
+              left: (i * 137 % 100) + '%',
+              top: (i * 193 % 100) + '%',
+              width: (20 + (i % 15)) + 'px',
               opacity: 0.15,
               filter: 'grayscale(1) brightness(1.5)',
-              position: 'absolute'
+              animation: 'floatBackground ' + (15 + (i % 10)) + 's linear infinite',
+              animationDelay: (i * 0.5) + 's'
             }}
           />
         ))}
       </div>
+
+      {/* Дальше идет твой остальной код (Header и т.д.) */}
 
       
       {/* 1. ШАПКА */}
