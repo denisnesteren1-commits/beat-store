@@ -738,109 +738,119 @@ function App() {
           }
         }}
       >
-        {/* Индикатор свайпа (маленькая полоска сверху) */}
-        <div className="swipe-indicator"></div>
+        <div className="swipe-handle-container" onClick={() => { setIsPlayerExpanded(false); setIsEditing(false); }}>
+          <div className="swipe-indicator"></div>
+        </div>
 
-        <button className="close-player" onClick={(e) => { 
-          e.stopPropagation(); 
-          setIsPlayerExpanded(false); 
-          setIsEditing(false); 
-        }}>
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </button>
-
-        {beats.find(b => b.id === currentBeatId) && (
-          <div className="full-player-content">
-            <img 
-              src={beats.find(b => b.id === currentBeatId).image} 
-              alt="cover" 
-              className="full-cover" 
-            />
-            
-            {!isEditing ? (
-              <div className="beat-info-full">
-                <div className="full-main-info">
-                  <h1>{beats.find(b => b.id === currentBeatId)?.title}</h1>
-                  <p className="full-genre">{beats.find(b => b.id === currentBeatId)?.genre}</p>
-                </div>
-
-                <div className="full-progress-container">
-                  <input 
-                    type="range" 
-                    className="full-seek-bar" 
-                    value={progress} 
-                    onChange={handleSeek} 
-                  />
-                  <div className="time-info">
-                    <span>
-                      {Math.floor((audioRef.current?.currentTime || 0) / 60)}:
-                      {('0' + Math.floor((audioRef.current?.currentTime || 0) % 60)).slice(-2)}
-                    </span>
-                    <span>
-                      {Math.floor((audioRef.current?.duration || 0) / 60)}:
-                      {('0' + Math.floor((audioRef.current?.duration || 0) % 60)).slice(-2)}
-                    </span>
+        <div className="full-player-scroll-area">
+          {beats.find(b => b.id === currentBeatId) && (
+            <div className="full-player-content">
+              <img 
+                src={beats.find(b => b.id === currentBeatId)?.image} 
+                alt="cover" 
+                className="full-cover" 
+              />
+              
+              {!isEditing ? (
+                <div className="beat-info-full">
+                  <div className="full-main-info">
+                    <h1>{beats.find(b => b.id === currentBeatId)?.title}</h1>
+                    <p className="full-genre">{beats.find(b => b.id === currentBeatId)?.genre}</p>
                   </div>
-                </div>
 
-                <div className="full-controls">
-                  <button className={`control-btn secondary-action ${isLooping ? 'active' : ''}`} onClick={toggleLoop}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
-                      <polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
-                    </svg>
-                  </button>
+                  {/* Прогресс-бар */}
+                  <div className="full-progress-container">
+                    <div className="progress-bar-wrapper">
+                      <div 
+                        className="progress-fill" 
+                        style={{ width: `${progress}%` }}
+                      ></div>
+                      <input 
+                        type="range" 
+                        className="full-seek-bar" 
+                        value={progress} 
+                        onChange={handleSeek} 
+                      />
+                    </div>
+                    <div className="time-info">
+                      <span>
+                        {Math.floor((audioRef.current?.currentTime || 0) / 60)}:
+                        {('0' + Math.floor((audioRef.current?.currentTime || 0) % 60)).slice(-2)}
+                      </span>
+                      <span>
+                        {Math.floor((audioRef.current?.duration || 0) / 60)}:
+                        {('0' + Math.floor((audioRef.current?.duration || 0) % 60)).slice(-2)}
+                      </span>
+                    </div>
+                  </div>
 
-                  <div className="main-controls">
-                    <button className="control-btn main-skip" onClick={playPrev}>
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"></path></svg>
+                  {/* Управление */}
+                  <div className="full-controls-layout">
+                    <button className={`control-btn secondary-action ${isLooping ? 'active' : ''}`} onClick={toggleLoop}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
                     </button>
-                    <button className="control-btn play-pause-circle" onClick={() => setIsPlaying(!isPlaying)}>
-                      {isPlaying ? 
-                        <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg> : 
-                        <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" style={{marginLeft: '4px'}}><path d="M8 5v14l11-7z"></path></svg>
+
+                    <div className="main-controls">
+                      <button className="control-btn main-skip" onClick={playPrev}>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"></path></svg>
+                      </button>
+                      <button className="control-btn play-pause-circle" onClick={() => setIsPlaying(!isPlaying)}>
+                        {isPlaying ? 
+                          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg> : 
+                          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" style={{marginLeft: '4px'}}><path d="M8 5v14l11-7z"></path></svg>
+                        }
+                      </button>
+                      <button className="control-btn main-skip" onClick={playNext}>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"></path></svg>
+                      </button>
+                    </div>
+
+                    <button className="control-btn secondary-action" onClick={() => toggleFav(currentBeatId)}>
+                      {favorites.includes(currentBeatId) ? 
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#ff4d4d"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg> : 
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                       }
                     </button>
-                    <button className="control-btn main-skip" onClick={playNext}>
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"></path></svg>
-                    </button>
                   </div>
 
-                  <button className="control-btn secondary-action" onClick={() => toggleFav(currentBeatId)}>
-                    {favorites.includes(currentBeatId) ? 
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="#ff4d4d"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg> : 
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                    }
-                  </button>
-                </div>
+                  {/* Эстетичные статы */}
+                  <div className="aesthetic-stats">
+                    <div className="stat-item">
+                      <span>BPM</span>
+                      <strong>{beats.find(b => b.id === currentBeatId)?.bpm || '--'}</strong>
+                    </div>
+                    <div className="stat-divider"></div>
+                    <div className="stat-item">
+                      <span>KEY</span>
+                      <strong>{beats.find(b => b.id === currentBeatId)?.key || '--'}</strong>
+                    </div>
+                  </div>
 
-                <div className="full-stats-grid">
-                  <div className="stat-box"><span>BPM</span><strong>{beats.find(b => b.id === currentBeatId)?.bpm}</strong></div>
-                  <div className="stat-box"><span>KEY</span><strong>{beats.find(b => b.id === currentBeatId)?.key}</strong></div>
-                </div>
+                  <div className="full-description">
+                    <label>ABOUT THIS BEAT</label>
+                    <p className="description-text">
+                      {beats.find(b => b.id === currentBeatId)?.tags ? `Tags: ${beats.find(b => b.id === currentBeatId).tags}` : "High quality production by FRESSO. This beat is carefully crafted for the best sound experience."}
+                    </p>
+                  </div>
 
-                <div className="full-description">
-                  <label>DESCRIPTION</label>
-                  <p className="description-text">
-                    {beats.find(b => b.id === currentBeatId)?.description || "High quality production by FRESSO. This beat is carefully crafted for the best sound experience."}
-                  </p>
+                  {Number(tg?.initDataUnsafe?.user?.id) === ADMIN_ID && (
+                    <button className="edit-beat-btn" onClick={() => setIsEditing(true)}>EDIT BEAT DATA</button>
+                  )}
                 </div>
-
-                {Number(tg?.initDataUnsafe?.user?.id) === ADMIN_ID && (
-                  <button className="edit-beat-btn" onClick={() => setIsEditing(true)}>EDIT BEAT DATA</button>
-                )}
-              </div>
-            ) : (
-              <div className="edit-form-full">
-                <h2 style={{color: 'var(--accent)', marginBottom: '20px'}}>Edit Mode</h2>
-                <p style={{color: '#666'}}>Форма редактирования скоро будет готова...</p>
-                <button className="apply-btn" style={{marginTop: '20px'}} onClick={() => setIsEditing(false)}>Back</button>
-              </div>
-            )}
-          </div>
-        )}
+              ) : (
+                <div className="edit-form-full">
+                  <h2 style={{color: 'var(--accent)', marginBottom: '20px', fontSize: '18px', fontWeight: '800'}}>EDIT MODE</h2>
+                  <p style={{color: '#888', marginBottom: '20px', fontSize: '14px'}}>Modify beat information here.</p>
+                  
+                  {/* Можно добавить поля ввода здесь позже */}
+                  
+                  <button className="apply-btn" style={{width: '100%'}} onClick={() => setIsEditing(false)}>SAVE CHANGES</button>
+                  <button className="reset-btn" style={{width: '100%', marginTop: '10px', background: 'transparent', border: '1px solid #333'}} onClick={() => setIsEditing(false)}>CANCEL</button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

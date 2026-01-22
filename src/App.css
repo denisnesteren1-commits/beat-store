@@ -737,442 +737,162 @@ input[type="range"]::-webkit-slider-thumb {
   font-weight: 800;
 }
 
-/* --- 4. FULL PLAYER (APPLE/YANDEX STYLE) --- */
+/* ============================================================
+   ФИНАЛЬНЫЙ ПЛЕЕР: ВСЁ В ОДНОМ (ИСПРАВЛЕННЫЙ)
+   ============================================================ */
+
 .full-player {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0; width: 100%; height: 100%;
   background: #000;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  box-sizing: border-box; /* Важно, чтобы ничего не улетало за экран */
   transform: translateY(100%);
   transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  overflow: hidden; /* Чтобы сама база не дергалась */
 }
 
-.full-player.open {
-  transform: translateY(0);
-}
+.full-player.open { transform: translateY(0); }
 
-/* Кнопка закрытия сверху слева */
-.close-player {
-  background: none;
-  border: none;
-  color: #fff;
-  opacity: 0.5;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  z-index: 10;
-}
-
-/* --- ШАГ 2: ИСПРАВЛЕНИЕ СКРОЛЛА И ПОЛЗУНКА --- */
-
-/* Главный контейнер контента — теперь он позволяет скроллить вниз */
-.full-player-content {
+/* Зона скролла — именно здесь живет контент */
+.full-player-scroll-area {
   flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 20px 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* Свайп-индикатор (вместо стрелки) */
+.swipe-handle-container {
   width: 100%;
-  box-sizing: border-box;
-  padding: 40px 20px; /* Отступы, чтобы контент не лип к краям */
-  overflow-y: auto;   /* РАЗРЕШАЕМ СКРОЛЛ ВНУТРИ ПЛЕЕРА */
-  -webkit-overflow-scrolling: touch; /* Плавный скролл на iPhone */
+  padding: 15px 0 10px;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.swipe-indicator {
+  width: 40px; height: 5px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
 }
 
 /* Обложка */
 .full-cover {
-  width: 80% !important;
+  width: 85% !important;
   max-width: 320px;
   aspect-ratio: 1/1;
-  border-radius: 24px;
+  border-radius: 28px;
   object-fit: cover;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-  margin-bottom: 40px;
-  flex-shrink: 0; /* Чтобы обложка не сжималась при скролле */
-}
-
-/* Названия */
-.beat-info-full {
-  text-align: center;
-  width: 100%;
-  margin-bottom: 30px;
+  margin: 10px 0 30px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
   flex-shrink: 0;
 }
 
-.full-main-info h1 {
-  font-size: 26px;
-  font-weight: 800;
-  color: #fff;
-  margin: 0 0 8px 0;
-  letter-spacing: -0.5px;
-}
+/* Информация о бите */
+.beat-info-full { text-align: center; margin-bottom: 30px; width: 100%; }
+.beat-info-full h1 { font-size: 26px; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.5px; }
+.full-genre { color: var(--accent); font-weight: 700; font-size: 14px; text-transform: uppercase; margin-top: 8px; opacity: 0.8; }
 
-.full-genre {
-  font-size: 14px;
-  color: var(--accent);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  opacity: 0.8;
-}
-
-/* Прогресс-бар — фиксируем ширину, чтобы не вылетал */
+/* ПОЛЗУНОК С ЗАПОЛНЕНИЕМ (Progress Bar) */
 .full-progress-container {
   width: 100%;
-  max-width: 330px; /* Немного уменьшили, чтобы точно влезло */
-  padding: 0;
-  box-sizing: border-box; 
-  margin-bottom: 40px;
-  flex-shrink: 0;
+  max-width: 320px;
+  margin-bottom: 35px;
+}
+
+.progress-bar-wrapper {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+}
+
+.progress-fill {
+  position: absolute;
+  left: 0; top: 0; height: 100%;
+  background: #fff; /* Белая линия прогресса */
+  border-radius: 10px;
+  z-index: 1;
 }
 
 .full-seek-bar {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 4px; /* Чуть тоньше для эстетики */
-  background: rgba(255,255,255,0.15);
-  border-radius: 10px;
-  outline: none;
+  position: absolute;
+  top: -6px; left: 0;
+  width: 100% !important;
+  appearance: none; -webkit-appearance: none;
+  background: transparent !important;
+  z-index: 5;
+  margin: 0;
   cursor: pointer;
-  display: block; /* Убирает лишние отступы */
 }
 
 .full-seek-bar::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
-  border: none;
+  appearance: none; -webkit-appearance: none;
+  width: 14px; height: 14px; background: #fff;
+  border-radius: 50%; border: none;
 }
 
 .time-info {
+  display: flex; justify-content: space-between;
+  margin-top: 12px; font-size: 11px; color: rgba(255,255,255,0.4); font-family: monospace;
+}
+
+/* КНОПКИ УПРАВЛЕНИЯ */
+.full-controls-layout {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
-  font-size: 11px;
-  color: rgba(255,255,255,0.4);
-  font-family: 'Inter', sans-serif;
-}
-
-/* --- ШАГ 1: КНОПКИ УПРАВЛЕНИЯ (БЕЗ РАМОК И БЛИЖЕ) --- */
-.full-controls {
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
+  max-width: 330px;
+  margin-bottom: 40px;
 }
 
-.main-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 25px; /* Уменьшили с 40px до 25px, чтобы они были компактнее */
-}
+.main-controls { display: flex; align-items: center; gap: 20px; }
 
-.control-btn {
-  background: none !important; /* Убираем любой фон */
-  border: none !important;     /* Убираем любые рамки */
-  outline: none !important;    /* Убираем контур при клике */
-  box-shadow: none !important; /* Убираем тени, если они были */
-  color: #fff;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-  -webkit-tap-highlight-color: transparent; /* Убирает синий квадрат на смартфонах */
-}
-
-.control-btn:active {
-  transform: scale(0.85); /* Эстетичное сжатие при нажатии */
-}
-
-/* Центральная кнопка Play (Круг остается) */
 .play-pause-circle {
-  width: 75px;
-  height: 75px;
-  background: #fff !important; /* Белый круг */
+  width: 72px; height: 72px;
+  background: #fff !important;
   border-radius: 50%;
-  flex-shrink: 0;
+  color: #000 !important;
 }
 
-.play-pause-circle svg {
-  fill: #000 !important;
-  width: 30px;
-  height: 30px;
-}
-
-/* Кнопки Назад/Вперед (Только иконки) */
-.main-skip svg {
-  width: 34px;
-  height: 34px;
-  fill: #fff;
-  opacity: 0.9;
-}
-
-/* --- СТИЛИ ПОИСКА И ФИЛЬТРОВ --- */
-.search-container {
-  padding: 15px 20px;
-  position: relative;
-  z-index: 100;
-  background: #000;
-}
-
-.search-bar {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.search-input-wrapper {
-  flex: 1;
-  background: #121212;
-  border: 1px solid #222;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  padding: 0 15px;
-  height: 48px;
-}
-
-.search-icon {
-  margin-right: 10px;
-  font-size: 14px;
-  opacity: 0.5;
-}
-
-.search-input-wrapper input {
-  background: none;
-  border: none;
-  color: #fff;
-  width: 100%;
-  font-size: 15px;
-  outline: none;
-}
-
-.filter-toggle-btn {
-  width: 48px;
-  height: 48px;
-  background: #121212;
-  border: 1px solid #222;
-  border-radius: 14px;
-  color: #666;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.filter-toggle-btn.active {
-  color: var(--accent);
-  border-color: var(--accent);
-  background: rgba(255, 51, 51, 0.05);
-}
-
-/* Выпадающее окно фильтров */
-.filter-dropdown {
-  background: #121212;
-  border: 1px solid #222;
-  border-radius: 20px;
-  padding: 20px;
-  margin-top: 10px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.filter-group label {
-  display: block;
-  font-size: 10px;
-  font-weight: 800;
-  color: #555;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 10px;
-}
-
-.filter-label-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.range-value {
-  color: var(--accent);
-  font-weight: 900;
-  font-size: 13px;
-}
-
-/* ИСПРАВЛЕННЫЕ СЛАЙДЕРЫ BPM (Без перечеркивания) */
-.range-slider-container {
-  position: relative;
-  height: 4px; /* Тонкая линия */
-  background: #252525;
-  margin: 15px 0;
-  display: flex;
-  align-items: center;
-  border-radius: 2px;
-}
-
-.range-slider-container input {
-  position: absolute;
-  width: 100%;
-  pointer-events: none; /* Клик проходит сквозь инпут */
-  appearance: none;
-  -webkit-appearance: none;
-  background: none;
-  outline: none;
-}
-
-.range-slider-container input::-webkit-slider-thumb {
-  pointer-events: auto; /* Кликабелен только сам кружок */
-  appearance: none;
-  -webkit-appearance: none;
-  width: 22px;
-  height: 22px;
-  background: #fff;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid var(--accent);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-}
-
-/* Ряд жанров */
-.filter-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-.filter-group select {
-  width: 100%;
-  background: #000;
-  border: 1px solid #333;
-  color: #fff;
-  padding: 12px;
-  border-radius: 12px;
-  font-weight: 700;
-  outline: none;
-}
-
-.filter-actions {
-  display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: 10px;
-  margin-top: 5px;
-}
-
-.reset-btn {
-  background: none;
-  border: 1px solid #333;
-  color: #666;
-  padding: 14px;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 12px;
-}
-
-.apply-btn {
-  background: #fff;
-  color: #000;
-  border: none;
-  padding: 14px;
-  border-radius: 12px;
-  font-weight: 900;
-  font-size: 12px;
-}
-
-/* --- ТОЛЬКО АНИМАЦИЯ (ФИНАЛ) --- */
-.beat-card {
-  animation: cardSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-@keyframes cardSlideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.empty-search {
-  text-align: center;
-  padding: 60px 20px;
-  color: #444;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-/* --- ФИНАЛЬНЫЕ ПРАВКИ: СКРОЛЛ, СВАЙП И ЭСТЕТИКА --- */
-
-/* Индикатор свайпа (полоска сверху) */
-.swipe-indicator {
-  width: 40px;
-  height: 4px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 2px;
-  margin: 10px auto 0;
-  flex-shrink: 0;
-}
-
-/* Настройка области описания */
-.full-description {
-  margin-top: 40px;
-  padding: 0 10px;
-  text-align: left;
-  width: 100%;
-}
-
-.full-description label {
-  font-size: 10px;
-  font-weight: 800;
-  color: #555;
-  letter-spacing: 1.5px;
-  display: block;
-  margin-bottom: 10px;
-}
-
-.description-text {
-  font-family: 'Inter', -apple-system, sans-serif;
-  color: #888;
-  font-size: 14px;
-  line-height: 1.6;
-  margin: 0;
-}
-
-/* Кнопки Loop и Fav (боковые) */
 .secondary-action {
-  opacity: 0.5;
-  transition: all 0.3s ease;
+  color: #444; /* Изначально серые */
   background: none !important;
   border: none !important;
-  outline: none !important;
 }
 
-.secondary-action.active {
-  color: var(--accent) !important;
-  opacity: 1;
-  transform: scale(1.1);
+.secondary-action.active { color: var(--accent) !important; opacity: 1; }
+
+/* ЭСТЕТИЧНЫЕ СТАТЫ (BPM / KEY) */
+.aesthetic-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  background: #111;
+  padding: 18px 0;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 40px;
 }
 
-/* Убираем любые синие контуры при нажатии на мобильных */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
+.stat-item { text-align: center; }
+.stat-item span { display: block; font-size: 10px; color: #444; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; }
+.stat-item strong { color: #fff; font-size: 18px; font-weight: 700; }
+.stat-divider { width: 1px; height: 30px; background: #222; }
+
+/* ОПИСАНИЕ */
+.full-description { width: 100%; max-width: 320px; text-align: left; }
+.full-description label { font-size: 10px; color: #444; font-weight: 900; letter-spacing: 1px; display: block; margin-bottom: 10px; }
+.description-text { font-size: 14px; color: #888; line-height: 1.6; margin: 0; }
+
+/* Убираем выделение везде */
+* { -webkit-tap-highlight-color: transparent; outline: none !important; }
