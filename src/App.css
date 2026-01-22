@@ -527,22 +527,16 @@ body {
   text-transform: uppercase; 
 }
 
-/* Кнопка опубликовать */
-.fresso-submit { 
-  width: 100%;
-  max-width: 300px;
-  background: var(--accent); 
-  color: #fff; 
-  border: none; 
-  padding: 16px; 
-  border-radius: 15px; 
-  font-weight: 900; 
-  font-size: 15px; 
-  margin: 15px auto 0; 
-  display: block;
-}
 /* 7. АНИМАЦИИ И КНОПКА ОТПРАВКИ */
-@keyframes popCheck { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
+
+/* Анимация галочки */
+@keyframes popCheck { 
+  0% { transform: scale(0); opacity: 0; } 
+  70% { transform: scale(1.2); } 
+  100% { transform: scale(1); opacity: 1; } 
+}
+
+/* Анимация пульсации кнопки (исправленная) */
 @keyframes pulse-red { 
   0% { 
     background: var(--accent); 
@@ -550,8 +544,8 @@ body {
     box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.4); 
   } 
   50% { 
-    background: #ffffff; /* Кнопка плавно белеет */
-    color: #000000;      /* Текст плавно становится черным */
+    background: #ffffff; 
+    color: #000000; 
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); 
   } 
   100% { 
@@ -561,30 +555,32 @@ body {
   } 
 }
 
+/* Сама кнопка: теперь она ОДНА и с правильными размерами */
 .fresso-submit { 
-  /* Используем calc, чтобы оставить отступы по 20px с каждой стороны */
-  width: calc(100% - 40px); 
-  margin: 20px auto;        /* Центрируем кнопку */
-  display: block;           /* Чтобы auto-margin сработал */
+  width: 100%;
+  max-width: 300px;        /* Чтобы была в размер полей ввода */
+  margin: 20px auto 0;    /* Центрируем её */
+  display: block; 
   
   background: var(--accent); 
   color: #fff; 
   border: none; 
-  padding: 15px;            /* Уменьшили высоту (было 22px) */
-  border-radius: 14px;      /* Сделали закругление аккуратнее (было 20px) */
+  padding: 16px;          /* Хорошая высота */
+  border-radius: 15px;    /* Скругление как у полей */
   font-weight: 900; 
-  font-size: 15px;          /* Чуть уменьшили шрифт */
+  font-size: 15px; 
   cursor: pointer; 
   box-shadow: 0 8px 15px rgba(255, 51, 51, 0.2); 
   transition: all 0.2s; 
 }
 
+/* Состояния кнопки */
 .fresso-submit:not(:disabled) { 
   animation: pulse-red 2s infinite; 
 }
 
 .fresso-submit:active { 
-  transform: scale(0.96);   /* Чуть заметнее нажатие */
+  transform: scale(0.96); 
 }
 
 .fresso-submit:disabled { 
