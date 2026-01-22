@@ -1194,3 +1194,24 @@ input[type="range"]::-webkit-slider-thumb {
     shimmer 4s linear infinite, 
     entrance 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
+/* 1. Инструкция для блика (shimmer) */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* 2. Инструкция для появления (entrance) */
+@keyframes entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9); /* Выплывает снизу и чуть увеличивается */
+    letter-spacing: 0px;
+    filter: blur(10px); /* Эффект появления из тумана */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    letter-spacing: 5px;
+    filter: blur(0);
+  }
+}
