@@ -394,24 +394,25 @@ body {
   background: #1a1a1a; 
   border-color: #333;
 }
-/* 6. АДМИНКА И ФАЙЛЫ (Финальная ровная версия) */
+/* 6. АДМИНКА И ФАЙЛЫ (Только CSS, без правок в JS) */
 
 .admin-view {
   width: 100%;
-  max-width: 450px; /* Ширина всего контейнера приложения */
+  max-width: 450px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   padding-bottom: 40px;
 }
 
-/* ШАПКА: как в профиле, с отступами по бокам */
+/* ШАПКА: растянута, стрелка на 20px от края */
 .admin-header { 
   display: flex; 
   align-items: center; 
   justify-content: space-between; 
-  padding: 20px; /* Стандартный отступ как в остальном приложении */
+  padding: 20px; 
   width: 100%; 
+  box-sizing: border-box;
 }
 
 .back-area { 
@@ -423,114 +424,75 @@ body {
   cursor: pointer; 
   border-radius: 50%; 
   background: rgba(255, 255, 255, 0.05); 
-  transition: 0.2s;
 }
 
-.back-area:active {
-  transform: scale(0.9);
-  background: rgba(255, 255, 255, 0.1);
-}
+.back-arrow { font-size: 22px; color: var(--accent); font-weight: bold; }
+.admin-title { font-size: 18px; font-weight: 900; color: var(--accent); }
 
-.back-arrow { 
-  font-size: 22px; 
-  color: var(--accent); 
-  font-weight: bold; 
-}
-
-.admin-title { 
-  font-size: 18px; 
-  font-weight: 900; 
-  color: var(--accent); 
-  letter-spacing: 0.5px;
-}
-
-/* КОНТЕНТ: Всё, что ниже шапки, центрируем и сужаем */
-.admin-form-content {
-  display: flex;
+/* ЦЕНТРИРОВАНИЕ ВСЕХ ПОЛЕЙ БЕЗ ДОП. ДИВОВ */
+/* Мы просто задаем им всем одинаковую ширину и margin: auto */
+.upload-square, 
+.fresso-input, 
+.fresso-row, 
+.price-grid, 
+.file-selectors, 
+.fresso-submit {
+  width: calc(100% - 80px) !important; /* Отступы по 40px с боков */
+  max-width: 300px;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: flex; /* Для контейнеров */
   flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding: 0 40px; /* Сдавливаем форму к центру */
 }
 
+/* Индивидуальные правки для специфических элементов */
 .upload-square {
-  width: 120px;
-  height: 120px;
+  height: 120px; 
+  width: 120px !important; /* Квадрат не должен быть 300px */
   border: 2px dashed #333;
   border-radius: 18px;
-  margin: 10px auto 25px;
-  display: flex;
-  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 25px;
   justify-content: center;
+  align-items: center;
   background: #080808;
   overflow: hidden;
-  color: #444;
-  cursor: pointer;
 }
 
-.upload-square img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Поля ввода и кнопки: центровка через margin auto и max-width */
 .fresso-input { 
-  width: 100%; 
-  max-width: 300px; 
+  display: block; /* Чтобы margin auto работал на инпуте */
   background: #111; 
   border: 1px solid #222; 
   color: #fff; 
   padding: 12px 15px; 
   border-radius: 12px; 
-  margin: 0 auto 10px; 
+  margin-bottom: 10px; 
   font-size: 14px; 
-  outline: none; 
-  display: block;
+  outline: none;
+  box-sizing: border-box;
 }
-
-.fresso-input:focus { border-color: var(--accent); background: #161616; }
 
 .fresso-row, .price-grid { 
   display: grid; 
   grid-template-columns: 1fr 1fr; 
   gap: 10px; 
-  width: 100%;
-  max-width: 300px;
-  margin: 0 auto 5px;
-}
-
-.file-selectors { 
-  width: 100%;
-  max-width: 300px;
-  margin: 15px auto; 
-  display: flex; 
-  flex-direction: column; 
-  gap: 10px; 
+  margin-bottom: 5px;
 }
 
 .file-row { 
+  width: 100%; /* Занимает всю ширину своего контейнера (300px) */
   display: flex; 
   align-items: center; 
   justify-content: space-between; 
-  gap: 12px; 
   background: #111; 
   border: 1px solid #222; 
   padding: 14px; 
   border-radius: 14px; 
+  margin-bottom: 8px;
+  box-sizing: border-box;
 }
 
-.file-name { 
-  font-size: 12px; 
-  font-weight: 700; 
-  color: #555; 
-  text-transform: uppercase; 
-}
-
-/* Кнопка опубликовать */
 .fresso-submit { 
-  width: 100%;
-  max-width: 300px;
   background: var(--accent); 
   color: #fff; 
   border: none; 
@@ -538,8 +500,18 @@ body {
   border-radius: 15px; 
   font-weight: 900; 
   font-size: 15px; 
-  margin: 15px auto 0; 
-  display: block;
+  margin-top: 15px;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* Анимация пульсации с перекраской текста */
+.fresso-submit:not(:disabled) { animation: pulse-red 2s infinite; }
+
+@keyframes pulse-red {
+  0% { background: var(--accent); color: #fff; }
+  50% { background: #fff; color: #000; }
+  100% { background: var(--accent); color: #fff; }
 }
 /* 7. АНИМАЦИИ И КНОПКА ОТПРАВКИ */
 @keyframes popCheck { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
