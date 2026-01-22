@@ -776,33 +776,39 @@ input[type="range"]::-webkit-slider-thumb {
   z-index: 10;
 }
 
-/* Главный контейнер контента */
+/* --- ШАГ 2: ИСПРАВЛЕНИЕ СКРОЛЛА И ПОЛЗУНКА --- */
+
+/* Главный контейнер контента — теперь он позволяет скроллить вниз */
 .full-player-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   width: 100%;
   box-sizing: border-box;
+  padding: 40px 20px; /* Отступы, чтобы контент не лип к краям */
+  overflow-y: auto;   /* РАЗРЕШАЕМ СКРОЛЛ ВНУТРИ ПЛЕЕРА */
+  -webkit-overflow-scrolling: touch; /* Плавный скролл на iPhone */
 }
 
 /* Обложка */
 .full-cover {
-  width: 85% !important;
+  width: 80% !important;
   max-width: 320px;
   aspect-ratio: 1/1;
   border-radius: 24px;
   object-fit: cover;
   box-shadow: 0 20px 60px rgba(0,0,0,0.6);
   margin-bottom: 40px;
+  flex-shrink: 0; /* Чтобы обложка не сжималась при скролле */
 }
 
 /* Названия */
 .beat-info-full {
   text-align: center;
   width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
+  flex-shrink: 0;
 }
 
 .full-main-info h1 {
@@ -814,7 +820,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .full-genre {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--accent);
   font-weight: 700;
   text-transform: uppercase;
@@ -822,93 +828,103 @@ input[type="range"]::-webkit-slider-thumb {
   opacity: 0.8;
 }
 
-/* Прогресс-бар (Apple style) */
+/* Прогресс-бар — фиксируем ширину, чтобы не вылетал */
 .full-progress-container {
   width: 100%;
-  max-width: 340px;
-  padding: 0 10px;
-  box-sizing: border-box; /* Исправляет вылет за экран */
+  max-width: 330px; /* Немного уменьшили, чтобы точно влезло */
+  padding: 0;
+  box-sizing: border-box; 
   margin-bottom: 40px;
+  flex-shrink: 0;
 }
 
 .full-seek-bar {
   -webkit-appearance: none;
-  appearance: none; /* Добавили стандартное свойство */
+  appearance: none;
   width: 100%;
-  height: 5px;
+  height: 4px; /* Чуть тоньше для эстетики */
   background: rgba(255,255,255,0.15);
   border-radius: 10px;
   outline: none;
   cursor: pointer;
+  display: block; /* Убирает лишние отступы */
 }
 
 .full-seek-bar::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none; /* И здесь тоже */
-  width: 15px;
-  height: 15px;
+  appearance: none;
+  width: 14px;
+  height: 14px;
   background: #fff;
   border-radius: 50%;
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  border: none;
 }
 
 .time-info {
   display: flex;
   justify-content: space-between;
-  margin-top: 12px;
+  margin-top: 10px;
   font-size: 11px;
   color: rgba(255,255,255,0.4);
-  font-family: monospace;
+  font-family: 'Inter', sans-serif;
 }
 
-/* Кнопки управления (Clean Apple Style) */
+/* --- ШАГ 1: КНОПКИ УПРАВЛЕНИЯ (БЕЗ РАМОК И БЛИЖЕ) --- */
 .full-controls {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 20px;
 }
 
 .main-controls {
   display: flex;
   align-items: center;
-  gap: 40px; /* Идеальное расстояние */
+  justify-content: center;
+  gap: 25px; /* Уменьшили с 40px до 25px, чтобы они были компактнее */
 }
 
 .control-btn {
-  background: none;
-  border: none;
+  background: none !important; /* Убираем любой фон */
+  border: none !important;     /* Убираем любые рамки */
+  outline: none !important;    /* Убираем контур при клике */
+  box-shadow: none !important; /* Убираем тени, если они были */
   color: #fff;
   cursor: pointer;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  transition: transform 0.2s, opacity 0.2s;
+  transition: transform 0.2s ease;
+  -webkit-tap-highlight-color: transparent; /* Убирает синий квадрат на смартфонах */
 }
 
 .control-btn:active {
-  transform: scale(0.9);
+  transform: scale(0.85); /* Эстетичное сжатие при нажатии */
 }
 
-/* Центральная кнопка Play */
+/* Центральная кнопка Play (Круг остается) */
 .play-pause-circle {
-  width: 80px;
-  height: 80px;
-  background: #fff;
+  width: 75px;
+  height: 75px;
+  background: #fff !important; /* Белый круг */
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .play-pause-circle svg {
   fill: #000 !important;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
 }
 
-/* Кнопки Назад/Вперед */
+/* Кнопки Назад/Вперед (Только иконки) */
 .main-skip svg {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
+  fill: #fff;
   opacity: 0.9;
 }
 
@@ -1102,4 +1118,61 @@ input[type="range"]::-webkit-slider-thumb {
   color: #444;
   font-size: 14px;
   font-weight: 600;
+}
+
+/* --- ФИНАЛЬНЫЕ ПРАВКИ: СКРОЛЛ, СВАЙП И ЭСТЕТИКА --- */
+
+/* Индикатор свайпа (полоска сверху) */
+.swipe-indicator {
+  width: 40px;
+  height: 4px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 2px;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+}
+
+/* Настройка области описания */
+.full-description {
+  margin-top: 40px;
+  padding: 0 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.full-description label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #555;
+  letter-spacing: 1.5px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.description-text {
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: #888;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Кнопки Loop и Fav (боковые) */
+.secondary-action {
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.secondary-action.active {
+  color: var(--accent) !important;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Убираем любые синие контуры при нажатии на мобильных */
+* {
+  -webkit-tap-highlight-color: transparent;
 }
