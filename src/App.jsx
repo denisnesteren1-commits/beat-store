@@ -459,27 +459,42 @@ const formatTime = (time) => {
     );
   }
 
-  return (
+ return (
     <div className="app-container">
       {/* ФОНОВЫЕ ЛОГОТИПЫ */}
       <div className="bg-animation">
         {[...Array(15)].map((_, i) => (
           <img 
             key={i} 
-            src="https://www.freepnglogos.com/uploads/fl-studio-logo-png/fl-studio-logo-transparent-png-m-line-1.png" 
+            src="https://img.icons8.com/color/512/fl-studio.png" 
             className="bg-fl-logo" 
             alt="" 
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${15 + Math.random() * 20}s`,
-              width: `${10 + Math.random() * 30}px`,
-              opacity: 0.5
+              left: `${(i * 137) % 100}%`,
+              top: `${(i * 193) % 100}%`,
+              animationDelay: `${(i * 0.5)}s`,
+              animationDuration: `${15 + (i % 10)}s`,
+              width: `${20 + (i % 15)}px`,
+              opacity: 0.15,
+              filter: 'grayscale(1) brightness(1.5)',
+              position: 'absolute'
             }}
           />
         ))}
       </div>
+
+      {/* 1. ШАПКА */}
+      {activeTab !== 'profile' && activeTab !== 'admin' && activeTab !== 'my_purchases' && (
+        <header className="main-header">
+          <div className="logo logo-anim">FRESSO</div>
+          <img 
+            src={userAvatar} 
+            className="header-avatar" 
+            onClick={() => setActiveTab('profile')} 
+            alt="avatar" 
+          />
+        </header>
+      )}
 
 
       {/* 1. ШАПКА */}
