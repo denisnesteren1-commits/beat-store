@@ -461,6 +461,27 @@ const formatTime = (time) => {
 
   return (
     <div className="app-container">
+      {/* ФОНОВЫЕ ЛОГОТИПЫ */}
+      <div className="bg-animation">
+        {[...Array(15)].map((_, i) => (
+          <img 
+            key={i} 
+            src="https://upload.wikimedia.org/wikipedia/commons/a/ad/FL_Studio_logo.svg" 
+            className="bg-fl-logo" 
+            alt="" 
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${15 + Math.random() * 20}s`,
+              width: `${10 + Math.random() * 30}px`,
+              opacity: 0.1
+            }}
+          />
+        ))}
+      </div>
+
+
       {/* 1. ШАПКА */}
 {activeTab !== 'profile' && activeTab !== 'admin' && activeTab !== 'my_purchases' && (
   <header className="main-header">
@@ -668,53 +689,56 @@ const formatTime = (time) => {
       )}
 
       {/* 4. МОИ ПОКУПКИ */}
-      {activeTab === 'my_purchases' && (
-        <div className="purchases-view">
-          <div className="admin-header" style={{ width: '100%' }}>
-            <div className="back-area" onClick={() => setActiveTab('profile')}>
-              <span className="back-arrow">←</span>
-            </div>
-            <div className="admin-title">МОИ ПОКУПКИ</div>
-            <div style={{ width: 44 }}></div>
-          </div>
+{activeTab === 'my_purchases' && (
+  <div className="purchases-view">
+    {/* Шапка раздела с фиксированным слоем */}
+    <div className="admin-header" style={{ width: '100%', position: 'relative', zIndex: 10 }}>
+      <div className="back-area" onClick={() => setActiveTab('profile')}>
+        <span className="back-arrow">←</span>
+      </div>
+      <div className="admin-title">МОИ ПОКУПКИ</div>
+      <div style={{ width: 44 }}></div>
+    </div>
 
-          {myPurchases.length === 0 ? (
-            <div className="empty-state">
-              <p className="no-purchases-msg">У вас пока нет купленных битов 🎶</p>
-              <button className="shop-now-btn" onClick={() => setActiveTab('shop')}>
-                ВЫБРАТЬ БИТ
+    <div className="purchases-content" style={{ position: 'relative', zIndex: 5, width: '100%' }}>
+      {myPurchases.length === 0 ? (
+        <div className="empty-state">
+          <p className="no-purchases-msg">У вас пока нет купленных битов 🎶</p>
+          <button className="shop-now-btn" onClick={() => setActiveTab('shop')}>
+            ВЫБРАТЬ БИТ
+          </button>
+        </div>
+      ) : (
+        <div className="purchases-list">
+          {myPurchases.map((pur) => (
+            <div key={pur.id} className="purchase-card-glass">
+              <div className="pur-main-info">
+                <div className="pur-cover-mini">
+                  <img src={pur.image || 'https://via.placeholder.com/150'} alt="cover" />
+                </div>
+                <div className="pur-text-content">
+                  <div className="pur-header-row">
+                    <span className="pur-title">{pur.beatTitle}</span>
+                    <span className="pur-license-badge">{pur.licenseName}</span>
+                  </div>
+                  <div className="pur-meta">
+                    {pur.bpm} BPM • {pur.key}
+                  </div>
+                </div>
+              </div>
+              <button 
+                className="download-btn-premium" 
+                onClick={() => pur.fileUrl && window.open(pur.fileUrl)}
+              >
+                СКАЧАТЬ ФАЙЛ ⬇️
               </button>
             </div>
-          ) : (
-            <div className="purchases-list" style={{ marginTop: '20px', width: '100%' }}>
-              {myPurchases.map((pur) => (
-                <div key={pur.id} className="purchase-card">
-                  <div className="pur-main-info">
-                    <div className="pur-cover-mini">
-                      <img src={pur.image || 'https://via.placeholder.com/150'} alt="cover" />
-                    </div>
-                    <div className="pur-text-content">
-                      <div className="pur-header-row">
-                        <span className="pur-title">{pur.beatTitle}</span>
-                        <span className="pur-license">{pur.licenseName}</span>
-                      </div>
-                      <div className="pur-meta">
-                        {pur.bpm} BPM • {pur.key}
-                      </div>
-                    </div>
-                  </div>
-                  <button 
-                    className="download-btn" 
-                    onClick={() => pur.fileUrl && window.open(pur.fileUrl)}
-                  >
-                    СКАЧАТЬ ФАЙЛ ⬇️
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+          ))}
         </div>
       )}
+    </div>
+  </div>
+)}
 
       {/* 5. НИЖНИЙ МИНИ-ПЛЕЕР */}
       {currentBeatId && (
