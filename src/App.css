@@ -46,15 +46,10 @@ body {
 }
 
 .app-container {
-  width: 100vw; 
-  max-width: 450px; 
-  margin: 0 auto; 
-  min-height: 100vh;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  background: transparent !important;
-  z-index: 10; /* Контент всегда выше фона */
+  min-height: 100vh;
+  color: white;
+  overflow-x: hidden;
 }
 
 /* 2. ШАПКА И ТАБЫ */
@@ -1276,16 +1271,18 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* ВСТАВЛЯЙ ЭТО В КОНЕЦ ФАЙЛА App.css */
 
+/* App.css */
+
 .bg-animation {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   z-index: -1; 
   overflow: hidden;
   pointer-events: none;
-  /* Глубокий антрацит переходящий в мягкий винный оттенок */
+  /* Твой градиент */
   background: linear-gradient(135deg, #000000 0%, #0c0c0c 40%, #250101 70%, #000000 100%);
   background-size: 300% 300%;
   animation: grad 15s ease-in-out infinite;
@@ -1293,38 +1290,38 @@ input[type="range"]::-webkit-slider-thumb {
 
 .bg-fl-logo {
   position: absolute;
-  /* width и height теперь управляются через React-style, но тут оставим базу */
+  /* Добавляем дефолтные значения, чтобы они точно были видны */
+  width: 80px; 
+  height: auto;
+  opacity: 0.2; 
+  
   pointer-events: none;
-  /* Сочный оригинальный цвет + объемное свечение */
   filter: saturate(1.5) contrast(1.1) drop-shadow(0 0 20px rgba(255, 74, 0, 0.4)); 
-  /* Анимация берет название отсюда, а время — из React */
+  
   animation-name: floatBackground;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   will-change: transform;
 }
 
-/* Анимация плавного перелива градиента (ВАЖНО!) */
+/* Анимация перелива фона */
 @keyframes grad {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-/* Анимация полета логотипов */
+/* Анимация полета */
 @keyframes floatBackground {
-  0% { 
-    transform: translate(0, 0) rotate(0deg) scale(1); 
-  }
-  33% { 
-    transform: translate(40px, 60px) rotate(120deg) scale(1.1); 
-  }
-  66% { 
-    transform: translate(-30px, 120px) rotate(240deg) scale(0.9); 
-  }
-  100% { 
-    transform: translate(0, 0) rotate(360deg) scale(1); 
-  }
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  33% { transform: translate(40px, 60px) rotate(120deg) scale(1.1); }
+  66% { transform: translate(-30px, 120px) rotate(240deg) scale(0.9); }
+  100% { transform: translate(0, 0) rotate(360deg) scale(1); }
+}
+
+/* ВАЖНО: убедись, что у app-container нет своего фона, который все перекрывает */
+.app-container {
+  background: transparent !important;
 }
 
 /* Оставляем плавный перелив фона */

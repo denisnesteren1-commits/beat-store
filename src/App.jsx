@@ -461,22 +461,20 @@ const formatTime = (time) => {
 
 return (
   <div className="app-container">
-    {/* 1. ФОНОВЫЙ СЛОЙ */}
+    {/* ФОНОВЫЕ ЛОГОТИПЫ */}
     <div className="bg-animation">
-      {[...Array(12)].map((_, i) => (
+      {[...Array(15)].map((_, i) => (
         <img 
           key={i} 
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/FL_Studio_logo.svg/512px-FL_Studio_logo.svg.png" 
           className="bg-fl-logo" 
           alt="" 
           style={{
-            position: 'absolute',
             left: (i * 137 % 100) + '%',
             top: (i * 193 % 100) + '%',
-            width: (60 + (i * 7 % 50)) + 'px',
-            opacity: 0.2, 
-            animationDuration: (15 + (i % 15)) + 's',
-            animationDelay: -(i * 2) + 's'
+            width: (40 + (i % 15)) + 'px', 
+            animationDuration: (15 + (i % 10)) + 's',
+            animationDelay: -(i * 0.5) + 's'
           }}
         />
       ))}
