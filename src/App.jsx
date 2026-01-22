@@ -460,28 +460,29 @@ const formatTime = (time) => {
   }
 
 return (
-  <div className="app-container">
-    {/* ФОН И ЛОГОТИПЫ */}
-    <div className="bg-animation">
-      {[...Array(12)].map((_, i) => (
-        <img 
-          key={i} 
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/FL_Studio_logo.svg/512px-FL_Studio_logo.svg.png" 
-          className="bg-fl-logo" 
-          alt="" 
-          style={{
-            position: 'absolute',
-            left: (i * 137 % 100) + '%',
-            top: (i * 193 % 100) + '%',
-            width: (50 + (i * 7 % 60)) + 'px',
-            opacity: 0.2, 
-            /* Возвращаем рабочую схему анимации */
-            animation: `floatBackground ${15 + (i % 15)}s linear infinite`,
-            animationDelay: `-${i * 2}s`
-          }}
-        />
-      ))}
-    </div>
+    <div className="app-container">
+      {/* ФОНОВЫЕ ЛОГОТИПЫ */}
+      <div className="bg-animation" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: -1, pointerEvents: 'none' }}>
+        {[...Array(15)].map((_, i) => (
+          <img 
+            key={i} 
+            src="https://img.icons8.com/color/512/fl-studio.png" 
+            className="bg-fl-logo" 
+            alt="" 
+            style={{
+              position: 'absolute',
+              left: (i * 137 % 100) + '%',
+              top: (i * 193 % 100) + '%',
+              width: (20 + (i % 15)) + 'px',
+              opacity: 0.2, 
+              animation: 'floatBackground ' + (15 + (i % 10)) + 's linear infinite',
+              animationDelay: (i * 0.5) + 's'
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Дальше продолжается твой остальной код (шапка и т.д.) */}
 
       
       {/* 1. ШАПКА */}
