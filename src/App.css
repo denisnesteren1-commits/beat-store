@@ -1169,3 +1169,28 @@ input[type="range"]::-webkit-slider-thumb {
 .time-info span:last-child {
   text-align: right;
 }
+
+.logo-anim {
+  font-weight: 900;
+  font-size: 26px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  
+  background: linear-gradient(
+    to right, 
+    #ffffff 20%, 
+    #888888 50%, 
+    #ffffff 80%
+  );
+  background-size: 200% auto;
+
+  /* ДОБАВЬ ЭТИ ДВЕ СТРОКИ ВМЕСТЕ: */
+  -webkit-background-clip: text; 
+  background-clip: text; /* Это стандартная строка, которую просит редактор */
+  
+  -webkit-text-fill-color: transparent;
+  
+  animation: 
+    shimmer 4s linear infinite, 
+    entrance 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}

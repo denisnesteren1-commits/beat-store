@@ -462,12 +462,12 @@ const formatTime = (time) => {
   return (
     <div className="app-container">
       {/* 1. ШАПКА */}
-      {activeTab !== 'profile' && activeTab !== 'admin' && activeTab !== 'my_purchases' && (
-        <header className="main-header">
-          <div className="logo">FRESSO</div>
-          <img src={userAvatar} className="header-avatar" onClick={() => setActiveTab('profile')} alt="avatar" />
-        </header>
-      )}
+{activeTab !== 'profile' && activeTab !== 'admin' && activeTab !== 'my_purchases' && (
+  <header className="main-header">
+    <div className="logo logo-anim">FRESSO</div>
+    <img src={userAvatar} className="header-avatar" onClick={() => setActiveTab('profile')} alt="avatar" />
+  </header>
+)}
 
       {/* 2. МАГАЗИН И ЛЮБИМЫЕ */}
       {(activeTab === 'shop' || activeTab === 'favs') && (
