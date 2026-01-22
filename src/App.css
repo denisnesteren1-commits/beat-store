@@ -1323,6 +1323,6 @@ input[type="range"]::-webkit-slider-thumb {
 }
 /* Делаем так, чтобы фон БЫЛ ВИДЕН поверх всего на время теста */
 .bg-animation {
-  z-index: 9999 !important; /* Выносим на самый передний план */
+  z-index: -1 !important; /* Теперь уводим в самый низ, ПОД контент */
   pointer-events: none;
 }

@@ -474,8 +474,7 @@ const formatTime = (time) => {
               left: (i * 137 % 100) + '%',
               top: (i * 193 % 100) + '%',
               width: (20 + (i % 15)) + 'px',
-              opacity: 0.15,
-              filter: 'grayscale(1) brightness(1.5)',
+              opacity: 0.2, 
               animation: 'floatBackground ' + (15 + (i % 10)) + 's linear infinite',
               animationDelay: (i * 0.5) + 's'
             }}
@@ -483,7 +482,7 @@ const formatTime = (time) => {
         ))}
       </div>
 
-      {/* Дальше идет твой остальной код (Header и т.д.) */}
+      {/* Дальше продолжается твой остальной код (шапка и т.д.) */}
 
       
       {/* 1. ШАПКА */}
