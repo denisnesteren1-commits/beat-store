@@ -1241,8 +1241,11 @@ input[type="range"]::-webkit-slider-thumb {
 
 .bg-fl-logo {
   position: absolute;
-  filter: grayscale(1) brightness(2);
+  /* ИЗМЕНЕНИЯ ТУТ: */
+  filter: grayscale(0.5) brightness(1.5) contrast(1.2); /* Делаем их светлее и возвращаем немного цвета */
+  opacity: 0.3; /* Подними до 0.4 или 0.5, если хочешь, чтобы они были еще заметнее */
   animation: floatBackground linear infinite;
+  pointer-events: none;
 }
 
 @keyframes floatBackground {
