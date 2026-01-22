@@ -115,16 +115,23 @@ const formatTime = (time) => {
   }, [favorites]);
 
   // Логика работы прогресс-бара и автопереключения
+  // Логика работы прогресс-бара и автопереключения
   useEffect(() => {
     const audio = audioRef.current;
     
     const updateProgress = () => {
+      // Проверяем, что аудио вообще загрузилось
       if (audio.duration && !isNaN(audio.duration)) {
         const val = (audio.currentTime / audio.duration) * 100;
         setProgress(val);
-        // ДОБАВЛЯЕМ ЭТУ СТРОКУ НИЖЕ:
+        // Обновляем текущие секунды
         setCurrentTime(audio.currentTime); 
       }
+    };
+
+    // Чтобы общее время трека появлялось сразу при загрузке
+    const handleMetadata = () => {
+      setCurrentTime(audio.currentTime);
     };
 
     const handleTrackEnd = () => {
@@ -137,13 +144,15 @@ const formatTime = (time) => {
     };
 
     audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('loadedmetadata', handleMetadata);
     audio.addEventListener('ended', handleTrackEnd);
     
     return () => {
       audio.removeEventListener('timeupdate', updateProgress);
+      audio.removeEventListener('loadedmetadata', handleMetadata);
       audio.removeEventListener('ended', handleTrackEnd);
     };
-  }, [isLooping, currentBeatId, beats]);
+  }, [isLooping, currentBeatId]); // Убрали 'beats', чтобы не было лишних сбросов
 
   // ЗАГРУЗКА: Черновик и Покупки
   useEffect(() => {
