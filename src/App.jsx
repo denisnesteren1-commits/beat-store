@@ -470,11 +470,13 @@ return (
           className="bg-fl-logo" 
           alt="" 
           style={{
+            position: 'absolute',
             left: (i * 137 % 100) + '%',
             top: (i * 193 % 100) + '%',
-            width: (40 + (i % 15)) + 'px', 
-            animationDuration: (15 + (i % 10)) + 's',
-            animationDelay: -(i * 0.5) + 's'
+            width: (35 + (i % 15)) + 'px', 
+            opacity: 0.2,
+            animation: `floatBackground ${15 + (i % 10)}s linear infinite`,
+            animationDelay: `${i * 0.5}s`
           }}
         />
       ))}

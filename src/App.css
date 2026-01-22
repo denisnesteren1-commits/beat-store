@@ -48,6 +48,7 @@ body {
 .app-container {
   position: relative;
   min-height: 100vh;
+  background: #000; /* Базовый черный фон */
   color: white;
   overflow-x: hidden;
 }
@@ -1273,16 +1274,26 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* App.css */
 
+/* App.css */
+
+.app-container {
+  position: relative;
+  min-height: 100vh;
+  /* Убираем черный цвет отсюда, чтобы он не перекрывал градиент */
+  background: transparent; 
+  color: white;
+  overflow-x: hidden;
+}
+
 .bg-animation {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1; 
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  /* Ставим 0, а контенту поставим 1. Так фон точно не пропадет под body */
+  z-index: 0; 
   pointer-events: none;
-  /* Твой градиент */
   background: linear-gradient(135deg, #000000 0%, #0c0c0c 40%, #250101 70%, #000000 100%);
   background-size: 300% 300%;
   animation: grad 15s ease-in-out infinite;
@@ -1290,21 +1301,13 @@ input[type="range"]::-webkit-slider-thumb {
 
 .bg-fl-logo {
   position: absolute;
-  /* Добавляем дефолтные значения, чтобы они точно были видны */
-  width: 80px; 
-  height: auto;
-  opacity: 0.2; 
-  
   pointer-events: none;
-  filter: saturate(1.5) contrast(1.1) drop-shadow(0 0 20px rgba(255, 74, 0, 0.4)); 
-  
-  animation-name: floatBackground;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  will-change: transform;
+  /* Цвет и свечение */
+  filter: saturate(1.5) contrast(1.1) drop-shadow(0 0 20px rgba(255, 74, 0, 0.4));
+  z-index: 0;
 }
 
-/* Анимация перелива фона */
+/* Анимация градиента */
 @keyframes grad {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -1319,9 +1322,10 @@ input[type="range"]::-webkit-slider-thumb {
   100% { transform: translate(0, 0) rotate(360deg) scale(1); }
 }
 
-/* ВАЖНО: убедись, что у app-container нет своего фона, который все перекрывает */
-.app-container {
-  background: transparent !important;
+/* Весь твой остальной контент (шапка, табы) должен иметь это: */
+.main-header, .tab-menu, .main-content {
+  position: relative;
+  z-index: 10; /* Контент всегда ВЫШЕ фона */
 }
 
 /* Оставляем плавный перелив фона */
