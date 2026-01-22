@@ -460,27 +460,29 @@ const formatTime = (time) => {
   }
 
  return (
-    <div className="app-container">
-      {/* ФОНОВЫЕ ЛОГОТИПЫ */}
-      <div className="bg-animation" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: -1, pointerEvents: 'none' }}>
-        {[...Array(15)].map((_, i) => (
-          <img 
-            key={i} 
-            src="https://img.icons8.com/color/512/fl-studio.png" 
-            className="bg-fl-logo" 
-            alt="" 
-            style={{
-              position: 'absolute',
-              left: (i * 137 % 100) + '%',
-              top: (i * 193 % 100) + '%',
-              width: (20 + (i % 15)) + 'px',
-              opacity: 0.2, 
-              animation: 'floatBackground ' + (15 + (i % 10)) + 's linear infinite',
-              animationDelay: (i * 0.5) + 's'
-            }}
-          />
-        ))}
-      </div>
+  <div className="app-container">
+    {/* 1. ФОНОВЫЙ СЛОЙ (Градиент и анимированные логотипы) */}
+    <div className="bg-animation">
+      {[...Array(12)].map((_, i) => (
+        <img 
+          key={i} 
+          src="https://www.vhv.rs/dpng/d/256-2565795_fl-studio-12-logo-transparent-fl-studio-logo.png" 
+          className="bg-fl-logo" 
+          alt="" 
+          style={{
+            left: (i * 137 % 100) + '%',
+            top: (i * 193 % 100) + '%',
+            /* Разные размеры для создания глубины (от 40px до 90px) */
+            width: (40 + (i * 7 % 50)) + 'px', 
+            /* Разная прозрачность для эффекта "далеко-близко" */
+            opacity: 0.1 + (i % 4) * 0.05, 
+            /* Разная скорость вращения и движения */
+            animationDuration: (15 + (i % 15)) + 's',
+            animationDelay: -(i * 2) + 's'
+          }}
+        />
+      ))}
+    </div>
 
       {/* Дальше продолжается твой остальной код (шапка и т.д.) */}
 
