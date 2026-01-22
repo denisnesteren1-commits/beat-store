@@ -466,7 +466,7 @@ const formatTime = (time) => {
       {[...Array(12)].map((_, i) => (
         <img 
           key={i} 
-          src="https://www.vhv.rs/dpng/d/256-2565795_fl-studio-12-logo-transparent-fl-studio-logo.png" 
+          src="https://www.kindpng.com/imgv/mibT_fl-studio-12-png-fl-studio-12-logo/" 
           className="bg-fl-logo" 
           alt="" 
           style={{
