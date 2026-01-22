@@ -831,50 +831,74 @@ input[type="range"]::-webkit-slider-thumb {
   width: 30px;
   height: 30px;
 }
-/* --- ИСПРАВЛЕНИЕ ГИГАНТСКОЙ ОБЛОЖКИ В FULL PLAYER --- */
+/* --- ОБНОВЛЕННЫЙ ЦЕНТРАЛЬНЫЙ БЛОК ПЛЕЕРА --- */
 .full-player-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 30px;
+  padding: 0 20px;
+  width: 100%;
+  margin-top: -20px; /* Немного приподнимаем всё вверх */
 }
 
-.full-player-cover {
-  width: 100%;
-  max-width: 320px; /* Ограничиваем ширину */
-  aspect-ratio: 1/1; /* Делаем строго квадратной */
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-}
-
-.full-player-cover img {
-  width: 100%;
-  height: 100%;
+/* Твоя обложка из JSX (теперь она будет ровной) */
+.full-cover {
+  width: 80% !important; 
+  max-width: 320px;
+  aspect-ratio: 1/1;
   object-fit: cover;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  margin-bottom: 25px;
 }
 
-.full-player-info {
+/* Блок с текстом (класс из твоего JSX) */
+.beat-info-full {
   text-align: center;
   width: 100%;
 }
 
-.full-player-title {
-  font-size: 24px;
+.full-main-info h1 {
+  font-size: 26px;
   font-weight: 900;
   color: #fff;
-  margin-bottom: 8px;
-  letter-spacing: -0.5px;
+  margin: 0 0 6px 0;
 }
 
-.full-player-author {
-  font-size: 16px;
+.full-genre {
+  font-size: 15px;
   color: var(--accent);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
+  margin-bottom: 30px;
+  display: block;
+}
+
+/* Стилизация твоего ползунка (Progress Bar) */
+.full-progress-container {
+  width: 100%;
+  max-width: 340px;
+  margin-bottom: 20px;
+}
+
+.full-seek-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 10px;
+  accent-color: var(--accent); /* Цвет бегунка */
+  cursor: pointer;
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 10px;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Группа кнопок управления (назад, пауза, вперед) */
