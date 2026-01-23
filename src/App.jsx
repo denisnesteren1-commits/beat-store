@@ -947,47 +947,68 @@ return (
         <div className="admin-input-group"><label>KEY</label><input type="text" id="edit-key" defaultValue={beats.find(b => b.id === currentBeatId)?.key} /></div>
       </div>
 
-      {/* ЗАГРУЗКА ФАЙЛОВ (Как во вкладке добавления) */}
+      {/* ЗАГРУЗКА ФАЙЛОВ (УЛУЧШЕННАЯ ПАНЕЛЬ) */}
       <div className="admin-files-section">
-        <label>UPDATE FILES</label>
-        {['mp3', 'wav', 'trackout', 'exclusive'].map((fileType) => (
-          <div key={fileType} className="file-upload-item">
-            <div className="file-status">
-              <span className="file-type-label">{fileType.toUpperCase()}</span>
-              {/* Показываем текущую ссылку, если она есть */}
-              <span className="current-file-indicator">
-                {document.getElementById(`edit-${fileType}`)?.value || beats.find(b => b.id === currentBeatId)?.[fileType] ? '✅ Loaded' : '❌ Empty'}
-              </span>
+        <label>MANAGE FILES</label>
+        {['mp3', 'wav', 'trackout', 'exclusive'].map((fileType) => {
+          const currentLink = beats.find(b => b.id === currentBeatId)?.[fileType];
+          const isLoaded = !!currentLink && currentLink !== "";
+
+          return (
+            <div key={fileType} className="file-upload-row">
+              <div className="file-info-left">
+                <span className="file-type-label">{fileType.toUpperCase()}</span>
+                <span className={`status-badge ${isLoaded ? 'loaded' : 'empty'}`}>
+                  {isLoaded ? 'LOADED' : 'EMPTY'}
+                </span>
+              </div>
+
+              <div className="file-actions-right">
+                {/* Скрытый настоящий инпут, чтобы не было надписи "файл не выбран" */}
+                <input 
+                  type="file" 
+                  id={`file-input-${fileType}`}
+                  style={{ display: 'none' }}
+                  accept={fileType === 'mp3' ? '.mp3' : '.zip,.rar,.wav'} 
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    // Логика загрузки в Firebase Storage
+                    const storageRef = ref(storage, `beats/${currentBeatId}/${fileType}_${file.name}`);
+                    const uploadTask = uploadBytesResumable(storageRef, file);
+
+                    uploadTask.on('state_changed', 
+                      (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        tg?.MainButton.setText(`UPLOADING ${fileType.toUpperCase()}: ${Math.round(progress)}%`).show();
+                      }, 
+                      (error) => alert("Upload error"), 
+                      async () => {
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        // Записываем новую ссылку в скрытый инпут для последующего сохранения
+                        document.getElementById(`edit-${fileType}`).value = downloadURL;
+                        tg?.MainButton.setText("FILE READY ✅").show();
+                        setTimeout(() => tg.MainButton.hide(), 2000);
+                      }
+                    );
+                  }}
+                />
+                
+                {/* Кнопка управления вынесенная вправо */}
+                <button 
+                  className="change-file-btn"
+                  onClick={() => document.getElementById(`file-input-${fileType}`).click()}
+                >
+                  {isLoaded ? 'REPLACE' : 'UPLOAD'}
+                </button>
+
+                {/* Скрытый инпут для хранения ссылок, которые полетят в базу при нажатии SAVE */}
+                <input type="hidden" id={`edit-${fileType}`} defaultValue={currentLink} />
+              </div>
             </div>
-            <input 
-              type="file" 
-              accept={fileType === 'mp3' ? '.mp3' : '.zip,.rar,.wav'} 
-              onChange={async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                const storageRef = ref(storage, `beats/${currentBeatId}/${fileType}_${file.name}`);
-                const uploadTask = uploadBytesResumable(storageRef, file);
-
-                uploadTask.on('state_changed', 
-                  (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    tg?.MainButton.setText(`UPLOADING ${fileType.toUpperCase()}: ${Math.round(progress)}%`).show();
-                  }, 
-                  (error) => alert("Upload error"), 
-                  async () => {
-                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                    document.getElementById(`edit-${fileType}`).value = downloadURL;
-                    tg?.MainButton.setText("FILE READY").show();
-                    setTimeout(() => tg.MainButton.hide(), 2000);
-                  }
-                );
-              }}
-            />
-            {/* Скрытые инпуты для хранения ссылок */}
-            <input type="hidden" id={`edit-${fileType}`} defaultValue={beats.find(b => b.id === currentBeatId)?.[fileType]} />
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="admin-input-group">

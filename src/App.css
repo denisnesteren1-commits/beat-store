@@ -1685,23 +1685,94 @@ input[type="range"]::-webkit-slider-thumb {
   border-color: var(--accent);
 }
 
-/* Поля для ссылок на файлы (компактные) */
+/* --- СЕКЦИЯ УПРАВЛЕНИЯ ФАЙЛАМИ (БЕЗ НАСЛОЕНИЙ) --- */
 .admin-files-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 15px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 16px;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin: 10px 0;
+}
+
+.admin-files-section label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #666;
+  margin-bottom: 5px;
+  display: block;
+  letter-spacing: 1px;
+}
+
+.file-upload-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 12px 15px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-.admin-files-section input {
-  font-size: 13px !important;
-  padding: 10px 12px !important;
-  background: rgba(255, 255, 255, 0.03) !important;
+.file-info-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
+.file-type-label {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--accent);
+  min-width: 65px;
+}
+
+.status-badge {
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.loaded {
+  background: rgba(49, 181, 69, 0.12);
+  color: #31b545;
+  border: 1px solid rgba(49, 181, 69, 0.1);
+}
+
+.status-badge.empty {
+  background: rgba(255, 255, 255, 0.05);
+  color: #777;
+}
+
+.file-actions-right {
+  display: flex;
+  align-items: center;
+}
+
+.change-file-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.change-file-btn:active {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(0.96);
+}
+
+/* --- СЕТКА И КНОПКИ ДЕЙСТВИЙ --- */
 .admin-grid-inputs {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1709,130 +1780,64 @@ input[type="range"]::-webkit-slider-thumb {
   width: 100%;
 }
 
-/* Кнопки действий */
 .admin-actions-sticky {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .apply-changes-btn {
-  background: transparent;
-  color: var(--accent);
-  border: 2px solid var(--accent);
-  padding: 16px;
-  border-radius: 14px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 18px;
+  border-radius: 16px;
   font-weight: 800;
   font-size: 14px;
   letter-spacing: 1px;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.apply-changes-btn:active {
-  background: var(--accent);
-  color: white;
+  box-shadow: 0 4px 15px rgba(255, 74, 0, 0.2);
 }
 
 .reset-btn {
   background: transparent;
-  color: #777;
-  border: 1px solid #333;
+  color: #999;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 16px;
-  border-radius: 14px;
+  border-radius: 16px;
   font-weight: 600;
   cursor: pointer;
 }
 
-/* Опасная зона */
+/* --- ОПАСНАЯ ЗОНА --- */
 .admin-danger-zone {
-  margin-top: 5px;
+  margin-top: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding-top: 20px;
+  padding-top: 25px;
 }
 
 .delete-beat-btn {
   width: 100%;
-  background: rgba(255, 61, 0, 0.08);
+  background: rgba(255, 61, 0, 0.05);
   color: #ff3d00;
-  border: 1px solid rgba(255, 61, 0, 0.15);
+  border: 1px solid rgba(255, 61, 0, 0.2);
   padding: 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   font-weight: 700;
   font-size: 11px;
   letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
-/* Скрываем лишние элементы */
+/* СИСТЕМНЫЕ КЛАССЫ */
 .back-arrow-btn, .swipe-handle-container {
   display: none !important;
 }
 
-/* Когда плеер открыт, блокируем прокрутку всего сайта на фоне */
 body.modal-open {
   overflow: hidden;
   position: fixed;
   width: 100%;
-}
-
-/* --- СТИЛИ ДЛЯ ЗАГРУЗКИ ФАЙЛОВ В РЕДАКТИРОВАНИИ --- */
-
-.file-upload-item {
-  background: rgba(255, 255, 255, 0.03);
-  padding: 12px;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-}
-
-.file-upload-item:hover {
-  border-color: var(--accent);
-  background: rgba(255, 74, 0, 0.05);
-}
-
-.file-status {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.file-type-label {
-  font-size: 11px;
-  font-weight: 900;
-  color: var(--accent);
-  letter-spacing: 1px;
-}
-
-.current-file-indicator {
-  font-size: 10px;
-  font-weight: 600;
-  color: #888;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-.file-upload-item input[type="file"] {
-  font-size: 12px;
-  color: #aaa;
-  width: 100%;
-  cursor: pointer;
-}
-
-/* Улучшаем вид кнопок выбора файла в Chrome/Safari */
-.file-upload-item input[type="file"]::file-selector-button {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  margin-right: 10px;
-  font-size: 10px;
-  text-transform: uppercase;
-  font-weight: 700;
-  cursor: pointer;
 }
