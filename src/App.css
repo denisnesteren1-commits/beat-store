@@ -1776,3 +1776,63 @@ body.modal-open {
   position: fixed;
   width: 100%;
 }
+
+/* --- СТИЛИ ДЛЯ ЗАГРУЗКИ ФАЙЛОВ В РЕДАКТИРОВАНИИ --- */
+
+.file-upload-item {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.file-upload-item:hover {
+  border-color: var(--accent);
+  background: rgba(255, 74, 0, 0.05);
+}
+
+.file-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.file-type-label {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+.current-file-indicator {
+  font-size: 10px;
+  font-weight: 600;
+  color: #888;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.file-upload-item input[type="file"] {
+  font-size: 12px;
+  color: #aaa;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Улучшаем вид кнопок выбора файла в Chrome/Safari */
+.file-upload-item input[type="file"]::file-selector-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-right: 10px;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  cursor: pointer;
+}
