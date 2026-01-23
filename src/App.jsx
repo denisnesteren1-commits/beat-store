@@ -772,39 +772,70 @@ return (
       )}
 
       {/* 6. РАЗВЕРНУТАЯ КАРТОЧКА БИТА (FULL PLAYER) */}
-      <div className={`full-player ${isPlayerExpanded ? 'open' : ''}`}>
-        
-        <button className="back-arrow-btn" onClick={() => { setIsPlayerExpanded(false); setIsEditing(false); }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-        </button>
-
+      <div 
+        className={`full-player ${isPlayerExpanded ? 'open' : ''}`}
+        style={{ 
+          transform: window.playerOffset > 0 ? `translateY(${window.playerOffset}px)` : '' 
+        }}
+      >
         <div className="full-player-scroll-area">
           {beats.find(b => b.id === currentBeatId) && (
             <div className="full-player-content">
               
+              {/* ЗОНА СВАЙПА + СМЕНА ОБЛОЖКИ */}
               <div 
                 className="cover-swipe-zone"
-                onTouchStart={(e) => { window.startY = e.touches[0].clientY; }}
+                onTouchStart={(e) => { 
+                  window.startY = e.touches[0].clientY; 
+                }}
                 onTouchMove={(e) => {
                   const moveY = e.touches[0].clientY;
                   const diffY = moveY - window.startY;
-                  if (diffY > 100) { 
-                    setIsPlayerExpanded(false); 
-                    setIsEditing(false);
+                  if (diffY > 0) {
+                    window.playerOffset = diffY;
+                    e.currentTarget.closest('.full-player').style.transform = `translateY(${diffY}px)`;
                   }
                 }}
+                onTouchEnd={(e) => {
+                  if (window.playerOffset > 150) {
+                    setIsPlayerExpanded(false);
+                    setIsEditing(false);
+                  }
+                  window.playerOffset = 0;
+                  e.currentTarget.closest('.full-player').style.transform = '';
+                }}
               >
-                <img 
-                  src={beats.find(b => b.id === currentBeatId)?.image} 
-                  alt="cover" 
-                  className="full-cover" 
-                />
+                <div className="cover-wrapper" onClick={() => isEditing && document.getElementById('coverInput').click()}>
+                  <img 
+                    src={beats.find(b => b.id === currentBeatId)?.image} 
+                    alt="cover" 
+                    className={`full-cover ${isEditing ? 'editing-mode' : ''}`} 
+                  />
+                  {isEditing && <div className="change-photo-overlay">CHANGE PHOTO</div>}
+                  <input 
+                    id="coverInput" 
+                    type="file" 
+                    hidden 
+                    accept="image/*" 
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          const updatedBeats = beats.map(b => 
+                            b.id === currentBeatId ? { ...b, image: reader.result } : b
+                          );
+                          setBeats(updatedBeats);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }} 
+                  />
+                </div>
               </div>
               
               {!isEditing ? (
+                /* --- ОБЫЧНЫЙ ПЛЕЕР --- */
                 <div className="beat-info-full">
                   <div className="full-main-info">
                     <h1>{beats.find(b => b.id === currentBeatId)?.title}</h1>
@@ -848,48 +879,64 @@ return (
                     <div className="stat-item"><span>KEY</span><strong>{beats.find(b => b.id === currentBeatId)?.key || '--'}</strong></div>
                   </div>
 
+                  {/* ОПИСАНИЕ БИТА */}
+                  <div className="full-description">
+                    <label>ABOUT THIS BEAT</label>
+                    <p className="description-text">
+                      {beats.find(b => b.id === currentBeatId)?.description || "High quality production by FRESSO. This beat is carefully crafted for the best sound experience."}
+                    </p>
+                  </div>
+
                   {Number(tg?.initDataUnsafe?.user?.id) === 856199923 && (
                     <button className="edit-beat-btn" onClick={() => setIsEditing(true)}>EDIT BEAT DATA</button>
                   )}
                 </div>
               ) : (
+                /* --- АДМИН ПАНЕЛЬ --- */
                 <div className="edit-form-full">
                   <h2 className="admin-title">ADMIN PANEL</h2>
                   
                   <div className="admin-input-group">
                     <label>TITLE</label>
-                    <input type="text" defaultValue={beats.find(b => b.id === currentBeatId)?.title} />
+                    <input type="text" id="edit-title" defaultValue={beats.find(b => b.id === currentBeatId)?.title} />
                   </div>
 
                   <div className="admin-grid-inputs">
                     <div className="admin-input-group">
                       <label>BPM</label>
-                      <input type="number" defaultValue={beats.find(b => b.id === currentBeatId)?.bpm} />
+                      <input type="number" id="edit-bpm" defaultValue={beats.find(b => b.id === currentBeatId)?.bpm} />
                     </div>
                     <div className="admin-input-group">
                       <label>KEY</label>
-                      <input type="text" defaultValue={beats.find(b => b.id === currentBeatId)?.key} />
+                      <input type="text" id="edit-key" defaultValue={beats.find(b => b.id === currentBeatId)?.key} />
                     </div>
-                  </div>
-
-                  <div className="admin-input-group">
-                    <label>TAGS (Comma separated)</label>
-                    <input type="text" defaultValue={beats.find(b => b.id === currentBeatId)?.tags} />
                   </div>
 
                   <div className="admin-input-group">
                     <label>DESCRIPTION</label>
-                    <textarea rows="3" defaultValue="High quality production by FRESSO."></textarea>
+                    <textarea id="edit-desc" rows="3" defaultValue={beats.find(b => b.id === currentBeatId)?.description || "High quality production by FRESSO."}></textarea>
                   </div>
 
                   <div className="admin-danger-zone">
-                    <button className="delete-beat-btn" onClick={() => { if(window.confirm("Удалить этот бит навсегда?")) setIsEditing(false); }}>
+                    <button className="delete-beat-btn" onClick={() => { if(window.confirm("Удалить навсегда?")) setIsEditing(false); }}>
                       DELETE BEAT
                     </button>
                   </div>
 
                   <div className="admin-actions-sticky">
-                    <button className="apply-btn" onClick={() => setIsEditing(false)}>SAVE CHANGES</button>
+                    <button className="apply-changes-btn" onClick={() => {
+                      const updatedBeats = beats.map(b => b.id === currentBeatId ? {
+                        ...b,
+                        title: document.getElementById('edit-title').value,
+                        bpm: document.getElementById('edit-bpm').value,
+                        key: document.getElementById('edit-key').value,
+                        description: document.getElementById('edit-desc').value,
+                      } : b);
+                      setBeats(updatedBeats);
+                      setIsEditing(false);
+                    }}>
+                      SAVE CHANGES
+                    </button>
                     <button className="reset-btn" onClick={() => setIsEditing(false)}>CANCEL</button>
                   </div>
                 </div>
@@ -898,7 +945,6 @@ return (
           )}
         </div>
       </div>
-    {/* КОНЕЦ APP-CONTAINER */}
     </div> 
   );
 }

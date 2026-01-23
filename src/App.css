@@ -1588,3 +1588,77 @@ input[type="range"]::-webkit-slider-thumb {
 .swipe-handle-container {
   display: none !important;
 }
+
+/* Плавность движения карточки */
+.full-player {
+  transition: transform 0.15s ease-out, opacity 0.3s ease;
+}
+
+/* Обертка обложки */
+.cover-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.full-cover.editing-mode {
+  filter: brightness(0.4);
+  border: 2px dashed var(--accent);
+}
+
+.change-photo-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: 900;
+  font-size: 12px;
+  background: rgba(255, 74, 0, 0.7);
+  padding: 10px 20px;
+  border-radius: 30px;
+  pointer-events: none;
+  letter-spacing: 1px;
+}
+
+/* Кнопка SAVE в рамочке */
+.apply-changes-btn {
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  padding: 16px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* Стили описания */
+.full-description {
+  margin-top: 25px;
+  text-align: left;
+  padding: 0 5px;
+}
+
+.full-description label {
+  font-size: 10px;
+  color: #666;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.description-text {
+  color: #999;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+/* Убираем лишние кнопки */
+.back-arrow-btn {
+  display: none !important;
+}
