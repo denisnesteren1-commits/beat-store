@@ -1447,92 +1447,115 @@ input[type="range"]::-webkit-slider-thumb {
   width: 100%;
 }
 
-/* --- ADMIN PANEL STYLES --- */
+/* --- CLEAN ADMIN PANEL & PLAYER UPDATES --- */
 
-.edit-form-full {
-  padding: 10px 5px;
+/* Кнопка "Назад" в верхнем углу */
+.back-arrow-btn {
+  position: absolute;
+  top: 25px;
+  left: 20px;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   display: flex;
-  flex-direction: column;
-  gap: 15px;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
+/* Зона свайпа только на фото */
+.cover-swipe-zone {
+  width: 100%;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+  cursor: grab;
+}
+
+/* Контейнер формы — теперь строго в рамках экрана */
+.edit-form-full {
+  width: 100%;
+  padding: 0 20px 40px 20px;
+  box-sizing: border-box; /* Гарантирует, что padding не расширяет блок */
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-title {
+  text-align: center;
+  color: var(--accent);
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+/* Группы ввода */
 .admin-input-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  text-align: left;
+  gap: 6px;
+  width: 100%;
 }
 
 .admin-input-group label {
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 700;
   color: #666;
-  letter-spacing: 1px;
-  padding-left: 2px;
   text-transform: uppercase;
+  padding-left: 4px;
 }
 
 .admin-input-group input, 
 .admin-input-group textarea {
+  width: 100%;
+  box-sizing: border-box; /* Чтобы инпуты не вылезали за края */
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: 12px 15px;
+  padding: 14px;
   color: white;
-  font-size: 16px; /* 16px предотвращает авто-зум в Safari на iPhone */
+  font-size: 16px; 
   outline: none;
-  transition: all 0.3s ease;
-  appearance: none; /* Убирает стандартные стили iOS */
+  transition: border-color 0.2s;
+  appearance: none;
 }
 
 .admin-input-group input:focus {
   border-color: var(--accent);
-  background: rgba(255, 74, 0, 0.05);
-  box-shadow: 0 0 15px rgba(255, 74, 0, 0.1);
 }
 
+/* Сетка для BPM и Key */
 .admin-grid-inputs {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
-}
-
-.admin-danger-zone {
-  margin-top: 10px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.delete-beat-btn {
   width: 100%;
-  background: rgba(255, 61, 0, 0.1);
-  color: #ff3d00;
-  border: 1px solid rgba(255, 61, 0, 0.2);
-  padding: 14px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 1px;
-  cursor: pointer;
 }
 
+/* Кнопки действий */
 .admin-actions-sticky {
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  margin-top: 10px;
 }
 
 .apply-btn {
   background: var(--accent);
   color: white;
-  border: none;
   padding: 16px;
   border-radius: 14px;
   font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-  box-shadow: 0 10px 20px rgba(255, 74, 0, 0.2);
+  border: none;
+  box-shadow: 0 8px 20px rgba(255, 74, 0, 0.2);
 }
 
 .reset-btn {
@@ -1542,5 +1565,26 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 16px;
   border-radius: 14px;
   font-weight: 600;
-  cursor: pointer;
+}
+
+/* Опасная зона */
+.admin-danger-zone {
+  margin-top: 5px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 20px;
+}
+
+.delete-beat-btn {
+  width: 100%;
+  background: rgba(255, 61, 0, 0.1);
+  color: #ff3d00;
+  border: 1px solid rgba(255, 61, 0, 0.15);
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+/* Убираем старый системный мусор */
+.swipe-handle-container {
+  display: none !important;
 }

@@ -772,30 +772,37 @@ return (
       )}
 
       {/* 6. РАЗВЕРНУТАЯ КАРТОЧКА БИТА (FULL PLAYER) */}
-      <div 
-        className={`full-player ${isPlayerExpanded ? 'open' : ''}`}
-        onTouchStart={(e) => { window.startY = e.touches[0].clientY; }}
-        onTouchMove={(e) => {
-          const moveY = e.touches[0].clientY;
-          const diffY = moveY - window.startY;
-          if (diffY > 100) { 
-            setIsPlayerExpanded(false); 
-            setIsEditing(false);
-          }
-        }}
-      >
-        <div className="swipe-handle-container" onClick={() => { setIsPlayerExpanded(false); setIsEditing(false); }}>
-          <div className="swipe-indicator"></div>
-        </div>
+      <div className={`full-player ${isPlayerExpanded ? 'open' : ''}`}>
+        
+        <button className="back-arrow-btn" onClick={() => { setIsPlayerExpanded(false); setIsEditing(false); }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
 
         <div className="full-player-scroll-area">
           {beats.find(b => b.id === currentBeatId) && (
             <div className="full-player-content">
-              <img 
-                src={beats.find(b => b.id === currentBeatId)?.image} 
-                alt="cover" 
-                className="full-cover" 
-              />
+              
+              <div 
+                className="cover-swipe-zone"
+                onTouchStart={(e) => { window.startY = e.touches[0].clientY; }}
+                onTouchMove={(e) => {
+                  const moveY = e.touches[0].clientY;
+                  const diffY = moveY - window.startY;
+                  if (diffY > 100) { 
+                    setIsPlayerExpanded(false); 
+                    setIsEditing(false);
+                  }
+                }}
+              >
+                <img 
+                  src={beats.find(b => b.id === currentBeatId)?.image} 
+                  alt="cover" 
+                  className="full-cover" 
+                />
+              </div>
               
               {!isEditing ? (
                 <div className="beat-info-full">
@@ -807,65 +814,38 @@ return (
                   <div className="full-progress-container">
                     <div className="progress-bar-wrapper">
                       <div className="progress-fill" style={{ width: `${progress}%` }}></div>
-                      <input 
-                        type="range" 
-                        className="full-seek-bar" 
-                        value={progress} 
-                        onChange={handleSeek} 
-                      />
+                      <input type="range" className="full-seek-bar" value={progress} onChange={handleSeek} />
                     </div>
                     <div className="time-info">
-                    {/* Теперь здесь currentTime вместо audioRef */}
-                    <span>{formatTime(currentTime)}</span>
-                    <span>{formatTime(audioRef.current?.duration)}</span>
-                  </div>
+                      <span>{formatTime(currentTime)}</span>
+                      <span>{formatTime(audioRef.current?.duration)}</span>
+                    </div>
                   </div>
 
                   <div className="full-controls-layout">
                     <button className={`control-btn secondary-action ${isLooping ? 'active' : ''}`} onClick={toggleLoop}>
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
                     </button>
-
                     <div className="main-controls">
                       <button className="control-btn main-skip" onClick={playPrev}>
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"></path></svg>
                       </button>
                       <button className="control-btn play-pause-circle" onClick={() => setIsPlaying(!isPlaying)}>
-                        {isPlaying ? 
-                          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg> : 
-                          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" style={{marginLeft: '4px'}}><path d="M8 5v14l11-7z"></path></svg>
-                        }
+                        {isPlaying ? <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg> : <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" style={{marginLeft: '4px'}}><path d="M8 5v14l11-7z"></path></svg>}
                       </button>
                       <button className="control-btn main-skip" onClick={playNext}>
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"></path></svg>
                       </button>
                     </div>
-
                     <button className="control-btn secondary-action" onClick={() => toggleFav(currentBeatId)}>
-                      {favorites.includes(currentBeatId) ? 
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#ff4d4d"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg> : 
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                      }
+                      {favorites.includes(currentBeatId) ? <svg width="24" height="24" viewBox="0 0 24 24" fill="#ff4d4d"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg> : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>}
                     </button>
                   </div>
 
                   <div className="aesthetic-stats">
-                    <div className="stat-item">
-                      <span>BPM</span>
-                      <strong>{beats.find(b => b.id === currentBeatId)?.bpm || '--'}</strong>
-                    </div>
+                    <div className="stat-item"><span>BPM</span><strong>{beats.find(b => b.id === currentBeatId)?.bpm || '--'}</strong></div>
                     <div className="stat-divider"></div>
-                    <div className="stat-item">
-                      <span>KEY</span>
-                      <strong>{beats.find(b => b.id === currentBeatId)?.key || '--'}</strong>
-                    </div>
-                  </div>
-
-                  <div className="full-description">
-                    <label>ABOUT THIS BEAT</label>
-                    <p className="description-text">
-                      {beats.find(b => b.id === currentBeatId)?.tags ? `Tags: ${beats.find(b => b.id === currentBeatId).tags}` : "High quality production by FRESSO. This beat is carefully crafted for the best sound experience."}
-                    </p>
+                    <div className="stat-item"><span>KEY</span><strong>{beats.find(b => b.id === currentBeatId)?.key || '--'}</strong></div>
                   </div>
 
                   {Number(tg?.initDataUnsafe?.user?.id) === 856199923 && (
@@ -874,30 +854,27 @@ return (
                 </div>
               ) : (
                 <div className="edit-form-full">
-                  <h2 style={{color: 'var(--accent)', marginBottom: '10px', fontSize: '18px', fontWeight: '800'}}>ADMIN PANEL</h2>
-                  <p style={{color: '#888', marginBottom: '20px', fontSize: '13px'}}>
-                    Редактирование: {beats.find(b => b.id === currentBeatId)?.title}
-                  </p>
+                  <h2 className="admin-title">ADMIN PANEL</h2>
                   
                   <div className="admin-input-group">
                     <label>TITLE</label>
-                    <input type="text" defaultValue={beats.find(b => b.id === currentBeatId)?.title} placeholder="Beat Name" />
+                    <input type="text" defaultValue={beats.find(b => b.id === currentBeatId)?.title} />
                   </div>
 
                   <div className="admin-grid-inputs">
                     <div className="admin-input-group">
                       <label>BPM</label>
-                      <input type="number" defaultValue={beats.find(b => b.id === currentBeatId)?.bpm} placeholder="140" />
+                      <input type="number" defaultValue={beats.find(b => b.id === currentBeatId)?.bpm} />
                     </div>
                     <div className="admin-input-group">
                       <label>KEY</label>
-                      <input type="text" defaultValue={beats.find(b => b.id === currentBeatId)?.key} placeholder="Cm" />
+                      <input type="text" defaultValue={beats.find(b => b.id === currentBeatId)?.key} />
                     </div>
                   </div>
 
                   <div className="admin-input-group">
                     <label>TAGS (Comma separated)</label>
-                    <input type="text" defaultValue={beats.find(b => b.id === currentBeatId)?.tags} placeholder="Trap, Hard, Dark" />
+                    <input type="text" defaultValue={beats.find(b => b.id === currentBeatId)?.tags} />
                   </div>
 
                   <div className="admin-input-group">
@@ -906,11 +883,7 @@ return (
                   </div>
 
                   <div className="admin-danger-zone">
-                    <button className="delete-beat-btn" onClick={() => {
-                      if(window.confirm("Удалить этот бит навсегда?")) {
-                        setIsEditing(false);
-                      }
-                    }}>
+                    <button className="delete-beat-btn" onClick={() => { if(window.confirm("Удалить этот бит навсегда?")) setIsEditing(false); }}>
                       DELETE BEAT
                     </button>
                   </div>
@@ -919,13 +892,14 @@ return (
                     <button className="apply-btn" onClick={() => setIsEditing(false)}>SAVE CHANGES</button>
                     <button className="reset-btn" onClick={() => setIsEditing(false)}>CANCEL</button>
                   </div>
-                </div> /* Закрытие edit-form-full */
+                </div>
               )}
-            </div> /* Закрытие full-player-content */
+            </div>
           )}
-        </div> /* Закрытие full-player-scroll-area */
-      </div> /* Закрытие full-player */
-    </div> /* Закрытие app-container */
+        </div>
+      </div>
+    {/* КОНЕЦ APP-CONTAINER */}
+    </div> 
   );
 }
 
