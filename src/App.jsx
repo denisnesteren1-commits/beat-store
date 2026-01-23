@@ -82,10 +82,17 @@ const formatTime = (time) => {
 
   // Вычисляем отфильтрованные биты
   const filteredBeats = beats.filter(beat => {
+    // Приводим поисковый запрос к нижнему регистру один раз
+    const query = searchQuery.toLowerCase();
+
+    // Проверка по текстовым полям: Название, Теги, Описание и Жанр
     const matchesSearch = 
-      beat.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      beat.tags?.toLowerCase().includes(searchQuery.toLowerCase());
-    
+      beat.title?.toLowerCase().includes(query) || 
+      beat.tags?.toLowerCase().includes(query) ||
+      beat.description?.toLowerCase().includes(query) || // Добавлено описание
+      beat.genre?.toLowerCase().includes(query);       // Добавлен жанр для удобства
+
+    // Фильтры по параметрам
     const matchesBPM = Number(beat.bpm) >= filters.bpmMin && Number(beat.bpm) <= filters.bpmMax;
     const matchesGenre = filters.genre === 'All' || beat.genre === filters.genre;
     const matchesKey = filters.key === 'All' || beat.key === filters.key;
