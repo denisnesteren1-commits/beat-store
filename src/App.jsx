@@ -1,7 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { db } from './firebase';
-import { collection, onSnapshot, query, orderBy, addDoc } from "firebase/firestore";
+
+// ОБЪЕДИНЕННЫЙ ИМПОРТ (все функции в одной строке)
+import { 
+  collection, 
+  onSnapshot, 
+  query, 
+  orderBy, 
+  addDoc, 
+  doc, 
+  updateDoc 
+} from "firebase/firestore";
 
 const tg = window.Telegram ? window.Telegram.WebApp : null;
 const ADMIN_ID = 856199923;
@@ -956,24 +966,37 @@ return (
                   </div>
 
                   <div className="admin-actions-sticky">
-                    <button className="apply-changes-btn" onClick={() => {
-                      const updatedBeats = beats.map(b => b.id === currentBeatId ? {
-                        ...b,
-                        title: document.getElementById('edit-title').value,
-                        genre: document.getElementById('edit-genre').value,
-                        bpm: document.getElementById('edit-bpm').value,
-                        key: document.getElementById('edit-key').value,
-                        tags: document.getElementById('edit-tags').value,
-                        description: document.getElementById('edit-desc').value,
-                        mp3: document.getElementById('edit-mp3').value,
-                        wav: document.getElementById('edit-wav').value,
-                        trackout: document.getElementById('edit-trackout').value,
-                        exclusive: document.getElementById('edit-exclusive').value,
-                      } : b);
-                      setBeats(updatedBeats);
-                      setIsEditing(false);
-                    }}>SAVE CHANGES</button>
-                    <button className="reset-btn" onClick={() => setIsEditing(false)}>CANCEL</button>
+                    <button className="apply-changes-btn" onClick={async () => {
+                      try {
+                        const beatRef = doc(db, "beats", currentBeatId);
+                        const updatedData = {
+                          title: document.getElementById('edit-title').value,
+                          genre: document.getElementById('edit-genre').value,
+                          bpm: document.getElementById('edit-bpm').value,
+                          key: document.getElementById('edit-key').value,
+                          tags: document.getElementById('edit-tags').value,
+                          description: document.getElementById('edit-desc').value,
+                          mp3: document.getElementById('edit-mp3').value,
+                          wav: document.getElementById('edit-wav').value,
+                          trackout: document.getElementById('edit-trackout').value,
+                          exclusive: document.getElementById('edit-exclusive').value,
+                        };
+
+                        await updateDoc(beatRef, updatedData);
+                        setIsEditing(false);
+                        // Опционально: уведомление от Telegram
+                        tg?.showAlert("Changes saved successfully!");
+                      } catch (error) {
+                        console.error("Firebase Update Error:", error);
+                        alert("Error saving changes.");
+                      }
+                    }}>
+                      SAVE CHANGES
+                    </button>
+                    
+                    <button className="reset-btn" onClick={() => setIsEditing(false)}>
+                      CANCEL
+                    </button>
                   </div>
                 </div>
               )}
@@ -981,7 +1004,7 @@ return (
           )}
         </div>
       </div>
-    </div> 
+    </div>
   );
 }
 
