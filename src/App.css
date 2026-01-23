@@ -1446,3 +1446,101 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
   width: 100%;
 }
+
+/* --- ADMIN PANEL STYLES --- */
+
+.edit-form-full {
+  padding: 10px 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+}
+
+.admin-input-group label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #666;
+  letter-spacing: 1px;
+  padding-left: 2px;
+  text-transform: uppercase;
+}
+
+.admin-input-group input, 
+.admin-input-group textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 15px;
+  color: white;
+  font-size: 16px; /* 16px предотвращает авто-зум в Safari на iPhone */
+  outline: none;
+  transition: all 0.3s ease;
+  appearance: none; /* Убирает стандартные стили iOS */
+}
+
+.admin-input-group input:focus {
+  border-color: var(--accent);
+  background: rgba(255, 74, 0, 0.05);
+  box-shadow: 0 0 15px rgba(255, 74, 0, 0.1);
+}
+
+.admin-grid-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.admin-danger-zone {
+  margin-top: 10px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.delete-beat-btn {
+  width: 100%;
+  background: rgba(255, 61, 0, 0.1);
+  color: #ff3d00;
+  border: 1px solid rgba(255, 61, 0, 0.2);
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.admin-actions-sticky {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.apply-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(255, 74, 0, 0.2);
+}
+
+.reset-btn {
+  background: transparent;
+  color: #888;
+  border: 1px solid #333;
+  padding: 16px;
+  border-radius: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}

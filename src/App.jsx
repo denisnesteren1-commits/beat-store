@@ -874,17 +874,58 @@ return (
                 </div>
               ) : (
                 <div className="edit-form-full">
-                  <h2 style={{color: 'var(--accent)', marginBottom: '20px', fontSize: '18px', fontWeight: '800'}}>EDIT MODE</h2>
-                  <p style={{color: '#888', marginBottom: '20px', fontSize: '14px'}}>Modify beat information here.</p>
-                  <button className="apply-btn" style={{width: '100%'}} onClick={() => setIsEditing(false)}>SAVE CHANGES</button>
-                  <button className="reset-btn" style={{width: '100%', marginTop: '10px', background: 'transparent', border: '1px solid #333'}} onClick={() => setIsEditing(false)}>CANCEL</button>
-                </div>
+                  <h2 style={{color: 'var(--accent)', marginBottom: '10px', fontSize: '18px', fontWeight: '800'}}>ADMIN PANEL</h2>
+                  <p style={{color: '#888', marginBottom: '20px', fontSize: '13px'}}>
+                    Редактирование: {beats.find(b => b.id === currentBeatId)?.title}
+                  </p>
+                  
+                  <div className="admin-input-group">
+                    <label>TITLE</label>
+                    <input type="text" defaultValue={beats.find(b => b.id === currentBeatId)?.title} placeholder="Beat Name" />
+                  </div>
+
+                  <div className="admin-grid-inputs">
+                    <div className="admin-input-group">
+                      <label>BPM</label>
+                      <input type="number" defaultValue={beats.find(b => b.id === currentBeatId)?.bpm} placeholder="140" />
+                    </div>
+                    <div className="admin-input-group">
+                      <label>KEY</label>
+                      <input type="text" defaultValue={beats.find(b => b.id === currentBeatId)?.key} placeholder="Cm" />
+                    </div>
+                  </div>
+
+                  <div className="admin-input-group">
+                    <label>TAGS (Comma separated)</label>
+                    <input type="text" defaultValue={beats.find(b => b.id === currentBeatId)?.tags} placeholder="Trap, Hard, Dark" />
+                  </div>
+
+                  <div className="admin-input-group">
+                    <label>DESCRIPTION</label>
+                    <textarea rows="3" defaultValue="High quality production by FRESSO."></textarea>
+                  </div>
+
+                  <div className="admin-danger-zone">
+                    <button className="delete-beat-btn" onClick={() => {
+                      if(window.confirm("Удалить этот бит навсегда?")) {
+                        setIsEditing(false);
+                      }
+                    }}>
+                      DELETE BEAT
+                    </button>
+                  </div>
+
+                  <div className="admin-actions-sticky">
+                    <button className="apply-btn" onClick={() => setIsEditing(false)}>SAVE CHANGES</button>
+                    <button className="reset-btn" onClick={() => setIsEditing(false)}>CANCEL</button>
+                  </div>
+                </div> /* Закрытие edit-form-full */
               )}
-            </div>
+            </div> /* Закрытие full-player-content */
           )}
-        </div>
-      </div>
-    </div>
+        </div> /* Закрытие full-player-scroll-area */
+      </div> /* Закрытие full-player */
+    </div> /* Закрытие app-container */
   );
 }
 
