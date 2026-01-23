@@ -1689,3 +1689,9 @@ input[type="range"]::-webkit-slider-thumb {
 .back-arrow-btn, .swipe-handle-container {
   display: none !important;
 }
+/* Когда плеер открыт, блокируем прокрутку всего сайта на фоне */
+body.modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}

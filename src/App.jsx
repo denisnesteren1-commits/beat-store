@@ -85,6 +85,16 @@ const formatTime = (time) => {
 
   // 2. ЭФФЕКТЫ (EFFECTS)
 
+  useEffect(() => {
+    if (isPlayerExpanded) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => document.body.classList.remove('modal-open');
+  }, [isPlayerExpanded]);
+
+  
   // Инициализация Telegram и загрузка основного списка битов
   useEffect(() => {
     if (tg) {
@@ -97,6 +107,8 @@ const formatTime = (time) => {
     });
     return () => unsub();
   }, []);
+
+
 
   // ГЛАВНЫЙ ЭФФЕКТ ПЛЕЕРА: Управляет проигрыванием/паузой
   useEffect(() => {
@@ -345,6 +357,8 @@ const formatTime = (time) => {
     playBeat(beats[prevIndex]);
     if (tg) tg.HapticFeedback.impactOccurred('medium');
   };
+
+
 
   // 4. ОТОБРАЖЕНИЕ (RENDER)
   if (activeTab === 'admin') {
@@ -774,8 +788,10 @@ return (
       {/* 6. РАЗВЕРНУТАЯ КАРТОЧКА БИТА (FULL PLAYER) */}
       <div 
         className={`full-player ${isPlayerExpanded ? 'open' : ''}`}
-        /* Блокируем передачу свайпа на задний план (главное меню) */
-        onTouchMove={(e) => e.stopPropagation()} 
+        /* Блокируем скролл фона */
+        onTouchMove={(e) => {
+          if (isPlayerExpanded) e.stopPropagation();
+        }}
         style={{ 
           transform: window.playerOffset > 0 ? `translateY(${window.playerOffset}px)` : '' 
         }}
@@ -784,14 +800,14 @@ return (
           {beats.find(b => b.id === currentBeatId) && (
             <div className="full-player-content">
               
-              {/* ЗОНА СВАЙПА (Закрытие свайпом ТОЛЬКО если НЕ в режиме редактирования) */}
+              {/* ЗОНА СВАЙПА */}
               <div 
                 className="cover-swipe-zone"
                 onTouchStart={(e) => { 
                   if (!isEditing) window.startY = e.touches[0].clientY; 
                 }}
                 onTouchMove={(e) => {
-                  if (isEditing) return; // В админке свайп на закрытие не работает
+                  if (isEditing) return;
                   const moveY = e.touches[0].clientY;
                   const diffY = moveY - window.startY;
                   if (diffY > 0) {
@@ -830,15 +846,45 @@ return (
               </div>
               
               {!isEditing ? (
-                /* --- РЕЖИМ ПРОСМОТРА --- */
+                /* --- РЕЖИМ ПЛЕЕРА --- */
                 <div className="beat-info-full">
                   <div className="full-main-info">
                     <h1>{beats.find(b => b.id === currentBeatId)?.title}</h1>
-                    {/* Подсвеченный жанр */}
                     <span className="full-genre-badge">{beats.find(b => b.id === currentBeatId)?.genre}</span>
                   </div>
 
-                  {/* ... (блок прогресса и кнопок остается прежним) ... */}
+                  {/* ПЕРЕМОТКА */}
+                  <div className="full-progress-container">
+                    <div className="progress-bar-wrapper">
+                      <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+                      <input type="range" className="full-seek-bar" value={progress} onChange={handleSeek} />
+                    </div>
+                    <div className="time-info">
+                      <span>{formatTime(currentTime)}</span>
+                      <span>{formatTime(audioRef.current?.duration)}</span>
+                    </div>
+                  </div>
+
+                  {/* КНОПКИ УПРАВЛЕНИЯ */}
+                  <div className="full-controls-layout">
+                    <button className={`control-btn secondary-action ${isLooping ? 'active' : ''}`} onClick={toggleLoop}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+                    </button>
+                    <div className="main-controls">
+                      <button className="control-btn main-skip" onClick={playPrev}>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"></path></svg>
+                      </button>
+                      <button className="control-btn play-pause-circle" onClick={() => setIsPlaying(!isPlaying)}>
+                        {isPlaying ? <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg> : <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" style={{marginLeft: '4px'}}><path d="M8 5v14l11-7z"></path></svg>}
+                      </button>
+                      <button className="control-btn main-skip" onClick={playNext}>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"></path></svg>
+                      </button>
+                    </div>
+                    <button className="control-btn secondary-action" onClick={() => toggleFav(currentBeatId)}>
+                      {favorites.includes(currentBeatId) ? <svg width="24" height="24" viewBox="0 0 24 24" fill="#ff4d4d"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg> : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>}
+                    </button>
+                  </div>
 
                   <div className="aesthetic-stats">
                     <div className="stat-item"><span>BPM</span><strong>{beats.find(b => b.id === currentBeatId)?.bpm}</strong></div>
@@ -846,7 +892,6 @@ return (
                     <div className="stat-item"><span>KEY</span><strong>{beats.find(b => b.id === currentBeatId)?.key}</strong></div>
                   </div>
 
-                  {/* ТЕГИ */}
                   <div className="full-tags-display">
                     {beats.find(b => b.id === currentBeatId)?.tags?.split(',').map(tag => (
                       <span key={tag} className="tag-chip">#{tag.trim()}</span>
@@ -863,15 +908,15 @@ return (
                   )}
                 </div>
               ) : (
-                /* --- РЕЖИМ АДМИН ПАНЕЛИ --- */
+                /* --- АДМИН ПАНЕЛЬ --- */
                 <div className="edit-form-full">
                   <h2 className="admin-title">ADMIN PANEL</h2>
                   
                   <div className="admin-input-group">
                     <label>TITLE & GENRE</label>
                     <div className="admin-grid-inputs">
-                      <input type="text" id="edit-title" defaultValue={beats.find(b => b.id === currentBeatId)?.title} placeholder="Title" />
-                      <input type="text" id="edit-genre" defaultValue={beats.find(b => b.id === currentBeatId)?.genre} placeholder="Genre" />
+                      <input type="text" id="edit-title" defaultValue={beats.find(b => b.id === currentBeatId)?.title} />
+                      <input type="text" id="edit-genre" defaultValue={beats.find(b => b.id === currentBeatId)?.genre} />
                     </div>
                   </div>
 
@@ -881,13 +926,12 @@ return (
                   </div>
 
                   <div className="admin-input-group">
-                    <label>TAGS (Comma separated)</label>
-                    <input type="text" id="edit-tags" defaultValue={beats.find(b => b.id === currentBeatId)?.tags} placeholder="Trap, Dark, Melodic" />
+                    <label>TAGS</label>
+                    <input type="text" id="edit-tags" defaultValue={beats.find(b => b.id === currentBeatId)?.tags} />
                   </div>
 
-                  {/* РЕДАКТИРОВАНИЕ ФАЙЛОВ (Ссылки) */}
                   <div className="admin-files-section">
-                    <label>FILE LINKS (MP3 / WAV / TRACKOUT / EXCL)</label>
+                    <label>FILE LINKS</label>
                     <input type="text" id="edit-mp3" defaultValue={beats.find(b => b.id === currentBeatId)?.mp3} placeholder="MP3 Link" />
                     <input type="text" id="edit-wav" defaultValue={beats.find(b => b.id === currentBeatId)?.wav} placeholder="WAV Link" />
                     <input type="text" id="edit-trackout" defaultValue={beats.find(b => b.id === currentBeatId)?.trackout} placeholder="Trackout Link" />
@@ -916,9 +960,7 @@ return (
                       } : b);
                       setBeats(updatedBeats);
                       setIsEditing(false);
-                    }}>
-                      SAVE CHANGES
-                    </button>
+                    }}>SAVE CHANGES</button>
                     <button className="reset-btn" onClick={() => setIsEditing(false)}>CANCEL</button>
                   </div>
                 </div>
