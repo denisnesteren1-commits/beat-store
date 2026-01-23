@@ -1781,24 +1781,36 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .admin-actions-sticky {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 15px;
+    /* Фиксируем блок в нижней части родительского контейнера */
+    position: sticky;
+    bottom: -20px; 
+    
+    /* Оформление фона, чтобы текст под кнопками не просвечивал */
+    background: #1a1a1a; 
+    padding: 20px 0;
+    margin-top: 20px;
+    
+    /* Создаем четкую границу отделения от полей ввода */
+    border-top: 1px solid #333;
+    
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    
+    /* Выводим на передний план */
+    z-index: 100;
 }
 
+/* Сама кнопка сохранения, чтобы она была заметнее */
 .apply-changes-btn {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 18px;
-  border-radius: 16px;
-  font-weight: 800;
-  font-size: 14px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(255, 74, 0, 0.2);
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3); /* Тень, чтобы кнопка "парила" */
 }
 
 .reset-btn {
