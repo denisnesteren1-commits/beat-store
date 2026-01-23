@@ -1685,94 +1685,23 @@ input[type="range"]::-webkit-slider-thumb {
   border-color: var(--accent);
 }
 
-/* --- СЕКЦИЯ УПРАВЛЕНИЯ ФАЙЛАМИ (БЕЗ НАСЛОЕНИЙ) --- */
+/* Поля для ссылок на файлы (компактные) */
 .admin-files-section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.25);
-  padding: 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  margin: 10px 0;
-}
-
-.admin-files-section label {
-  font-size: 11px;
-  font-weight: 800;
-  color: #666;
-  margin-bottom: 5px;
-  display: block;
-  letter-spacing: 1px;
-}
-
-.file-upload-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 12px 15px;
-  border-radius: 12px;
+  gap: 8px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-.file-info-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.admin-files-section input {
+  font-size: 13px !important;
+  padding: 10px 12px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
 }
 
-.file-type-label {
-  font-size: 11px;
-  font-weight: 900;
-  color: var(--accent);
-  min-width: 65px;
-}
-
-.status-badge {
-  font-size: 9px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
-
-.status-badge.loaded {
-  background: rgba(49, 181, 69, 0.12);
-  color: #31b545;
-  border: 1px solid rgba(49, 181, 69, 0.1);
-}
-
-.status-badge.empty {
-  background: rgba(255, 255, 255, 0.05);
-  color: #777;
-}
-
-.file-actions-right {
-  display: flex;
-  align-items: center;
-}
-
-.change-file-btn {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.change-file-btn:active {
-  background: var(--accent);
-  border-color: var(--accent);
-  transform: scale(0.96);
-}
-
-/* --- СЕТКА И КНОПКИ ДЕЙСТВИЙ --- */
 .admin-grid-inputs {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1780,76 +1709,130 @@ input[type="range"]::-webkit-slider-thumb {
   width: 100%;
 }
 
+/* Кнопки действий */
 .admin-actions-sticky {
-    /* Фиксируем блок в нижней части родительского контейнера */
-    position: sticky;
-    bottom: -20px; 
-    
-    /* Оформление фона, чтобы текст под кнопками не просвечивал */
-    background: #1a1a1a; 
-    padding: 20px 0;
-    margin-top: 20px;
-    
-    /* Создаем четкую границу отделения от полей ввода */
-    border-top: 1px solid #333;
-    
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    
-    /* Выводим на передний план */
-    z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
 }
 
-/* Сама кнопка сохранения, чтобы она была заметнее */
 .apply-changes-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 16px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3); /* Тень, чтобы кнопка "парила" */
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  padding: 16px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.apply-changes-btn:active {
+  background: var(--accent);
+  color: white;
 }
 
 .reset-btn {
   background: transparent;
-  color: #999;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #777;
+  border: 1px solid #333;
   padding: 16px;
-  border-radius: 16px;
+  border-radius: 14px;
   font-weight: 600;
   cursor: pointer;
 }
 
-/* --- ОПАСНАЯ ЗОНА --- */
+/* Опасная зона */
 .admin-danger-zone {
-  margin-top: 10px;
+  margin-top: 5px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding-top: 25px;
+  padding-top: 20px;
 }
 
 .delete-beat-btn {
   width: 100%;
-  background: rgba(255, 61, 0, 0.05);
+  background: rgba(255, 61, 0, 0.08);
   color: #ff3d00;
-  border: 1px solid rgba(255, 61, 0, 0.2);
+  border: 1px solid rgba(255, 61, 0, 0.15);
   padding: 14px;
-  border-radius: 14px;
+  border-radius: 12px;
   font-weight: 700;
   font-size: 11px;
   letter-spacing: 1px;
-  text-transform: uppercase;
 }
 
-/* СИСТЕМНЫЕ КЛАССЫ */
+/* Скрываем лишние элементы */
 .back-arrow-btn, .swipe-handle-container {
   display: none !important;
 }
 
+/* Когда плеер открыт, блокируем прокрутку всего сайта на фоне */
 body.modal-open {
   overflow: hidden;
   position: fixed;
   width: 100%;
+}
+
+/* --- СТИЛИ ДЛЯ ЗАГРУЗКИ ФАЙЛОВ В РЕДАКТИРОВАНИИ --- */
+
+.file-upload-item {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.file-upload-item:hover {
+  border-color: var(--accent);
+  background: rgba(255, 74, 0, 0.05);
+}
+
+.file-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.file-type-label {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+.current-file-indicator {
+  font-size: 10px;
+  font-weight: 600;
+  color: #888;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.file-upload-item input[type="file"] {
+  font-size: 12px;
+  color: #aaa;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Улучшаем вид кнопок выбора файла в Chrome/Safari */
+.file-upload-item input[type="file"]::file-selector-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-right: 10px;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  cursor: pointer;
 }
