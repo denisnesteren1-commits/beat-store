@@ -853,28 +853,29 @@ return (
                     <span className="full-genre-badge">{beats.find(b => b.id === currentBeatId)?.genre}</span>
                   </div>
 
-                  {/* ПЕРЕМОТКА С УЛУЧШЕННЫМ КЛИКОМ */}
-                  <div className="full-progress-container">
-                    <div className="progress-bar-wrapper">
-                      {/* Визуальная линия прогресса */}
-                      <div className="progress-fill" style={{ width: `${progress}%` }}></div>
-                      
-                      {/* Ползунок, который теперь ловит клик по всей ширине */}
-                      <input 
-                        type="range" 
-                        className="full-seek-bar" 
-                        min="0"
-                        max="100"
-                        value={progress} 
-                        onChange={handleSeek}
-                        onInput={handleSeek} 
-                      />
-                    </div>
-                    <div className="time-info">
-                      <span>{formatTime(currentTime)}</span>
-                      <span>{formatTime(audioRef.current?.duration)}</span>
-                    </div>
-                  </div>
+                  {/* ПЕРЕМОТКА */}
+            <div className="full-progress-container">
+              <div className="progress-bar-wrapper">
+                {/* Белая линия, которая заполняется */}
+                <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+                
+                {/* Ползунок - он прозрачный, но кликабельный */}
+                <input 
+                  type="range" 
+                  className="full-seek-bar" 
+                  min="0" 
+                  max="100" 
+                  step="0.1"
+                  value={progress} 
+                  onChange={handleSeek}
+                  onInput={handleSeek}
+                />
+              </div>
+              <div className="time-info">
+                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(audioRef.current?.duration)}</span>
+              </div>
+            </div>
 
                   {/* КНОПКИ УПРАВЛЕНИЯ */}
             <div className="full-controls-layout">
