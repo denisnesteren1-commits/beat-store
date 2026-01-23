@@ -1695,3 +1695,30 @@ body.modal-open {
   position: fixed;
   width: 100%;
 }
+
+/* Скрытый, но широкий инпут для удобного нажатия пальцем */
+.full-seek-bar {
+  -webkit-appearance: none; /* Для Chrome/Safari */
+  appearance: none;         /* Стандартное свойство (убирает варнинг) */
+  width: 100%;
+  position: absolute;
+  top: -18px; 
+  height: 40px; 
+  background: transparent;
+  cursor: pointer;
+  z-index: 5;
+  margin: 0;
+}
+
+/* И здесь тоже добавь стандартное свойство */
+.full-seek-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;         /* Добавили сюда */
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(0,0,0,0.5);
+  cursor: pointer;
+  margin-top: 13px; 
+}

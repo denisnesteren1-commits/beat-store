@@ -94,7 +94,7 @@ const formatTime = (time) => {
     return () => document.body.classList.remove('modal-open');
   }, [isPlayerExpanded]);
 
-  
+
   // Инициализация Telegram и загрузка основного списка битов
   useEffect(() => {
     if (tg) {
@@ -849,15 +849,26 @@ return (
                 /* --- РЕЖИМ ПЛЕЕРА --- */
                 <div className="beat-info-full">
                   <div className="full-main-info">
-                    <h1>{beats.find(b => b.id === currentBeatId)?.title}</h1>
+                    <h1 className="full-title">{beats.find(b => b.id === currentBeatId)?.title}</h1>
                     <span className="full-genre-badge">{beats.find(b => b.id === currentBeatId)?.genre}</span>
                   </div>
 
-                  {/* ПЕРЕМОТКА */}
+                  {/* ПЕРЕМОТКА С УЛУЧШЕННЫМ КЛИКОМ */}
                   <div className="full-progress-container">
                     <div className="progress-bar-wrapper">
+                      {/* Визуальная линия прогресса */}
                       <div className="progress-fill" style={{ width: `${progress}%` }}></div>
-                      <input type="range" className="full-seek-bar" value={progress} onChange={handleSeek} />
+                      
+                      {/* Ползунок, который теперь ловит клик по всей ширине */}
+                      <input 
+                        type="range" 
+                        className="full-seek-bar" 
+                        min="0"
+                        max="100"
+                        value={progress} 
+                        onChange={handleSeek}
+                        onInput={handleSeek} 
+                      />
                     </div>
                     <div className="time-info">
                       <span>{formatTime(currentTime)}</span>
