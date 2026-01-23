@@ -930,124 +930,78 @@ return (
             )}
           </div>
         ) : (
-                /* --- АДМИН ПАНЕЛЬ (РЕЖИМ РЕДАКТИРОВАНИЯ) --- */
-    <div className="edit-form-full">
-      <h2 className="admin-title">EDIT BEAT</h2>
-      
-      <div className="admin-input-group">
-        <label>TITLE & GENRE</label>
+               /* --- АДМИН ПАНЕЛЬ (РЕЖИМ РЕДАКТИРОВАНИЯ) --- */
+      <div className="edit-form-full">
+        <h2 className="admin-title">EDIT BEAT</h2>
+        
+        <div className="admin-input-group">
+          <label>TITLE & GENRE</label>
+          <div className="admin-grid-inputs">
+            <input type="text" id="edit-title" defaultValue={beats.find(b => b.id === currentBeatId)?.title} />
+            <input type="text" id="edit-genre" defaultValue={beats.find(b => b.id === currentBeatId)?.genre} />
+          </div>
+        </div>
+
         <div className="admin-grid-inputs">
-          <input type="text" id="edit-title" defaultValue={beats.find(b => b.id === currentBeatId)?.title} />
-          <input type="text" id="edit-genre" defaultValue={beats.find(b => b.id === currentBeatId)?.genre} />
+          <div className="admin-input-group">
+            <label>BPM</label>
+            <input type="number" id="edit-bpm" defaultValue={beats.find(b => b.id === currentBeatId)?.bpm} />
+          </div>
+          <div className="admin-input-group">
+            <label>KEY</label>
+            <input type="text" id="edit-key" defaultValue={beats.find(b => b.id === currentBeatId)?.key} />
+          </div>
+        </div>
+
+        {/* Скрытые поля, чтобы не потерять текущие ссылки на файлы при сохранении */}
+        {['mp3', 'wav', 'trackout', 'exclusive'].map((fileType) => (
+          <input 
+            key={fileType}
+            type="hidden" 
+            id={`edit-${fileType}`} 
+            defaultValue={beats.find(b => b.id === currentBeatId)?.[fileType]} 
+          />
+        ))}
+
+        <div className="admin-input-group">
+          <label>TAGS</label>
+          <input type="text" id="edit-tags" defaultValue={beats.find(b => b.id === currentBeatId)?.tags} />
+        </div>
+
+        <div className="admin-input-group">
+          <label>DESCRIPTION</label>
+          <textarea id="edit-desc" rows="3" defaultValue={beats.find(b => b.id === currentBeatId)?.description}></textarea>
+        </div>
+
+        <div className="admin-actions-sticky">
+          <button className="apply-changes-btn" onClick={async () => {
+            try {
+              const beatRef = doc(db, "beats", currentBeatId);
+              const updatedData = {
+                title: document.getElementById('edit-title').value,
+                genre: document.getElementById('edit-genre').value,
+                bpm: document.getElementById('edit-bpm').value,
+                key: document.getElementById('edit-key').value,
+                tags: document.getElementById('edit-tags').value,
+                description: document.getElementById('edit-desc').value,
+                // Ссылки берутся из скрытых полей, они останутся прежними
+                mp3: document.getElementById('edit-mp3').value,
+                wav: document.getElementById('edit-wav').value,
+                trackout: document.getElementById('edit-trackout').value,
+                exclusive: document.getElementById('edit-exclusive').value,
+              };
+
+              await updateDoc(beatRef, updatedData);
+              setIsEditing(false);
+              tg?.showAlert("Beat updated successfully!");
+            } catch (e) {
+              alert("Save error!");
+            }
+          }}>SAVE CHANGES</button>
+          <button className="reset-btn" onClick={() => setIsEditing(false)}>CANCEL</button>
         </div>
       </div>
-
-      <div className="admin-grid-inputs">
-        <div className="admin-input-group"><label>BPM</label><input type="number" id="edit-bpm" defaultValue={beats.find(b => b.id === currentBeatId)?.bpm} /></div>
-        <div className="admin-input-group"><label>KEY</label><input type="text" id="edit-key" defaultValue={beats.find(b => b.id === currentBeatId)?.key} /></div>
-      </div>
-
-      {/* ЗАГРУЗКА ФАЙЛОВ (УЛУЧШЕННАЯ ПАНЕЛЬ) */}
-      <div className="admin-files-section">
-        <label>MANAGE FILES</label>
-        {['mp3', 'wav', 'trackout', 'exclusive'].map((fileType) => {
-          const currentLink = beats.find(b => b.id === currentBeatId)?.[fileType];
-          const isLoaded = !!currentLink && currentLink !== "";
-
-          return (
-            <div key={fileType} className="file-upload-row">
-              <div className="file-info-left">
-                <span className="file-type-label">{fileType.toUpperCase()}</span>
-                <span className={`status-badge ${isLoaded ? 'loaded' : 'empty'}`}>
-                  {isLoaded ? 'LOADED' : 'EMPTY'}
-                </span>
-              </div>
-
-              <div className="file-actions-right">
-                {/* Скрытый настоящий инпут, чтобы не было надписи "файл не выбран" */}
-                <input 
-                  type="file" 
-                  id={`file-input-${fileType}`}
-                  style={{ display: 'none' }}
-                  accept={fileType === 'mp3' ? '.mp3' : '.zip,.rar,.wav'} 
-                  onChange={async (e) => {
-                    const file = e.target.files[0];
-                    if (!file) return;
-
-                    // Логика загрузки в Firebase Storage
-                    const storageRef = ref(storage, `beats/${currentBeatId}/${fileType}_${file.name}`);
-                    const uploadTask = uploadBytesResumable(storageRef, file);
-
-                    uploadTask.on('state_changed', 
-                      (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        tg?.MainButton.setText(`UPLOADING ${fileType.toUpperCase()}: ${Math.round(progress)}%`).show();
-                      }, 
-                      (error) => alert("Upload error"), 
-                      async () => {
-                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                        // Записываем новую ссылку в скрытый инпут для последующего сохранения
-                        document.getElementById(`edit-${fileType}`).value = downloadURL;
-                        tg?.MainButton.setText("FILE READY ✅").show();
-                        setTimeout(() => tg.MainButton.hide(), 2000);
-                      }
-                    );
-                  }}
-                />
-                
-                {/* Кнопка управления вынесенная вправо */}
-                <button 
-                  className="change-file-btn"
-                  onClick={() => document.getElementById(`file-input-${fileType}`).click()}
-                >
-                  {isLoaded ? 'REPLACE' : 'UPLOAD'}
-                </button>
-
-                {/* Скрытый инпут для хранения ссылок, которые полетят в базу при нажатии SAVE */}
-                <input type="hidden" id={`edit-${fileType}`} defaultValue={currentLink} />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="admin-input-group">
-        <label>TAGS</label>
-        <input type="text" id="edit-tags" defaultValue={beats.find(b => b.id === currentBeatId)?.tags} />
-      </div>
-
-      <div className="admin-input-group">
-        <label>DESCRIPTION</label>
-        <textarea id="edit-desc" rows="3" defaultValue={beats.find(b => b.id === currentBeatId)?.description}></textarea>
-      </div>
-
-      <div className="admin-actions-sticky">
-        <button className="apply-changes-btn" onClick={async () => {
-          try {
-            const beatRef = doc(db, "beats", currentBeatId);
-            const updatedData = {
-              title: document.getElementById('edit-title').value,
-              genre: document.getElementById('edit-genre').value,
-              bpm: document.getElementById('edit-bpm').value,
-              key: document.getElementById('edit-key').value,
-              tags: document.getElementById('edit-tags').value,
-              description: document.getElementById('edit-desc').value,
-              mp3: document.getElementById('edit-mp3').value,
-              wav: document.getElementById('edit-wav').value,
-              trackout: document.getElementById('edit-trackout').value,
-              exclusive: document.getElementById('edit-exclusive').value,
-            };
-
-            await updateDoc(beatRef, updatedData);
-            setIsEditing(false);
-            tg?.showAlert("Beat updated successfully!");
-          } catch (e) {
-            alert("Save error!");
-          }
-        }}>SAVE CHANGES</button>
-        <button className="reset-btn" onClick={() => setIsEditing(false)}>CANCEL</button>
-      </div>
-    </div>
+      /* --- КОНЕЦ АДМИН ПАНЕЛИ --- */
               )}
             </div>
           )}
